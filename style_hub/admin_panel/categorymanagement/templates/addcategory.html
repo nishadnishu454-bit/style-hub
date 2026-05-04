@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style-Hub | Add Category</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        body{
+            font-family:'Inter',sans-serif;
+            background-color:#FBFBFB;
+        }
+
+        .custom-shadow{
+            box-shadow:0 4px 20px rgba(0,0,0,0.03);
+        }
+
+        .input-field{
+            width:100%;
+            background:white;
+            border:1px solid #E5E7EB;
+            padding:16px;
+            font-size:13px;
+            outline:none;
+            transition:0.3s;
+        }
+
+        .input-field:focus{
+            border-color:black;
+        }
+
+        .label-text{
+            font-size:10px;
+            font-weight:800;
+            text-transform:uppercase;
+            letter-spacing:0.08em;
+            color:#9CA3AF;
+            margin-bottom:10px;
+            display:block;
+        }
+
+    </style>
+</head>
+
+<body class="bg-[#FBFBFB]">
+
+<header class="w-full bg-white border-b border-gray-100 px-10 py-4 flex justify-end items-center">
+
+    <div class="flex items-center space-x-3">
+
+        <div class="text-right">
+            <p class="text-[10px] font-bold uppercase">Admin</p>
+            <p class="text-[9px] text-gray-400 font-medium">Main Atelier</p>
+        </div>
+
+        <img src="https://ui-avatars.com/api/?name=Admin&background=333&color=fff"
+             class="w-8 h-8 rounded-full">
+
+    </div>
+
+</header>
+
+<main class="w-full flex flex-col items-center py-16">
+
+    <div class="w-full max-w-3xl px-6">
+
+        <!-- TITLE -->
+        <div class="mb-10 text-center">
+
+            <h2 class="text-3xl font-extrabold tracking-tighter uppercase mb-2">
+                Add Category
+            </h2>
+
+            <p class="text-[11px] font-bold text-gray-400 tracking-widest uppercase">
+                Establish a new category for the atelier collections.
+            </p>
+
+        </div>
+
+        <!-- MESSAGE -->
+        {% if messages %}
+            {% for message in messages %}
+
+                <div class="bg-green-100 text-green-700 px-5 py-4 mb-6 text-sm font-semibold rounded-sm">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+        {% endif %}
+
+        <!-- FORM BOX -->
+        <div class="bg-[#F2F2F2] p-8 md:p-12 rounded-sm custom-shadow w-full">
+
+            <form method="POST" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <!-- CATEGORY NAME -->
+                <div class="mb-6">
+
+                    <label class="label-text">
+                        Category Name
+                    </label>
+
+                    <input type="text"
+                           name="category_name"
+                           placeholder="Enter category name"
+                           class="input-field"
+                           required>
+
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="mb-6">
+
+                    <label class="label-text">
+                        Description
+                    </label>
+
+                    <textarea name="description"
+                              rows="5"
+                              placeholder="Write category description..."
+                              class="input-field resize-none"></textarea>
+
+                </div>
+
+                <!-- CUSTOM IMAGE UPLOAD -->
+                <div class="mb-6">
+
+                    <label class="label-text">
+                        Category Image
+                    </label>
+
+                    <label for="category_image"
+                        class="w-full bg-white border-2 border-dashed border-gray-300 p-10 flex flex-col items-center justify-center cursor-pointer hover:border-black transition-all">
+
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-4"></i>
+
+                        <p class="text-sm font-bold text-gray-700 uppercase tracking-widest">
+                            Upload Category Image
+                        </p>
+
+                        <p class="text-[11px] text-gray-400 mt-2">
+                            PNG, JPG or WEBP
+                        </p>
+
+                        <img id="previewImage"
+                             class="hidden mt-5 w-32 h-32 object-cover rounded-sm border border-gray-200">
+
+                    </label>
+
+                    <input type="file"
+                           id="category_image"
+                           name="category_image"
+                           accept="image/*"
+                           class="hidden"
+                           onchange="previewCategoryImage(event)">
+
+                </div>
+
+                <!-- BUTTONS -->
+                <div class="flex flex-col md:flex-row md:space-x-6 space-y-4 md:space-y-0 pt-4">
+
+                    <button type="submit"
+                        class="flex-1 bg-black text-white text-[10px] font-bold uppercase tracking-widest py-4 hover:bg-gray-800 transition-colors">
+
+                        Add Category
+
+                    </button>
+
+                    <a href="{% url 'category_listing' %}"
+                        class="flex-1 border border-gray-300 text-[10px] font-bold uppercase tracking-widest py-4 hover:bg-gray-50 transition-colors text-center block">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+<script>
+
+    function previewCategoryImage(event) {
+
+        const image = document.getElementById('previewImage');
+
+        image.src = URL.createObjectURL(event.target.files[0]);
+
+        image.classList.remove('hidden');
+    }
+
+</script>
+
+</body>
+</html>

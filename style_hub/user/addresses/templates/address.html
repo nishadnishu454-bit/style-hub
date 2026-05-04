@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Addresses | STYLE-HUB</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-secondary-fixed-variant": "#344768",
+            "surface-tint": "#c6c6c7",
+            "inverse-on-surface": "#1f3052",
+            "on-primary-fixed-variant": "#454747",
+            "on-primary": "#2f3131",
+            "surface": "#001232",
+            "surface-variant": "#233456",
+            "outline-variant": "#44474e",
+            "tertiary-container": "#470009",
+            "surface-container-low": "#071b3b",
+            "primary-container": "#1d1f20",
+            "surface-bright": "#28395b",
+            "on-primary-fixed": "#1a1c1c",
+            "inverse-primary": "#5d5f5f",
+            "tertiary-fixed-dim": "#ffb3b1",
+            "primary-fixed": "#e2e2e2",
+            "secondary-fixed": "#d7e3ff",
+            "primary": "#c6c6c7",
+            "on-secondary-fixed": "#051b3a",
+            "on-surface": "#d8e2ff",
+            "background": "#001232",
+            "primary-fixed-dim": "#c6c6c7",
+            "on-tertiary-container": "#d36565",
+            "on-surface-variant": "#c5c6cf",
+            "error": "#ffb4ab",
+            "surface-container-high": "#18294b",
+            "surface-container": "#0c1f40",
+            "outline": "#8f9099",
+            "on-secondary-container": "#a3b5dc",
+            "secondary": "#b4c7ee",
+            "on-tertiary-fixed": "#410007",
+            "tertiary-fixed": "#ffdad8",
+            "surface-dim": "#001232",
+            "on-error": "#690005",
+            "on-background": "#d8e2ff",
+            "on-secondary": "#1d3050",
+            "secondary-fixed-dim": "#b4c7ee",
+            "secondary-container": "#344768",
+            "on-tertiary-fixed-variant": "#80272b",
+            "tertiary": "#ffb3b1",
+            "on-error-container": "#ffdad6",
+            "surface-container-highest": "#233456",
+            "on-tertiary": "#620f17",
+            "error-container": "#93000a",
+            "on-primary-container": "#858787",
+            "inverse-surface": "#d8e2ff",
+            "surface-container-lowest": "#000d28"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Manrope"],
+            "label": ["Manrope"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Manrope', sans-serif; background-color: #001232; color: #d8e2ff; }
+    .glass-card {
+      background: rgba(40, 57, 91, 0.4);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .active-icon {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+<!-- TopNavBar Implementation -->
+<header class="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,13,40,0.4)] flex justify-between items-center px-8 h-20 w-full">
+<div class="text-2xl font-black tracking-tighter text-slate-100 uppercase font-manrope">STYLE-HUB</div>
+<nav class="hidden md:flex items-center gap-8 font-manrope tracking-tight">
+<a class="text-slate-400 hover:text-slate-200 transition-colors" href="{% url "home" %}">Home</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors" href="{% url "product_page" %}">Products</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors" href="{% url "category_page" %}">Categories</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors" href="{% url "about_page" %}">About</a>
+</nav>
+<div class="flex items-center gap-6 text-slate-200">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="bg-slate-800/50 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-slate-400 w-64 transition-all duration-300" placeholder="Search..." type="text"/>
+</div>
+<span class="material-symbols-outlined hover:bg-slate-800/50 transition-all duration-300 p-2 rounded-full cursor-pointer">favorite</span>
+<span class="material-symbols-outlined hover:bg-slate-800/50 transition-all duration-300 p-2 rounded-full cursor-pointer">shopping_bag</span>
+<a href="{% url 'profile' %}">
+    <span class="material-symbols-outlined hover:bg-slate-800/50 transition-all duration-300 p-2 rounded-full cursor-pointer">
+        person
+    </span>
+</a></div>
+</header>
+<main class="pt-20 min-h-screen flex">
+<!-- SideNavBar Implementation -->
+<aside class="hidden md:flex h-[calc(100vh-5rem)] w-72 bg-slate-900 border-r border-slate-800/20 flex-col p-6 gap-4 sticky top-20">
+
+<nav class="flex flex-col gap-1 font-manrope text-sm font-medium">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="{% url "profile" %}">
+<span class="material-symbols-outlined">person</span>
+<span>Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-slate-800 text-white rounded-lg translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined active-icon" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span>Address</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">package_2</span>
+<span>My Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<span>Wishlist</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span>Wallet</span>
+</a>
+</nav>
+</aside>
+<!-- Content Area -->
+<section class="flex-1 p-8 lg:p-12 bg-[#001232]">
+<!-- Header -->
+<div class="mb-12">
+<h1 class="text-4xl font-extrabold tracking-tighter text-white mb-2 uppercase font-headline">My Addresses</h1>
+<p class="text-on-surface-variant font-medium tracking-wide">Manage your saved delivery addresses</p>
+</div>
+<!-- Action Bar -->
+<!-- 🔥 ACTION BAR (UPDATED SEARCH WORKING) -->
+<div class="flex flex-col sm:flex-row justify-between items-center gap-6 mb-10">
+
+    <!-- 🔍 SEARCH FORM -->
+    <form method="GET" class="relative w-full sm:w-96">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50">search</span>
+
+        <input 
+            type="text"
+            name="q"
+            value="{{ request.GET.q }}"
+            placeholder="Search saved addresses..."
+            class="w-full bg-surface-container-low border border-outline-variant/20 rounded-full py-3.5 pl-12 pr-10 text-sm text-on-surface focus:ring-1 focus:ring-primary focus:border-transparent transition-all outline-none"/>
+
+        <!-- CLEAR BUTTON -->
+        {% if request.GET.q %}
+        <a href="{% url 'address_page' %}"
+           class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-red-400 hover:text-red-300">
+            ✕
+        </a>
+        {% endif %}
+    </form>
+
+    <!-- ➕ ADD ADDRESS -->
+    <button class="w-full sm:w-auto bg-primary-fixed hover:bg-primary text-on-primary-fixed font-bold py-3.5 px-8 rounded-full transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(226,226,222,0.15)]">
+        <span class="material-symbols-outlined">add</span>
+        <a href="{% url 'add_address' %}" class="px-6 py-3">
+            Add New Address
+        </a>
+    </button>
+</div>
+<!-- Address Grid -->
+<!-- Address Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+
+{% for address in address %}
+<div class="glass-card p-6 rounded-xl relative group border border-outline-variant/10 hover:border-outline-variant/30 transition-all duration-500 shadow-2xl">
+
+    <div class="flex justify-between items-start mb-6">
+        <div class="flex gap-2">
+            <span class="bg-secondary-container text-on-secondary-container text-[10px] uppercase font-black px-3 py-1 rounded-full tracking-widest">
+                {{ address.address_type }}
+            </span>
+
+            {% if address.is_default %}
+            <span class="bg-primary-container text-primary text-[10px] uppercase font-black px-3 py-1 rounded-full tracking-widest border border-primary/20">
+                Default
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="flex gap-2 opacity-40 group-hover:opacity-100 transition-opacity duration-300">
+            <a href="{% url "edit_address" address.id %}"
+               class="text-on-surface hover:text-white inline-flex">
+                <span class="material-symbols-outlined text-[20px]">edit</span>
+            </a>
+
+            <button type="button"
+        onclick="openDeleteModal('{{ address.id }}')"
+        class="text-error hover:brightness-125 inline-flex">
+    <span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+        </div>
+    </div>
+
+    <div class="space-y-1 mb-8">
+        <h4 class="text-xl font-bold text-white tracking-tight">
+            {{ address.full_name }}
+        </h4>
+
+        <p class="text-on-surface-variant font-medium text-sm">
+            {{ address.phone_number }}
+        </p>
+
+        <p class="text-on-surface-variant/80 text-sm leading-relaxed mt-4">
+            {{ address.house_name }}<br/>
+            {{ address.address }}<br/>
+            {{ address.area }}, {{ address.country }},{{address.state}}<br/>
+            {{ address.district }} - {{ address.pincode }}
+        </p>
+    </div>
+
+    <div class="flex flex-col gap-3">
+        <button class="w-full py-3 bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition-colors border border-white/5">
+            Deliver Here
+        </button>
+
+        {% if address.is_default %}
+        <div class="flex justify-center">
+            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest italic">
+                Currently set as default
+            </span>
+        </div>
+        {% else %}
+        <a href="{% url 'set_default_address' address.id %}"
+           class="w-full py-2.5 text-on-surface-variant hover:text-white font-bold text-[10px] uppercase tracking-widest transition-colors text-center">
+            Set as Default
+        </a>
+        {% endif %}
+    </div>
+
+</div>
+
+{% empty %}
+<div class="col-span-full text-center py-20">
+    <p class="text-on-surface-variant font-medium">No addresses added yet.</p>
+</div>
+{% endfor %}
+
+</div>
+</section>
+</main>
+<!-- Footer Implementation -->
+<footer class="bg-slate-950 w-full py-12 border-t border-slate-800/20">
+<div class="flex flex-col items-center gap-6 px-8 max-w-7xl mx-auto font-manrope">
+<div class="text-lg font-bold text-slate-200 tracking-tighter">STYLE-HUB</div>
+<div class="flex gap-8">
+<a class="text-xs tracking-widest uppercase text-slate-500 hover:text-slate-200 transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs tracking-widest uppercase text-slate-500 hover:text-slate-200 transition-colors" href="#">Terms of Service</a>
+<a class="text-xs tracking-widest uppercase text-slate-500 hover:text-slate-200 transition-colors" href="#">Contact Us</a>
+</div>
+<p class="text-xs tracking-widest uppercase text-slate-400">© 2024 STYLE-HUB Digital Flagship. All Rights Reserved.</p>
+</div>
+</footer>
+
+<div id="deleteModal" class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+
+    <div class="glass-card w-full max-w-md rounded-2xl border border-white/10 p-8 shadow-2xl text-center">
+
+        <div class="w-16 h-16 mx-auto mb-5 rounded-full bg-error/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-error text-4xl">delete</span>
+        </div>
+
+        <h2 class="text-2xl font-extrabold text-white mb-2">
+            Delete Address?
+        </h2>
+
+        <p class="text-on-surface-variant text-sm mb-8">
+            Are you sure you want to delete this address? This action cannot be undone.
+        </p>
+
+        <div class="flex flex-col gap-3">
+            <form id="deleteForm" method="POST">
+                {% csrf_token %}
+                <button type="submit"
+                    class="w-full py-4 bg-error text-on-error rounded-full font-bold text-sm tracking-wide hover:brightness-110 active:scale-95 transition-all">
+                    Yes, Delete
+                </button>
+            </form>
+
+            <button type="button"
+                onclick="closeDeleteModal()"
+                class="w-full py-4 bg-transparent border border-outline-variant/30 text-on-surface rounded-full font-bold text-sm tracking-wide hover:bg-surface-container-highest active:scale-95 transition-all">
+                Cancel
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function openDeleteModal(addressId) {
+    const modal = document.getElementById("deleteModal");
+    const form = document.getElementById("deleteForm");
+
+    form.action = `/address/delete_address/${addressId}/`;
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById("deleteModal");
+
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+</script>
+</body></html>

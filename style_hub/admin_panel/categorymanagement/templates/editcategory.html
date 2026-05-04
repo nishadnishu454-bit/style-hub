@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style-Hub | Edit Category</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        body{
+            font-family:'Inter',sans-serif;
+            background-color:#F8F9FA;
+        }
+
+        .input-style{
+            width:100%;
+            border-bottom:1px solid #E5E7EB;
+            padding-bottom:16px;
+            background:transparent;
+            outline:none;
+        }
+
+        .input-style:focus{
+            border-color:black;
+        }
+
+    </style>
+
+</head>
+
+<body class="bg-[#F8F9FA]">
+
+    <main class="min-h-screen flex justify-center py-10 px-4">
+
+        <div class="w-full max-w-4xl">
+
+            <!-- BREADCRUMB -->
+            <nav class="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+
+                <a href="{% url 'category_listing' %}"
+                   class="hover:text-black transition-colors">
+
+                    Categories
+
+                </a>
+
+                <span>&rsaquo;</span>
+
+                <span class="text-black">
+
+                    Edit Category
+
+                </span>
+
+            </nav>
+
+            <!-- TITLE -->
+            <div class="text-center mb-10">
+
+                <h2 class="text-5xl font-extrabold tracking-tighter mb-4">
+
+                    Edit Category
+
+                </h2>
+
+                <p class="text-gray-500 text-sm leading-relaxed max-w-2xl mx-auto">
+
+                    Modify the properties and visual assets for the product classification.
+                    Changes are reflected across the storefront immediately.
+
+                </p>
+
+            </div>
+
+            <!-- CARD -->
+            <div class="bg-white p-8 md:p-12 shadow-lg rounded-sm">
+
+                <form method="POST"
+                      enctype="multipart/form-data"
+                      class="space-y-10">
+
+                    {% csrf_token %}
+
+                    <!-- CATEGORY NAME -->
+                    <div>
+
+                        <label class="block text-[10px] font-black uppercase tracking-widest mb-5">
+
+                            Category Name
+
+                        </label>
+
+                        <input type="text"
+                               name="category_name"
+                               value="{{ category.category_name }}"
+                               class="input-style text-2xl font-light text-gray-700"
+                               required>
+
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div>
+
+                        <label class="block text-[10px] font-black uppercase tracking-widest mb-5">
+
+                            Description
+
+                        </label>
+
+                        <textarea rows="4"
+                                  name="description"
+                                  class="input-style text-lg font-light text-gray-500 resize-none"
+                                  required>{{ category.description }}</textarea>
+
+                    </div>
+
+                    <!-- IMAGE -->
+                    <div class="pt-4 border-t border-gray-100">
+
+                        <label class="block text-[10px] font-black uppercase tracking-widest mb-8 text-center">
+
+                            Category Preview
+
+                        </label>
+
+                        <div class="flex flex-col items-center">
+
+                            {% if category.category_image %}
+
+                                <img id="previewImage"
+                                     src="{{ category.category_image.url }}"
+                                     class="w-44 h-52 object-cover rounded shadow-md mb-6">
+
+                            {% else %}
+
+                                <img id="previewImage"
+                                     src="https://via.placeholder.com/200x250?text=No+Image"
+                                     class="w-44 h-52 object-cover rounded shadow-md mb-6">
+
+                            {% endif %}
+
+                            <label for="category_image"
+                                   class="bg-black text-white text-[10px] font-bold px-6 py-3 rounded cursor-pointer uppercase tracking-widest hover:bg-gray-800 transition-all">
+
+                                Change Photo
+
+                            </label>
+
+                            <input type="file"
+                                   id="category_image"
+                                   name="category_image"
+                                   accept="image/*"
+                                   class="hidden"
+                                   onchange="previewCategoryImage(event)">
+
+                        </div>
+
+                    </div>
+
+                    <!-- BUTTONS -->
+                    <div class="flex flex-col md:flex-row justify-center gap-4 pt-4">
+
+                        <button type="submit"
+                                class="bg-blue-600 text-white text-[11px] font-bold uppercase tracking-widest px-10 py-4 rounded hover:bg-blue-700 transition-all">
+
+                            Update Category
+
+                        </button>
+
+                        <a href="{% url 'category_listing' %}"
+                           class="border border-gray-300 text-[11px] font-bold uppercase tracking-widest px-10 py-4 rounded text-center hover:bg-gray-100 transition-all">
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+
+        function previewCategoryImage(event){
+
+            const image = document.getElementById('previewImage');
+
+            image.src = URL.createObjectURL(event.target.files[0]);
+
+        }
+
+    </script>
+
+</body>
+</html>

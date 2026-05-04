@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#000d28",
+              "on-tertiary-fixed-variant": "#80272b",
+              "inverse-surface": "#d8e2ff",
+              "tertiary": "#ffb3b1",
+              "surface-variant": "#233456",
+              "primary": "#c6c6c7",
+              "on-secondary-fixed": "#051b3a",
+              "on-secondary": "#1d3050",
+              "on-secondary-container": "#a3b5dc",
+              "surface-container": "#0c1f40",
+              "on-primary-fixed-variant": "#454747",
+              "tertiary-container": "#470009",
+              "surface-container-high": "#18294b",
+              "on-primary-container": "#858787",
+              "background": "#001232",
+              "tertiary-fixed-dim": "#ffb3b1",
+              "primary-container": "#1d1f20",
+              "on-tertiary-fixed": "#410007",
+              "on-surface-variant": "#c5c6cf",
+              "on-secondary-fixed-variant": "#344768",
+              "on-primary-fixed": "#1a1c1c",
+              "secondary-container": "#344768",
+              "tertiary-fixed": "#ffdad8",
+              "on-background": "#d8e2ff",
+              "surface-container-highest": "#233456",
+              "primary-fixed": "#e2e2e2",
+              "on-tertiary": "#620f17",
+              "on-tertiary-container": "#d36565",
+              "outline": "#8f9099",
+              "surface-dim": "#001232",
+              "inverse-primary": "#5d5f5f",
+              "inverse-on-surface": "#1f3052",
+              "surface-bright": "#28395b",
+              "error": "#ffb4ab",
+              "on-error": "#690005",
+              "surface": "#001232",
+              "secondary": "#b4c7ee",
+              "on-surface": "#d8e2ff",
+              "surface-container-low": "#071b3b",
+              "outline-variant": "#44474e",
+              "on-primary": "#2f3131",
+              "on-error-container": "#ffdad6",
+              "primary-fixed-dim": "#c6c6c7",
+              "secondary-fixed-dim": "#b4c7ee",
+              "secondary-fixed": "#d7e3ff",
+              "error-container": "#93000a",
+              "surface-tint": "#c6c6c7"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>.glass-card {
+    background: rgba(40, 57, 91, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px)
+    }
+.silhouette-bg {
+    background-image: linear-gradient(to right, #001232 30%, transparent 100%), url(https://lh3.googleusercontent.com/aida-public/AB6AXuCjqyO5qXf35DVyomhJl9Vx-3nAwR6YArRxJIgdz33x2RXkckh1dorBm-2y8GUBhVf03rX-Dj9hTqOUVBfE1CBTkDs8nl8eGDrbXyQaUx256ZOxbeIB81Hbvm44dSwotw7IHiBAEm53UyRvhUJGFwp7rUwFFbYNVIocIvTdWjBJzGAbM_rPG25tIM5M3UNJ27QP9asLA8zWxEJAYCW3fppbKKLYpIkiOgmMy9skA6Bz-CErpTBrPX6pU-LC0Jtfp-8D85x0rFGol1nL);
+    background-size: cover;
+    background-position: center right;
+    opacity: 0.15
+    }
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24
+    }</style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-container selection:text-primary min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Subtle Background Silhouette -->
+<div class="absolute inset-0 silhouette-bg z-0" data-alt="High-fashion male model silhouette in a sharp suit against a neutral backdrop, cinematic lighting, moody and luxurious atmosphere"></div>
+<!-- Top Branding Anchor -->
+<div class="absolute top-0 left-0 w-full z-20 flex justify-between items-center px-12 py-8">
+<span class="text-2xl font-black tracking-tighter text-slate-100 uppercase">STYLE-HUB</span>
+</div>
+<!-- Login Canvas -->
+<main class="relative z-10 w-full max-w-md px-6">
+<div class="glass-card rounded-[2rem] p-10 shadow-[0px_20px_40px_rgba(0,13,40,0.4)] border border-white/5">
+<!-- Header Section -->
+<div class="mb-10 text-center">
+<h1 class="text-4xl font-headline font-extrabold tracking-tight text-white mb-2 leading-tight">Admin Login</h1>
+</div>
+<!-- Login Form -->
+<form method="POST" action="{% url 'admin_login' %}" class="space-y-6">
+    {% csrf_token %}
+
+    <!-- Username -->
+    <div class="space-y-2">
+        <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant ml-1">
+            Username
+        </label>
+        <div class="relative">
+            <input 
+                class="w-full bg-surface-container-low border-2 border-error/50 rounded-xl px-5 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-error transition-all duration-300"
+                placeholder="stylehub"
+                type="text"
+                name="username"
+            />
+        </div>
+    </div>
+
+    <!-- Password -->
+    <div class="space-y-2">
+        <div class="flex justify-between items-end px-1">
+    <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant">
+        Password
+    </label>
+
+    <a href="{% url 'admin_forgottpassword' %}"
+       class="text-[11px] font-bold text-primary-fixed hover:text-white transition-colors uppercase tracking-tighter">
+        Forgot Password?
+    </a>
+</div>
+
+        <div class="relative">
+            <input 
+                class="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-5 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300"
+                placeholder="••••••••"
+                type="password"
+                name="password"
+            />
+        </div>
+    </div>
+
+    <!-- Submit -->
+    <button 
+        class="w-full bg-primary-fixed text-on-primary-fixed font-bold py-5 rounded-full hover:bg-primary transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/10 uppercase tracking-widest text-xs mt-4"
+        type="submit">
+        Login
+    </button>
+
+</form>
+
+<!-- Bottom Redirect -->
+
+</div>
+</main>
+<!-- Footer Identity -->
+
+</body></html>

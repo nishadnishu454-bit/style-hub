@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About | STYLE-HUB</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#c6c6c7",
+                        "surface-container": "#0c1f40",
+                        "secondary-container": "#344768",
+                        "on-background": "#d8e2ff",
+                        "inverse-on-surface": "#1f3052",
+                        "surface-dim": "#001232",
+                        "inverse-surface": "#d8e2ff",
+                        "outline": "#8f9099",
+                        "on-primary-container": "#858787",
+                        "background": "#001232",
+                        "surface-container-lowest": "#000d28",
+                        "surface-container-high": "#18294b",
+                        "on-secondary": "#1d3050",
+                        "on-tertiary-fixed-variant": "#80272b",
+                        "on-primary": "#2f3131",
+                        "surface-bright": "#28395b",
+                        "outline-variant": "#44474e",
+                        "on-error": "#690005",
+                        "primary-fixed": "#e2e2e2",
+                        "tertiary-fixed": "#ffdad8",
+                        "surface": "#001232",
+                        "on-surface-variant": "#c5c6cf",
+                        "surface-container-highest": "#233456",
+                        "secondary-fixed": "#d7e3ff",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "inverse-primary": "#5d5f5f",
+                        "on-tertiary": "#620f17",
+                        "surface-container-low": "#071b3b",
+                        "tertiary": "#ffb3b1",
+                        "surface-variant": "#233456",
+                        "primary-container": "#1d1f20",
+                        "on-secondary-container": "#a3b5dc",
+                        "error": "#ffb4ab",
+                        "tertiary-container": "#470009",
+                        "secondary": "#b4c7ee",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#454747",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-surface": "#d8e2ff",
+                        "on-secondary-fixed": "#051b3a",
+                        "surface-tint": "#c6c6c7",
+                        "on-tertiary-container": "#d36565",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#344768",
+                        "tertiary-fixed-dim": "#ffb3b1",
+                        "secondary-fixed-dim": "#b4c7ee",
+                        "on-tertiary-fixed": "#410007"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #001232; color: #d8e2ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card {
+            background: rgba(40, 57, 91, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="bg-background selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#001232]/80 backdrop-blur-xl shadow-[0_20_40px_rgba(0,13,40,0.4)]">
+<div class="flex justify-between items-center px-8 py-4 w-full max-w-screen-2xl mx-auto font-manrope tracking-tight">
+<div class="text-2xl font-black tracking-tighter text-[#e2e2e2]">STYLE-HUB</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-[#c5c6cf] hover:text-[#e2e2e2] transition-colors" href="{% url "home" %}">Home</a>
+<a class="text-[#c5c6cf] hover:text-[#e2e2e2] transition-colors" href="{% url "product_page" %}">Products</a>
+<a class="text-[#c5c6cf] hover:text-[#e2e2e2] transition-colors" href="{% url "category_page" %}">Categories</a>
+<a class="text-[#e2e2e2] border-b-2 border-[#e2e2e2] pb-1" href="{% url "about_page" %}">About</a>
+</div>
+<div class="flex items-center space-x-6">
+<div class="hidden lg:flex items-center bg-surface-container-high/50 px-4 py-2 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 text-on-surface placeholder:text-outline" placeholder="Search curated style..." type="text"/>
+</div>
+<div class="flex items-center space-x-4 text-[#e2e2e2]">
+<button class="hover:bg-[#28395b]/40 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+<button class="hover:bg-[#28395b]/40 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="min-h-[870px] flex flex-col md:flex-row items-center px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto gap-12 overflow-hidden">
+<div class="w-full md:w-1/2 flex flex-col justify-center">
+<span class="text-primary tracking-[0.2em] uppercase font-bold text-xs mb-4">About</span>
+<h1 class="text-6xl lg:text-8xl font-black text-on-surface tracking-tighter leading-tight mb-8">STYLE-HUB</h1>
+<p class="text-xl lg:text-2xl text-on-surface-variant max-w-xl leading-relaxed font-light">
+                    Redefining men's fashion with style, comfort, and confidence. Our collection blends modern trends with timeless elegance.
+                </p>
+<div class="mt-12">
+<button class="bg-primary-fixed text-on-primary-fixed px-10 py-4 rounded-full font-bold text-lg hover:bg-primary transition-all shadow-xl shadow-surface-container-lowest/50">
+                        Explore Collection
+                    </button>
+</div>
+</div>
+<div class="w-full md:w-1/2 h-[600px] lg:h-[800px] relative">
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10"></div>
+<img alt="Men's fashion editorial" class="w-full h-full object-cover object-top rounded-xl shadow-2xl" data-alt="Handsome male model in a high-end navy wool overcoat standing against a dark architectural background, moody dramatic side lighting, luxury fashion editorial" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpt8M3fvIpvieYvBLz0wb6xLj-QDMUC__i7d6sQ9qkd8Qsj_8FHj055rGJWfKeddjFo681bgHlp1Ds4O6RNsgf41Qw9exFPJxUMXFWvQxQvbt9dwnO14kNl4_6iKISWSVLlYloHzSU6KQXrTYU1sG1OsPyx2pOaYdzZHBYpAvhKsQuEY9SYpy_WTUTEI7ASLOaOX6R_C8AAMhMifKDYHPmLTGGwHCvDYxbvOjrDQbzR36z23F4Q4N7kWrWKiT45GlDz4_ugGgF5f6k"/>
+</div>
+</section>
+<!-- Brand Story Section -->
+<section class="py-32 px-8 md:px-16 lg:px-24 bg-surface-container-low">
+<div class="max-w-screen-2xl mx-auto grid md:grid-cols-2 gap-20 items-start">
+<div>
+<h2 class="text-4xl lg:text-5xl font-bold text-on-surface tracking-tight mb-8 leading-snug">Crafting Excellence Since Our First Stitch</h2>
+<p class="text-lg text-on-surface-variant leading-loose">
+                        Founded on the principle that true style is an extension of character, STYLE-HUB has evolved from a small atelier into a beacon of modern menswear. Every garment we produce is a testament to our commitment to craftsmanship. We don't just follow trends; we reinterpret them through a lens of permanence and quality. Our vision is to create a wardrobe that works as hard as the men who wear it.
+                    </p>
+</div>
+<div class="pt-4">
+<p class="text-lg text-on-surface-variant leading-loose md:mt-12 italic border-l-2 border-primary/20 pl-8">
+                        "We believe every man deserves to feel empowered by what he wears. Our mission is to provide the canvas—expertly tailored, meticulously sourced, and effortlessly elegant—upon which you can paint your unique story. Style isn't just about clothes; it's about the confidence to walk into any room and own your presence."
+                    </p>
+</div>
+</div>
+</section>
+<!-- Why Choose Us Section -->
+<section class="py-32 px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="text-4xl font-bold text-on-surface tracking-tight">Why Choose Us</h2>
+<div class="w-12 h-1 bg-primary mx-auto mt-6"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Card 1 -->
+<div class="glass-card p-10 rounded-xl hover:translate-y-[-8px] transition-all duration-300 group">
+<div class="w-14 h-14 bg-surface-container-highest rounded-full flex items-center justify-center mb-6 group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-on-primary-fixed" data-icon="diamond">diamond</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3">Premium Quality</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Sourced from the finest mills worldwide to ensure durability and touch.</p>
+</div>
+<!-- Card 2: Active/Hover Highlight -->
+<div class="bg-primary-fixed p-10 rounded-xl shadow-2xl translate-y-[-12px]">
+<div class="w-14 h-14 bg-surface-container-highest rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="trending_up">trending_up</span>
+</div>
+<h3 class="text-xl font-bold text-on-primary-fixed mb-3">Trendy Designs</h3>
+<p class="text-on-primary-fixed/80 text-sm leading-relaxed">Curated seasonal collections that stay ahead of the global fashion curve.</p>
+</div>
+<!-- Card 3 -->
+<div class="glass-card p-10 rounded-xl hover:translate-y-[-8px] transition-all duration-300 group">
+<div class="w-14 h-14 bg-surface-container-highest rounded-full flex items-center justify-center mb-6 group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-on-primary-fixed" data-icon="sell">sell</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3">Affordable Price</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Direct-to-consumer luxury without the traditional retail markup.</p>
+</div>
+<!-- Card 4 -->
+<div class="glass-card p-10 rounded-xl hover:translate-y-[-8px] transition-all duration-300 group">
+<div class="w-14 h-14 bg-surface-container-highest rounded-full flex items-center justify-center mb-6 group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-on-primary-fixed" data-icon="local_shipping">local_shipping</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3">Fast Delivery</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Global express shipping to get your new look to your door in days.</p>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 px-8 md:px-24">
+<div class="max-w-5xl mx-auto rounded-xl overflow-hidden relative group">
+<div class="absolute inset-0 bg-gradient-to-r from-surface-container-highest to-surface-container-low z-0"></div>
+<div class="relative z-10 px-12 py-20 text-center">
+<h2 class="text-3xl lg:text-5xl font-black text-on-surface mb-8 tracking-tighter">Upgrade Your Wardrobe with STYLE-HUB</h2>
+<button class="bg-primary-fixed text-on-primary-fixed px-12 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-xl">
+                        Shop Now
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#0c1f40] w-full pt-24 pb-12 font-manrope text-sm uppercase tracking-widest text-[#e2e2e2]">
+<div class="flex flex-col items-center justify-center px-12 w-full text-center max-w-screen-2xl mx-auto">
+<div class="text-3xl font-black text-[#e2e2e2] mb-8">STYLE-HUB</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16 w-full text-left">
+<div class="space-y-4">
+<h4 class="text-primary font-bold mb-6">Quick Links</h4>
+<ul class="space-y-3">
+<li><a class="text-[#c5c6cf] hover:text-white transition-colors hover:translate-x-1 inline-block" href="#">Home</a></li>
+<li><a class="text-[#c5c6cf] hover:text-white transition-colors hover:translate-x-1 inline-block" href="#">Products</a></li>
+<li><a class="text-[#c5c6cf] hover:text-white transition-colors hover:translate-x-1 inline-block" href="#">Categories</a></li>
+<li><a class="text-[#e2e2e2] font-bold" href="#">About</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="text-primary font-bold mb-6">Support</h4>
+<ul class="space-y-3">
+<li><a class="text-[#c5c6cf] hover:text-white transition-colors hover:translate-x-1 inline-block" href="#">Contact</a></li>
+<li><a class="text-[#c5c6cf] hover:text-white transition-colors hover:translate-x-1 inline-block" href="#">FAQ</a></li>
+<li><a class="text-[#c5c6cf] hover:text-white transition-colors hover:translate-x-1 inline-block" href="#">Returns</a></li>
+<li><a class="text-[#c5c6cf] hover:text-white transition-colors hover:translate-x-1 inline-block" href="#">Shipping Info</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="text-primary font-bold mb-6">Connect</h4>
+<div class="flex space-x-6 mb-6">
+<a class="hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="public">public</span>
+</a>
+<a class="hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+</a>
+<a class="hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</a>
+</div>
+<p class="text-xs text-on-surface-variant normal-case tracking-normal leading-relaxed">
+                        Join our newsletter for exclusive previews of upcoming collections and styling tips.
+                    </p>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant/10 mb-8"></div>
+<p class="text-[#c5c6cf]">© 2024 STYLE-HUB. THE MIDNIGHT ATELIER.</p>
+</div>
+</footer>
+</body></html>

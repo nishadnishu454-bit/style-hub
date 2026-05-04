@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Addresses - MIDNIGHT ATELIER</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error": "#690005",
+              "tertiary-container": "#470009",
+              "on-background": "#d8e2ff",
+              "tertiary": "#ffb3b1",
+              "on-tertiary": "#620f17",
+              "surface-bright": "#28395b",
+              "surface-container-high": "#18294b",
+              "on-primary-fixed": "#1a1c1c",
+              "on-primary-container": "#858787",
+              "background": "#001232",
+              "surface-tint": "#c6c6c7",
+              "on-tertiary-fixed": "#410007",
+              "primary": "#c6c6c7",
+              "on-error-container": "#ffdad6",
+              "primary-container": "#1d1f20",
+              "on-primary": "#2f3131",
+              "surface": "#001232",
+              "secondary-fixed-dim": "#b4c7ee",
+              "secondary-container": "#344768",
+              "on-surface-variant": "#c5c6cf",
+              "inverse-on-surface": "#1f3052",
+              "inverse-primary": "#5d5f5f",
+              "surface-variant": "#233456",
+              "secondary": "#b4c7ee",
+              "on-secondary": "#1d3050",
+              "tertiary-fixed": "#ffdad8",
+              "on-secondary-container": "#a3b5dc",
+              "on-primary-fixed-variant": "#454747",
+              "on-secondary-fixed": "#051b3a",
+              "on-tertiary-fixed-variant": "#80272b",
+              "surface-container-highest": "#233456",
+              "secondary-fixed": "#d7e3ff",
+              "surface-container-low": "#071b3b",
+              "surface-container": "#0c1f40",
+              "on-secondary-fixed-variant": "#344768",
+              "outline-variant": "#44474e",
+              "surface-container-lowest": "#000d28",
+              "inverse-surface": "#d8e2ff",
+              "error": "#ffb4ab",
+              "surface-dim": "#001232",
+              "error-container": "#93000a",
+              "on-tertiary-container": "#d36565",
+              "tertiary-fixed-dim": "#ffb3b1",
+              "outline": "#8f9099",
+              "primary-fixed-dim": "#c6c6c7",
+              "primary-fixed": "#e2e2e2",
+              "on-surface": "#d8e2ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .glass-card {
+        background: rgba(40, 57, 91, 0.6);
+        backdrop-filter: blur(20px);
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #001232;
+        color: #d8e2ff;
+        font-family: 'Manrope', sans-serif;
+      }
+    </style>
+</head>
+<body class="min-h-screen selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#001232]/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 w-full shadow-[0_20px_40px_rgba(0,13,40,0.4)]">
+<div class="flex items-center space-x-8">
+<span class="text-2xl font-black tracking-tighter text-slate-100">MIDNIGHT ATELIER</span>
+<div class="hidden md:flex space-x-6">
+<a class="text-slate-400 hover:text-white transition-colors font-manrope text-sm tracking-tight" href="#">Collections</a>
+<a class="text-slate-400 hover:text-white transition-colors font-manrope text-sm tracking-tight" href="#">New Drops</a>
+<a class="text-slate-400 hover:text-white transition-colors font-manrope text-sm tracking-tight" href="#">Private Suite</a>
+</div>
+</div>
+<div class="flex items-center space-x-6">
+<span class="material-symbols-outlined text-slate-200 cursor-pointer hover:bg-white/10 p-2 rounded-full transition-all">shopping_bag</span>
+<span class="material-symbols-outlined text-slate-200 cursor-pointer hover:bg-white/10 p-2 rounded-full transition-all">notifications</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-white/10">
+<img alt="User profile" data-alt="Close-up portrait of a stylish man with a clean haircut and minimalist gold earring in dramatic soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEpcC5a0DOK3eEPTHflmXJZrXv-mhjNlGqsS_MxedVaOfybnvxPBy-A-ICh1DRwJCzwWXGOHV5TR2Ty5vqali3FP07OOR6n-8iNZzjZG58eLxmmhcE9KwJaWt58DywGVfB5xEewcskR9JtaLYSpbmvzSaffe4lEFg8B07M0lYtumB0scMuztAUAK15b_W8Ponk2bPzbr6J1HmPTXzsHJBLHnkftj-ndHEZ4An54tkfyMTn7ILLjrbsumGvkiDFMUJDunUWfJ7wBz4D"/>
+</div>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="pt-24 min-h-screen flex">
+<!-- SideNavBar (Left Column) -->
+<aside class="hidden md:flex h-[calc(100vh-6rem)] w-64 border-r border-white/5 flex-col py-8 px-4 space-y-6 sticky top-24 bg-[#0c1f40]">
+<div class="px-2 mb-4">
+<p class="text-lg font-bold text-slate-100">Julian Vane</p>
+<p class="text-xs text-slate-400 font-medium tracking-widest uppercase">Gold Member</p>
+</div>
+<nav class="flex-grow space-y-2">
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-400 hover:text-slate-200 hover:bg-[#28395b]/50 transition-colors duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-400 hover:text-slate-200 hover:bg-[#28395b]/50 transition-colors duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">package_2</span>
+<span>Orders</span>
+</a>
+<a class="bg-[#344768] text-white rounded-lg flex items-center space-x-3 px-3 py-2 text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span>Measurements</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-400 hover:text-slate-200 hover:bg-[#28395b]/50 transition-colors duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+<span>Wishlist</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-400 hover:text-slate-200 hover:bg-[#28395b]/50 transition-colors duration-200 rounded-lg text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<button class="bg-primary-fixed text-on-primary-fixed py-3 px-4 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary transition-colors">
+                Book Fitting
+            </button>
+</aside>
+<!-- Main Content Area (Right Column) -->
+<main class="flex-1 px-8 md:px-12 py-8 overflow-y-auto">
+<header class="flex justify-between items-end mb-12">
+<div>
+<h1 class="text-4xl font-extrabold tracking-tighter text-on-surface mb-2">My Addresses</h1>
+<p class="text-on-surface-variant text-sm max-w-md">Manage your delivery destinations with precision and ease. Your curated list for global shipping.</p>
+</div>
+<button class="flex items-center space-x-2 bg-primary-fixed text-on-primary-fixed px-6 py-3 rounded-full font-bold text-sm transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Add New Address</span>
+</button>
+</header>
+<!-- Address Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Address Card: Home -->
+<div class="glass-card p-6 rounded-xl border border-white/5 relative group">
+<div class="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-white/10 rounded-full text-primary"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="p-2 hover:bg-white/10 rounded-full text-error"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+<div class="flex items-center space-x-3 mb-6">
+<div class="bg-secondary-container p-2 rounded-lg">
+<span class="material-symbols-outlined text-secondary">home</span>
+</div>
+<span class="text-xs font-bold tracking-[0.1rem] uppercase text-primary">Home</span>
+</div>
+<h3 class="text-lg font-bold text-on-surface mb-1">Julian Vane</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-4">
+                        Penthouse 4B, Azure Heights<br/>
+                        12th Street, Marina District<br/>
+                        San Francisco, CA 94105<br/>
+                        +1 (555) 012-3456
+                    </p>
+<div class="flex items-center space-x-2 text-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Default Address</span>
+</div>
+</div>
+<!-- Address Card: Work -->
+<div class="bg-surface-container p-6 rounded-xl border border-white/5 relative group hover:border-white/10 transition-colors">
+<div class="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-white/10 rounded-full text-primary"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="p-2 hover:bg-white/10 rounded-full text-error"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+<div class="flex items-center space-x-3 mb-6">
+<div class="bg-surface-variant p-2 rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant">work</span>
+</div>
+<span class="text-xs font-bold tracking-[0.1rem] uppercase text-on-surface-variant">Work</span>
+</div>
+<h3 class="text-lg font-bold text-on-surface mb-1">Julian Vane</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">
+                        Design Lead, Studio Noir<br/>
+                        88 Market Suite 200<br/>
+                        Financial District<br/>
+                        San Francisco, CA 94104
+                    </p>
+</div>
+<!-- Address Card: Studio -->
+<div class="bg-surface-container p-6 rounded-xl border border-white/5 relative group hover:border-white/10 transition-colors">
+<div class="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-white/10 rounded-full text-primary"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="p-2 hover:bg-white/10 rounded-full text-error"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+<div class="flex items-center space-x-3 mb-6">
+<div class="bg-surface-variant p-2 rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant">palette</span>
+</div>
+<span class="text-xs font-bold tracking-[0.1rem] uppercase text-on-surface-variant">Studio</span>
+</div>
+<h3 class="text-lg font-bold text-on-surface mb-1">Julian Vane</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">
+                        The Atelier Collective<br/>
+                        Dock Side Warehouse 9<br/>
+                        Oakland, CA 94607<br/>
+                        +1 (555) 012-9988
+                    </p>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-12 border-t border-white/5 bg-[#001232] flex flex-col items-center justify-center space-y-4">
+<div class="flex space-x-8">
+<a class="text-slate-500 hover:text-slate-300 transition-colors font-manrope text-[10px] uppercase tracking-[0.1rem]" href="#">Privacy</a>
+<a class="text-slate-500 hover:text-slate-300 transition-colors font-manrope text-[10px] uppercase tracking-[0.1rem]" href="#">Terms</a>
+<a class="text-slate-500 hover:text-slate-300 transition-colors font-manrope text-[10px] uppercase tracking-[0.1rem]" href="#">Concierge</a>
+</div>
+<p class="text-slate-500 font-manrope text-[10px] uppercase tracking-[0.1rem]">© 2024 MIDNIGHT ATELIER. ALL RIGHTS RESERVED.</p>
+</footer>
+<!-- ADD NEW ADDRESS MODAL OVERLAY -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md px-4">
+<!-- Modal Container -->
+<div class="glass-card w-full max-w-2xl rounded-2xl overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.6)] border border-white/10 relative">
+<!-- Close Button -->
+<button class="absolute top-6 right-6 text-on-surface-variant hover:text-white transition-colors">
+<a href="{% url 'address_page' %}">
+    <span class="material-symbols-outlined text-[28px]">close</span>
+</a></button>
+<!-- Modal Header -->
+<div class="px-8 pt-8 pb-4">
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface">Add New Address</h2>
+<p class="text-on-surface-variant text-sm mt-1">Enter a new delivery address for your tailored shipments.</p>
+</div>
+<!-- Modal Form -->
+<form method="POST" action="{% url 'add_address' %}" class="px-8 pb-2 space-y-1">
+    {% csrf_token %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary">Full Name</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="Julian Vane" type="text" name="full_name"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary">Phone Number</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="+1 (555) 000-0000" type="tel" name="phone_number" required pattern="[0-9]{10}"/>
+</div>
+</div>
+<!-- Full Width Inputs -->
+<div class="space-y-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary">House Name / Building Name</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="e.g. Skyline Residence" type="text" name="house_name"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary">Address</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="Enter street and house number" type="text" name="address"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary">Area</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="area"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary">Country</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="Optional" type="text" name="country"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="space-y-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary">District</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="district"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary">State</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="state"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary">Pincode</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="pincode" />
+</div>
+</div>
+<!-- Address Type Selector -->
+<div class="space-y-3">
+    <label class="text-[10px] font-bold uppercase tracking-widest text-primary">
+        Address Type
+    </label>
+
+    <div class="flex gap-6 text-sm text-on-surface">
+        <label>
+            <input type="radio" name="address_type" value="Home" checked>
+            Home
+        </label>
+
+        <label>
+            <input type="radio" name="address_type" value="Work">
+            Work
+        </label>
+
+        <label>
+            <input type="radio" name="address_type" value="Other">
+            Other
+        </label>
+    </div>
+</div>
+<!-- Checkbox -->
+<label class="flex items-center space-x-3 cursor-pointer group w-fit">
+<div class="relative">
+<input class="peer hidden" type="checkbox" name="is_default"/>
+<div class="w-5 h-5 border-2 border-outline rounded flex items-center justify-center peer-checked:bg-primary peer-checked:border-primary transition-all">
+<span class="material-symbols-outlined text-on-primary text-[14px] hidden peer-checked:block" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+</div>
+<span class="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Set as default address</span>
+</label>
+<!-- Footer Buttons -->
+<div class="flex items-center justify-end space-x-4 pt-6">
+
+    <!-- Cancel -->
+    <a href="{% url 'address_page' %}"
+       class="px-8 py-3 rounded-full text-on-surface-variant hover:text-white font-bold text-sm transition-colors text-center">
+        Cancel
+ </a>
+
+    <!-- Save -->
+    <button type="submit"
+ class="bg-primary-fixed text-on-primary-fixed px-10 py-3 rounded-full font-bold text-sm shadow-[0_10px_20px_rgba(198,198,199,0.15)] hover:bg-primary transition-all active:scale-95 text-center">
+    Save Address
+</button>
+</div>
+</form>
+</div>
+</div>
+</body></html>

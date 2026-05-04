@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Verify Your Email | STYLE-HUB</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container": "#0c1f40",
+                        "background": "#001232",
+                        "tertiary-fixed-dim": "#ffb3b1",
+                        "tertiary-fixed": "#ffdad8",
+                        "on-tertiary-fixed": "#410007",
+                        "secondary": "#b4c7ee",
+                        "on-secondary-fixed": "#051b3a",
+                        "inverse-primary": "#5d5f5f",
+                        "surface-container-highest": "#233456",
+                        "surface-variant": "#233456",
+                        "primary": "#c6c6c7",
+                        "on-primary-fixed-variant": "#454747",
+                        "error": "#ffb4ab",
+                        "surface": "#001232",
+                        "on-tertiary-container": "#d36565",
+                        "on-error-container": "#ffdad6",
+                        "on-surface": "#d8e2ff",
+                        "error-container": "#93000a",
+                        "surface-tint": "#c6c6c7",
+                        "tertiary-container": "#470009",
+                        "on-primary-container": "#858787",
+                        "on-primary": "#2f3131",
+                        "secondary-container": "#344768",
+                        "on-secondary": "#1d3050",
+                        "on-secondary-fixed-variant": "#344768",
+                        "surface-container-high": "#18294b",
+                        "secondary-fixed-dim": "#b4c7ee",
+                        "surface-container-lowest": "#000d28",
+                        "tertiary": "#ffb3b1",
+                        "outline-variant": "#44474e",
+                        "outline": "#8f9099",
+                        "on-secondary-container": "#a3b5dc",
+                        "surface-dim": "#001232",
+                        "on-tertiary": "#620f17",
+                        "on-surface-variant": "#c5c6cf",
+                        "on-primary-fixed": "#1a1c1c",
+                        "primary-container": "#1d1f20",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "on-tertiary-fixed-variant": "#80272b",
+                        "surface-bright": "#28395b",
+                        "on-error": "#690005",
+                        "inverse-surface": "#d8e2ff",
+                        "surface-container-low": "#071b3b",
+                        "secondary-fixed": "#d7e3ff",
+                        "on-background": "#d8e2ff",
+                        "inverse-on-surface": "#1f3052",
+                        "primary-fixed": "#e2e2e2"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-effect {
+            background: rgba(40, 57, 91, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .otp-input {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: #000d28;
+            border: 1px solid transparent;
+            outline: none;
+            border-radius: 0.75rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            box-shadow: 0 0 0 2px rgba(198, 198, 199, 0.3);
+            border-color: #c6c6c7;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col selection:bg-primary selection:text-on-primary">
+    <!-- Background -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-surface-container-high/30 blur-[120px]"></div>
+        <div class="absolute bottom-[-5%] left-[-5%] w-[40%] h-[40%] rounded-full bg-secondary-container/20 blur-[100px]"></div>
+    </div>
+
+    <!-- Main -->
+    <main class="relative z-10 flex-grow flex items-center justify-center p-6 lg:p-12">
+        <div class="w-full max-w-[520px] glass-effect rounded-[2rem] p-10 lg:p-14 shadow-[0px_40px_80px_rgba(0,13,40,0.6)] flex flex-col items-center">
+
+            <!-- Logo -->
+            <div class="mb-12">
+                <span class="text-2xl font-black tracking-tighter text-white uppercase">STYLE-HUB</span>
+            </div>
+
+            <!-- Heading -->
+            <div class="mb-8 flex flex-col items-center text-center">
+                <div class="w-16 h-16 rounded-full bg-secondary-container/30 flex items-center justify-center mb-6 border border-secondary/20">
+                    <span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">mark_email_read</span>
+                </div>
+
+                <h1 class="text-3xl font-extrabold tracking-tight text-white mb-3">Verify Your Email</h1>
+                <p class="text-on-surface-variant text-sm leading-relaxed max-w-[280px]">
+                    Enter the 6-digit code sent to your email address.
+                </p>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="w-full mb-6 space-y-3">
+                    {% for message in messages %}
+                        <div class="text-sm text-center rounded-xl px-4 py-3
+                            {% if message.tags == 'error' %}
+                                bg-red-500/10 text-red-300 border border-red-500/20
+                            {% elif message.tags == 'success' %}
+                                bg-green-500/10 text-green-300 border border-green-500/20
+                            {% else %}
+                                bg-white/10 text-white border border-white/10
+                            {% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- OTP Form -->
+            <form method="POST" class="w-full space-y-8">
+                {% csrf_token %}
+
+                <div class="flex justify-between gap-3 md:gap-4">
+                    <input name="otp1" maxlength="1" class="otp-input" type="text" inputmode="numeric" />
+                    <input name="otp2" maxlength="1" class="otp-input" type="text" inputmode="numeric" />
+                    <input name="otp3" maxlength="1" class="otp-input" type="text" inputmode="numeric" />
+                    <input name="otp4" maxlength="1" class="otp-input" type="text" inputmode="numeric" />
+                    <input name="otp5" maxlength="1" class="otp-input" type="text" inputmode="numeric" />
+                    <input name="otp6" maxlength="1" class="otp-input" type="text" inputmode="numeric" />
+                </div>
+
+                <button type="submit"
+                    class="w-full py-5 bg-primary-fixed hover:bg-primary text-on-primary-fixed font-bold rounded-full transition-all duration-300 transform active:scale-95 shadow-xl shadow-primary-container/20 tracking-wide">
+                    Verify
+                </button>
+            </form>
+
+            <!-- Footer Actions -->
+            <div class="mt-12 w-full flex flex-col items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-on-surface-variant text-lg">schedule</span>
+                    <span id="timer" class="text-sm font-mono text-white tracking-widest">00:30</span>
+                </div>
+
+                <div class="flex flex-col items-center gap-2">
+                    <p class="text-xs text-on-surface-variant uppercase tracking-[0.2em]">Didn't receive the code?</p>
+
+                    <button id="resendBtn"
+                            class="text-sm font-bold text-gray-400 cursor-not-allowed underline"
+                            disabled>
+                        Resend Code
+                    </button>
+                </div>
+
+                <a href="{% url 'login' %}"
+                   class="text-xs text-on-surface-variant hover:text-white transition-colors underline underline-offset-4 decoration-outline-variant/50">
+                    Back to Login
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const otpInputs = document.querySelectorAll('.otp-input');
+
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+
+                pastedData.split('').forEach((char, i) => {
+                    if (otpInputs[i]) {
+                        otpInputs[i].value = char;
+                    }
+                });
+
+                const nextIndex = Math.min(pastedData.length, otpInputs.length - 1);
+                otpInputs[nextIndex].focus();
+            });
+        });
+
+        // 30 second timer UI only
+       const resendBtn = document.getElementById('resendBtn');
+const timerElement = document.getElementById('timer');
+
+let timeLeft = 30;
+
+// start timer
+let countdown = setInterval(updateTimer, 1000);
+
+function updateTimer() {
+    let seconds = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+    timerElement.textContent = `00:${seconds}`;
+
+    if (timeLeft <= 0) {
+        clearInterval(countdown);
+        timerElement.textContent = '00:00';
+
+        // ✅ enable button
+        resendBtn.disabled = false;
+        resendBtn.classList.remove('text-gray-400', 'cursor-not-allowed');
+        resendBtn.classList.add('text-white', 'cursor-pointer');
+    }
+
+    timeLeft--;
+}
+
+// 🔥 RESEND CLICK
+resendBtn.addEventListener('click', function () {
+
+    if (timeLeft > 0) return; // safety
+
+    fetch("{% url 'resend_otp' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert("New OTP Sent ✅");
+
+        // 🔁 restart timer
+        timeLeft = 30;
+        resendBtn.disabled = true;
+
+        resendBtn.classList.add('text-gray-400', 'cursor-not-allowed');
+        resendBtn.classList.remove('text-white');
+
+        countdown = setInterval(updateTimer, 1000);
+    });
+});
+    </script>
+</body>
+</html>

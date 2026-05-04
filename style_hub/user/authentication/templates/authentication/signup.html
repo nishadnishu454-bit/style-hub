@@ -1,0 +1,319 @@
+{% load socialaccount %}
+
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>STYLE-HUB | Create Your Account</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script>
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+        extend: {
+            colors: {
+                "primary-fixed-dim": "#c6c6c7",
+                "tertiary": "#ffb3b1",
+                "tertiary-container": "#470009",
+                "secondary-container": "#344768",
+                "inverse-primary": "#5d5f5f",
+                "tertiary-fixed": "#ffdad8",
+                "background": "#001232",
+                "surface-tint": "#c6c6c7",
+                "secondary-fixed": "#d7e3ff",
+                "on-primary-fixed-variant": "#454747",
+                "surface-container": "#0c1f40",
+                "primary-container": "#1d1f20",
+                "primary-fixed": "#e2e2e2",
+                "on-tertiary-container": "#d36565",
+                "outline": "#8f9099",
+                "surface-container-lowest": "#000d28",
+                "surface-dim": "#001232",
+                "surface-container-highest": "#233456",
+                "surface-container-high": "#18294b",
+                "secondary-fixed-dim": "#b4c7ee",
+                "on-secondary-fixed": "#051b3a",
+                "secondary": "#b4c7ee",
+                "on-secondary": "#1d3050",
+                "outline-variant": "#44474e",
+                "on-primary-container": "#858787",
+                "inverse-surface": "#d8e2ff",
+                "on-background": "#d8e2ff",
+                "on-surface-variant": "#c5c6cf",
+                "on-secondary-fixed-variant": "#344768",
+                "surface-variant": "#233456",
+                "on-tertiary": "#620f17",
+                "error-container": "#93000a",
+                "primary": "#c6c6c7",
+                "on-tertiary-fixed": "#410007",
+                "error": "#ffb4ab",
+                "surface": "#001232",
+                "on-surface": "#d8e2ff",
+                "on-tertiary-fixed-variant": "#80272b",
+                "on-primary-fixed": "#1a1c1c",
+                "surface-bright": "#28395b",
+                "surface-container-low": "#071b3b",
+                "on-secondary-container": "#a3b5dc",
+                "on-error": "#690005",
+                "on-error-container": "#ffdad6",
+                "tertiary-fixed-dim": "#ffb3b1",
+                "on-primary": "#2f3131",
+                "inverse-on-surface": "#1f3052"
+            },
+            fontFamily: {
+                "headline": ["Manrope"],
+                "body": ["Manrope"],
+                "label": ["Manrope"]
+            },
+            borderRadius: {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+        },
+    },
+}
+</script>
+
+<style>
+body {
+    font-family: 'Manrope', sans-serif;
+}
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.glass-panel {
+    background: rgba(40, 57, 91, 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+}
+.text-glow:focus {
+    box-shadow: 0 0 15px rgba(198, 198, 199, 0.1);
+}
+</style>
+</head>
+
+<body class="bg-surface text-on-surface min-h-screen flex items-center justify-center p-4 md:p-8">
+
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-surface-container rounded-full blur-[120px] opacity-50"></div>
+    <div class="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-surface-container-high rounded-full blur-[150px] opacity-30"></div>
+</div>
+
+<main class="relative w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden rounded-[2rem] shadow-[0px_40px_80px_rgba(0,13,40,0.6)] glass-panel border border-outline-variant/10">
+
+    <div class="lg:col-span-7 p-8 md:p-16 flex flex-col justify-center">
+        <header class="mb-10">
+            <div class="text-2xl font-black tracking-tighter text-white uppercase mb-12">STYLE-HUB</div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-3">Create Your Account</h1>
+            <p class="text-on-surface-variant text-lg">Join STYLE-HUB and explore premium men’s fashion</p>
+        </header>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 text-center text-sm p-3 rounded
+                    {% if message.tags == 'error' %} bg-red-500/20 text-red-300 {% endif %}
+                    {% if message.tags == 'success' %} bg-green-500/20 text-green-300 {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form class="space-y-6" method="POST" action="{% url 'signup' %}">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">Username</label>
+                    <input
+                        class="w-full bg-surface-container-high/40 border-none rounded-xl px-4 py-4 text-white placeholder:text-outline/50 focus:ring-2 focus:ring-primary/30 transition-all outline-none text-glow"
+                        placeholder="alex_styles"
+                        type="text"
+                        name="username"
+                        required
+                    />
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">Email</label>
+                    <input
+                        class="w-full bg-surface-container-high/40 border-none rounded-xl px-4 py-4 text-white placeholder:text-outline/50 focus:ring-2 focus:ring-primary/30 transition-all outline-none text-glow"
+                        placeholder="alex@stylehub.com"
+                        type="email"
+                        name="email"
+                        required
+                    />
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">Phone Number</label>
+                <input
+                    class="w-full bg-surface-container-high/40 border-none rounded-xl px-4 py-4 text-white placeholder:text-outline/50 focus:ring-2 focus:ring-primary/30 transition-all outline-none text-glow"
+                    placeholder="+91 9876543210"
+                    type="tel"
+                    name="phone_number"
+                    required
+                />
+            </div>
+
+           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Password -->
+    <div class="space-y-2">
+        <label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">
+            Password
+        </label>
+
+        <div class="relative">
+            <input
+                id="signupPassword"
+                class="w-full bg-surface-container-high/40 border-none rounded-xl px-4 py-4 pr-12 text-white placeholder:text-outline/50 focus:ring-2 focus:ring-primary/30 transition-all outline-none text-glow"
+                placeholder="••••••••"
+                type="password"
+                name="password"
+                required
+            />
+
+            <button type="button"
+                    onclick="togglePassword('signupPassword', this)"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer">
+                <span class="material-symbols-outlined">visibility_off</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="space-y-2">
+        <label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">
+            Confirm Password
+        </label>
+
+        <div class="relative">
+            <input
+                id="signupConfirmPassword"
+                class="w-full bg-surface-container-high/40 border-none rounded-xl px-4 py-4 pr-12 text-white placeholder:text-outline/50 focus:ring-2 focus:ring-error/40 transition-all outline-none text-glow"
+                placeholder="••••••••"
+                type="password"
+                name="confirm_password"
+                required
+            />
+
+            <button type="button"
+                    onclick="togglePassword('signupConfirmPassword', this)"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer">
+                <span class="material-symbols-outlined">visibility_off</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+            <div class="flex items-center gap-3 py-2">
+                <div class="relative flex items-center">
+                    <input
+                        class="w-5 h-5 rounded border-outline-variant bg-surface-container-high text-primary-fixed focus:ring-primary/30 transition-all cursor-pointer"
+                        id="terms"
+                        name="terms"
+                        type="checkbox"
+                        required
+                    />
+                </div>
+
+                <label class="text-sm text-on-surface-variant cursor-pointer select-none" for="terms">
+                    I agree to the
+                    <span class="text-white hover:underline cursor-pointer">Terms</span>
+                    and
+                    <span class="text-white hover:underline cursor-pointer">Privacy Policy</span>
+                </label>
+            </div>
+
+            <div class="space-y-4 pt-4">
+                <button
+                    type="submit"
+                    class="w-full bg-primary-fixed hover:bg-primary text-on-primary-fixed font-bold py-4 rounded-full transition-all duration-300 transform active:scale-[0.98] shadow-lg shadow-primary/10">
+                    Signup
+                </button>
+
+                <div class="flex items-center gap-4 py-2">
+                    <div class="h-[1px] flex-1 bg-outline-variant/20"></div>
+                    <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">or</span>
+                    <div class="h-[1px] flex-1 bg-outline-variant/20"></div>
+                </div>
+
+                <a href="{% provider_login_url 'google' %}"
+                   class="w-full bg-surface-container-highest/40 hover:bg-surface-container-highest/60 border border-outline-variant/20 text-white font-medium py-4 rounded-full transition-all duration-300 flex items-center justify-center gap-3">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.65l-3.57-2.77c-.99.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+                    </svg>
+                    Continue with Google
+                </a>
+            </div>
+
+            <footer class="text-center pt-8">
+                <p class="text-on-surface-variant">
+                    Already have an account?
+                    <a class="text-white font-bold hover:text-primary transition-colors ml-1 underline decoration-primary/30 underline-offset-4" href="{% url 'login' %}">
+                        Login
+                    </a>
+                </p>
+            </footer>
+        </form>
+    </div>
+
+    <div class="hidden lg:block lg:col-span-5 relative overflow-hidden bg-surface-container-high/30">
+        <div class="absolute inset-0 bg-gradient-to-tr from-surface-container to-transparent opacity-60 z-10"></div>
+
+        <img
+            alt="Premium male fashion"
+            class="absolute inset-0 w-full h-full object-cover grayscale-[0.2] mix-blend-luminosity opacity-80"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGawZTzTaHl2HDuItpzH1ujsbCeTQoCXOk-JttN_jGt99qqt_8E5kcp5BBNbHpa3jvfjF5y0l0qVPVw8c5eo0m_nj5qLxiwFnJoz1qCeTT3wNB5pbQqAotFRaIdo8LxAtXlqfTIH7hZhD3uk6FciHCYUi7fOAXBP0e9yhbmIlo1iJeOqsNICyyGtMnEM157-eWBlwbYsACg4PrKyTx5Havn5yVmeX79Hy93l-eUEuQIdL7owM-2xgGSqagV4q42uQ5DbwO8FXgrrMd"
+        />
+
+        <div class="absolute bottom-16 left-12 right-12 z-20">
+            <div class="p-8 glass-panel rounded-2xl border border-white/5 space-y-4">
+                <span class="inline-block px-3 py-1 bg-primary text-on-primary-fixed text-[10px] font-black tracking-[0.2em] uppercase rounded-full">
+                    Membership
+                </span>
+                <h3 class="text-2xl font-bold text-white leading-tight">
+                    Elevate your wardrobe with the atelier experience.
+                </h3>
+                <p class="text-on-surface-variant text-sm leading-relaxed">
+                    Unlock exclusive early access to seasonal drops and personalized style consultations with our head tailors.
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="fixed bottom-6 left-0 right-0 text-center pointer-events-none">
+    <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.3em] font-medium opacity-40">
+        © 2024 STYLE-HUB. THE MIDNIGHT ATELIER.
+    </p>
+</footer>
+
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('span');
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.textContent = "visibility";
+    } else {
+        input.type = "password";
+        icon.textContent = "visibility_off";
+    }
+}
+</script>
+
+</body>
+</html>

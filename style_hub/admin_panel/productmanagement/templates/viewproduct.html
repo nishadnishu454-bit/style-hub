@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style-Hub | Product Detail</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F9FAFB; }
+        .serif-title { font-family: 'Playfair Display', serif; }
+        .sidebar-active { background: #f3f4f6; color: #000000; border-right: 3px solid #000000; }
+    </style>
+</head>
+
+<body class="flex min-h-screen">
+
+    
+    <!-- MAIN -->
+    <main class="flex-1">
+
+        <!-- TOP HEADER -->
+        <header class="flex justify-between items-center px-10 py-4 bg-white border-b border-gray-50">
+            <div class="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-gray-300">
+                <a href="{% url 'product_listing' %}" class="hover:text-black">Products</a>
+                <span>/</span>
+                <span class="text-black ml-2">Detail</span>
+                <span class="text-black ml-4">{{ product.product_name }}</span>
+            </div>
+
+            <div class="flex items-center space-x-6 text-gray-400">
+                <i class="fa-regular fa-bell cursor-pointer hover:text-black"></i>
+                <i class="fa-solid fa-gear cursor-pointer hover:text-black"></i>
+                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=000&color=fff"
+                     class="w-8 h-8 rounded-sm">
+            </div>
+        </header>
+
+        <div class="p-10 max-w-7xl mx-auto">
+
+            <!-- PRODUCT HEADER -->
+            <div class="flex justify-between items-start mb-10">
+                <div class="max-w-2xl">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                            {% if product.category %}
+                                {{ product.category.category_name }}
+                            {% else %}
+                                No Category
+                            {% endif %}
+                        </span>
+
+                        {% if product.stock %}
+                            <span class="bg-black text-white text-[9px] font-bold px-2 py-1 uppercase tracking-widest">
+                                {{ product.stock }} Units Available
+                            </span>
+                        {% else %}
+                            <span class="bg-red-600 text-white text-[9px] font-bold px-2 py-1 uppercase tracking-widest">
+                                Out of Stock
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <h2 class="text-6xl font-[900] tracking-tighter uppercase leading-[0.9] mb-4">
+                        {{ product.product_name }}
+                    </h2>
+
+                    {% if product.price %}
+                        <p class="text-3xl font-medium text-gray-400 tracking-tight">
+                            ₹{{ product.price }}
+                        </p>
+                    {% endif %}
+                </div>
+
+               <div class="flex space-x-3">
+
+    <a href="{% url 'edit_product' product.id %}"
+       class="bg-white border border-gray-100 text-black px-8 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all">
+
+        Edit Product
+
+    </a>
+
+    {% if product.is_active %}
+
+        <a href="{% url 'deactivate_product' product.id %}"
+           class="bg-yellow-500 text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-yellow-600 transition-all shadow-lg shadow-yellow-100">
+
+            Deactivate
+
+        </a>
+
+    {% else %}
+
+        <a href="{% url 'activate_product' product.id %}"
+           class="bg-green-600 text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-green-700 transition-all shadow-lg shadow-green-100">
+
+            Activate
+
+        </a>
+
+    {% endif %}
+
+   <button onclick="openDeleteModal()"
+        class="bg-[#B91C1C] text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-red-800 transition-all shadow-lg shadow-red-100">
+
+    Delete Product
+
+</button>
+
+</div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-8">
+
+                <!-- LEFT: PRODUCT MEDIA -->
+                <div class="col-span-8 bg-white border border-gray-50 p-8 rounded-sm">
+                    <div class="flex justify-between items-end mb-6">
+                        <h3 class="serif-title text-2xl text-black">Product Media</h3>
+                        <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
+                            Product Image
+                        </span>
+                    </div>
+
+                    <!-- Main Image -->
+                    <div class="bg-[#F3F4F6] aspect-[16/9] mb-4 flex items-center justify-center overflow-hidden">
+                        {% if product.product_image %}
+                            <img src="{{ product.product_image.url }}"
+                                 class="w-full h-full object-cover">
+                        {% else %}
+                            <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                                <i class="fa-solid fa-image text-6xl mb-4"></i>
+                                <p class="text-xs font-bold uppercase tracking-widest">No Image Added</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Thumbnail -->
+                    <div class="grid grid-cols-4 gap-4">
+                        {% if product.product_image %}
+                            <div class="aspect-square bg-gray-50 border-2 border-black p-2">
+                                <img src="{{ product.product_image.url }}"
+                                     class="w-full h-full object-cover">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- RIGHT: DETAILS -->
+                <div class="col-span-4 space-y-8">
+
+                    <!-- Product Info -->
+                    <div class="bg-white border border-gray-50 p-8 rounded-sm">
+                        <div class="flex items-center space-x-2 mb-8">
+                            <i class="fa-solid fa-circle-info text-gray-300 text-sm"></i>
+                            <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                Product Info
+                            </h4>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-sm font-medium">
+                                <span class="text-gray-400">Product ID</span>
+                                <span class="text-black">#PRD-{{ product.id }}</span>
+                            </div>
+
+                            <div class="flex justify-between text-sm font-medium">
+                                <span class="text-gray-400">Category</span>
+                                <span class="text-black">
+                                    {% if product.category %}
+                                        {{ product.category.category_name }}
+                                    {% else %}
+                                        No Category
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            {% if product.price %}
+                            <div class="flex justify-between text-sm font-medium">
+                                <span class="text-gray-400">Price</span>
+                                <span class="text-black">₹{{ product.price }}</span>
+                            </div>
+                            {% endif %}
+
+                            {% if product.brand %}
+                            <div class="flex justify-between text-sm font-medium">
+                                <span class="text-gray-400">Brand</span>
+                                <span class="text-black">{{ product.brand }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Inventory Control -->
+                    <div class="bg-white border border-gray-50 p-8 rounded-sm">
+                        <div class="flex items-center space-x-2 mb-8">
+                            <i class="fa-solid fa-box-archive text-gray-300 text-sm"></i>
+                            <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                Inventory Control
+                            </h4>
+                        </div>
+
+                        <div class="flex justify-between items-end border-t border-gray-50 pt-6">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-gray-300">
+                                On-hand Stock
+                            </span>
+
+                            <span class="text-xl font-black">
+                                {% if product.stock %}
+                                    {{ product.stock }} Units
+                                {% else %}
+                                    0 Units
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="bg-white border border-gray-50 p-8 rounded-sm">
+                        <div class="flex items-center space-x-2 mb-6">
+                            <i class="fa-solid fa-align-left text-gray-300 text-sm"></i>
+                            <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                Description
+                            </h4>
+                        </div>
+
+                        <p class="text-sm text-gray-500 leading-relaxed">
+                            {{ product.description }}
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- DELETE MODAL -->
+<div id="deleteModal"
+     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+
+    <div class="bg-white w-full max-w-md rounded-2xl p-8 shadow-2xl">
+
+        <div class="flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mx-auto mb-6">
+
+            <i class="fa-solid fa-trash text-red-600 text-2xl"></i>
+
+        </div>
+
+        <h3 class="text-2xl font-black text-center mb-3">
+
+            Delete Product?
+
+        </h3>
+
+        <p class="text-sm text-gray-500 text-center leading-relaxed mb-8">
+
+            Are you sure you want to delete this product?
+            This action cannot be undone.
+
+        </p>
+
+        <div class="flex items-center justify-center space-x-4">
+
+            <button onclick="closeDeleteModal()"
+                    class="px-6 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all">
+
+                Cancel
+
+            </button>
+
+            <a href="{% url 'delete_product' product.id %}"
+               class="px-6 py-3 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition-all">
+
+                Yes Delete
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    function openDeleteModal(){
+
+        document.getElementById('deleteModal').classList.remove('hidden');
+
+        document.getElementById('deleteModal').classList.add('flex');
+
+    }
+
+    function closeDeleteModal(){
+
+        document.getElementById('deleteModal').classList.remove('flex');
+
+        document.getElementById('deleteModal').classList.add('hidden');
+
+    }
+
+</script>
+
+</body>
+</html>

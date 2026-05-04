@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Addresses - STYLE-HUB</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "tertiary-fixed-dim": "#ffb3b1",
+            "on-surface": "#d8e2ff",
+            "surface-dim": "#001232",
+            "on-secondary": "#1d3050",
+            "surface-bright": "#28395b",
+            "background": "#001232",
+            "primary": "#c6c6c7",
+            "surface-container-highest": "#233456",
+            "on-error": "#690005",
+            "tertiary-fixed": "#ffdad8",
+            "on-secondary-container": "#a3b5dc",
+            "on-secondary-fixed": "#051b3a",
+            "primary-fixed-dim": "#c6c6c7",
+            "secondary": "#b4c7ee",
+            "on-error-container": "#ffdad6",
+            "surface-container-low": "#071b3b",
+            "on-tertiary-fixed-variant": "#80272b",
+            "error": "#ffb4ab",
+            "on-background": "#d8e2ff",
+            "on-primary-container": "#858787",
+            "on-primary-fixed-variant": "#454747",
+            "outline": "#8f9099",
+            "on-primary-fixed": "#1a1c1c",
+            "surface-tint": "#c6c6c7",
+            "surface-variant": "#233456",
+            "error-container": "#93000a",
+            "inverse-surface": "#d8e2ff",
+            "primary-fixed": "#e2e2e2",
+            "outline-variant": "#44474e",
+            "surface-container-high": "#18294b",
+            "secondary-fixed-dim": "#b4c7ee",
+            "surface-container-lowest": "#000d28",
+            "secondary-fixed": "#d7e3ff",
+            "on-primary": "#2f3131",
+            "on-tertiary": "#620f17",
+            "tertiary": "#ffb3b1",
+            "on-tertiary-container": "#d36565",
+            "on-tertiary-fixed": "#410007",
+            "surface-container": "#0c1f40",
+            "on-secondary-fixed-variant": "#344768",
+            "secondary-container": "#344768",
+            "tertiary-container": "#470009",
+            "on-surface-variant": "#c5c6cf",
+            "primary-container": "#1d1f20",
+            "inverse-on-surface": "#1f3052",
+            "surface": "#001232",
+            "inverse-primary": "#5d5f5f"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Manrope"],
+            "label": ["Manrope"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-card {
+      background: rgba(40, 57, 91, 0.4);
+      backdrop-filter: blur(16px);
+    }
+    body {
+      background-color: #001232;
+    }
+  </style>
+</head>
+<body class="font-body text-on-surface bg-background min-h-screen">
+<!-- TopNavBar Implementation from JSON -->
+<nav class="sticky top-0 w-full z-50 bg-[#001232] dark:bg-[#001232] font-manrope antialiased tracking-tight shadow-[0px_20px_40px_rgba(0,13,40,0.4)]">
+<div class="flex justify-between items-center px-8 h-20 w-full max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-white">STYLE-HUB</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-[#c5c6cf] hover:text-white transition-colors duration-300 cursor-pointer active:scale-95 transition-transform" href="#">Home</a>
+<a class="text-[#c5c6cf] hover:text-white transition-colors duration-300 cursor-pointer active:scale-95 transition-transform" href="#">Products</a>
+<a class="text-[#c5c6cf] hover:text-white transition-colors duration-300 cursor-pointer active:scale-95 transition-transform" href="#">Categories</a>
+<a class="text-[#c5c6cf] hover:text-white transition-colors duration-300 cursor-pointer active:scale-95 transition-transform" href="#">About</a>
+</div>
+<div class="flex items-center space-x-6 text-[#e2e2e2]">
+<span class="material-symbols-outlined cursor-pointer active:scale-95 transition-transform hover:text-white">favorite</span>
+<span class="material-symbols-outlined cursor-pointer active:scale-95 transition-transform hover:text-white">shopping_cart</span>
+<span class="material-symbols-outlined cursor-pointer active:scale-95 transition-transform text-white border-b-2 border-[#e2e2e2] pb-1">person</span>
+</div>
+</div>
+</nav>
+<main class="max-w-screen-2xl mx-auto px-8 py-12">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- Sidebar Left -->
+<aside class="md:col-span-3">
+<div class="bg-surface-container rounded-xl p-6 shadow-xl sticky top-28">
+<div class="flex items-center space-x-4 mb-8 pb-6 border-b border-outline-variant/20">
+<div class="h-14 w-14 rounded-full bg-surface-bright flex items-center justify-center border border-outline-variant/30 overflow-hidden">
+<img alt="User" class="w-full h-full object-cover" data-alt="Portrait of a stylish young man with a focused expression, clean lighting, professional studio aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKmEJsN2Mf8opPALj-59enASvGYbQLLE92oLniX807PX4MYKNAN7nPwaTLONRf0TaY4vaNUtSbcKHte8uTjI_XljJgQhXZNkwdjibfGrUIxrW_5G5SYMk_ulleFVWiP7CYVl9kYCHky9pp5I4sw5zeuE25nlTATdTuPPWtIq9aDGuiS7njYvICnuo0NZt8NJbWWphdkqxSmGtYvrE3mYV3i8gBI4iWDJ6Se2r39F42Wmu1n7bhz97jpugbox2ugDXh2341uPnwrzUr"/>
+</div>
+<div>
+<p class="text-sm text-on-surface-variant">Hello,</p>
+<h3 class="font-bold text-on-surface">Alex Thompson</h3>
+</div>
+</div>
+<nav class="space-y-2">
+<a class="flex items-center space-x-3 p-3 rounded-lg text-on-surface-variant hover:bg-surface-bright/30 transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">person</span>
+<span class="font-medium">PROFILE</span>
+</a>
+<a class="flex items-center space-x-3 p-3 rounded-lg bg-secondary-container text-on-surface shadow-sm" href="#">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="font-bold tracking-wide">ADDRESS</span>
+</a>
+<a class="flex items-center space-x-3 p-3 rounded-lg text-on-surface-variant hover:bg-surface-bright/30 transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">shopping_bag</span>
+<span class="font-medium">MY ORDERS</span>
+</a>
+<a class="flex items-center space-x-3 p-3 rounded-lg text-on-surface-variant hover:bg-surface-bright/30 transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">favorite</span>
+<span class="font-medium">WISHLIST</span>
+</a>
+<a class="flex items-center space-x-3 p-3 rounded-lg text-on-surface-variant hover:bg-surface-bright/30 transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">account_balance_wallet</span>
+<span class="font-medium">WALLET</span>
+</a>
+<div class="pt-6 mt-6 border-t border-outline-variant/20">
+<a class="flex items-center space-x-3 p-3 rounded-lg text-error/80 hover:bg-error-container/20 transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-medium">LOGOUT</span>
+</a>
+</div>
+</nav>
+</div>
+</aside>
+<!-- Content Area Right -->
+<section class="md:col-span-9">
+<div class="flex justify-between items-end mb-10">
+<div>
+<h1 class="text-4xl font-extrabold tracking-tight text-white mb-2">My Addresses</h1>
+<p class="text-on-surface-variant max-w-lg">Manage your delivery locations for a faster checkout experience at the Atelier.</p>
+</div>
+<button class="bg-primary-fixed text-on-primary-fixed px-6 py-3 rounded-full font-bold flex items-center space-x-2 hover:bg-primary transition-all shadow-lg active:scale-95">
+<span class="material-symbols-outlined">add</span>
+<span>ADD NEW ADDRESS</span>
+</button>
+</div>
+<!-- Address Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Address Card 1 (Active/Default) -->
+<div class="glass-card rounded-xl p-6 border-l-4 border-primary shadow-2xl relative">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-secondary-container text-on-secondary px-3 py-1 rounded-md text-[10px] font-black tracking-widest uppercase">
+                HOME
+              </div>
+<span class="text-primary text-xs font-bold bg-primary-container px-2 py-1 rounded">DEFAULT</span>
+</div>
+<h4 class="text-xl font-bold text-white mb-1">Alex Thompson</h4>
+<p class="text-sm text-on-surface-variant mb-4 font-medium">+1 (555) 012-3456</p>
+<p class="text-on-surface leading-relaxed mb-8 h-20 overflow-hidden">
+              Penthouse 42, Sky Tower, 788 Fifth Avenue,<br/>
+              Midtown Manhattan, New York, NY 10022
+            </p>
+<div class="flex items-center space-x-3 pt-4 border-t border-outline-variant/10">
+<button class="text-on-surface-variant hover:text-white flex items-center space-x-1 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-lg">edit</span>
+<span>Edit</span>
+</button>
+<div class="w-px h-4 bg-outline-variant/30"></div>
+<button class="text-on-surface-variant hover:text-error flex items-center space-x-1 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-lg">delete</span>
+<span>Delete</span>
+</button>
+<div class="flex-grow"></div>
+<button class="text-on-primary-fixed bg-primary-fixed px-4 py-2 rounded-full text-xs font-black tracking-wider transition-all hover:shadow-md active:scale-95">
+                DELIVER HERE
+              </button>
+</div>
+</div>
+<!-- Address Card 2 -->
+<div class="bg-surface-container-high/50 rounded-xl p-6 border border-outline-variant/10 shadow-xl transition-all hover:bg-surface-container-high">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-surface-container-highest text-on-surface-variant px-3 py-1 rounded-md text-[10px] font-black tracking-widest uppercase">
+                WORK
+              </div>
+</div>
+<h4 class="text-xl font-bold text-white mb-1">Alex Thompson</h4>
+<p class="text-sm text-on-surface-variant mb-4 font-medium">+1 (555) 098-7654</p>
+<p class="text-on-surface leading-relaxed mb-8 h-20 overflow-hidden">
+              Design Studios, Suite 800, 1200 Broadway,<br/>
+              Creative District, New York, NY 10001
+            </p>
+<div class="flex items-center space-x-3 pt-4 border-t border-outline-variant/10">
+<button class="text-on-surface-variant hover:text-white flex items-center space-x-1 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-lg">edit</span>
+<span>Edit</span>
+</button>
+<div class="w-px h-4 bg-outline-variant/30"></div>
+<button class="text-on-surface-variant hover:text-error flex items-center space-x-1 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-lg">delete</span>
+<span>Delete</span>
+</button>
+<div class="flex-grow"></div>
+<button class="text-on-surface-variant border border-outline-variant/40 px-4 py-2 rounded-full text-xs font-black tracking-wider hover:bg-surface-bright/20">
+                DELIVER HERE
+              </button>
+</div>
+</div>
+<!-- Add New Placeholder -->
+<div class="border-2 border-dashed border-outline-variant/30 rounded-xl p-6 flex flex-col items-center justify-center text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all cursor-pointer group py-12">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">add_location_alt</span>
+</div>
+<span class="font-bold tracking-widest text-sm uppercase">Add New Address</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Edit Address Popup Modal (Visible by default for demonstration) -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center px-4 overflow-y-auto">
+<!-- Backdrop -->
+<div class="fixed inset-0 bg-surface-container-lowest/90 backdrop-blur-sm"></div>
+<!-- Modal Content -->
+<div class="relative w-full max-w-2xl bg-surface-container-high rounded-2xl shadow-[0px_40px_80px_rgba(0,0,0,0.6)] overflow-hidden border border-outline-variant/20 my-8">
+<!-- Close Icon -->
+<button class="absolute top-6 right-6 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">close</span>
+</button>
+<div class="p-8 md:p-12">
+<div class="mb-10">
+<h2 class="text-3xl font-extrabold text-white tracking-tight">Edit Address</h2>
+<p class="text-on-surface-variant mt-1">Update your saved address details for accurate deliveries.</p>
+</div>
+<form method="POST" action="{% url 'edit_address' address.id %}" class="px-8 pb-2 space-y-1">
+    {% csrf_token %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Full Name -->
+<div class="space-y-1.5">
+<label class="block text-[10px] font-black tracking-widest text-primary uppercase px-1">Full Name</label>
+<input class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant/30 focus:border-primary focus:ring-0 text-on-surface placeholder-on-surface-variant/40 rounded-t-lg px-4 py-3 transition-all" type="text" value="{{address.full_name}}" name="full_name"/>
+</div>
+<!-- Phone -->
+<div class="space-y-1.5">
+<label class="block text-[10px] font-black tracking-widest text-primary uppercase px-1">Phone Number</label>
+<input class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant/30 focus:border-primary focus:ring-0 text-on-surface placeholder-on-surface-variant/40 rounded-t-lg px-4 py-3 transition-all" type="tel" value="{{address.phone_number}}" name="phone_number"/>
+</div>
+<!-- House/Building -->
+<div class="space-y-1.5">
+<label class="block text-[10px] font-black tracking-widest text-primary uppercase px-1">House / Building Name</label>
+<input class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant/30 focus:border-primary focus:ring-0 text-on-surface placeholder-on-surface-variant/40 rounded-t-lg px-4 py-3 transition-all" type="text" value="{{address.house_name}}" name="house_name"/>
+</div>
+<!-- Street -->
+<div class="space-y-1.5">
+<label class="block text-[10px] font-black tracking-widest text-primary uppercase px-1">Address</label>
+<input class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant/30 focus:border-primary focus:ring-0 text-on-surface placeholder-on-surface-variant/40 rounded-t-lg px-4 py-3 transition-all" type="text" value="{{address.address}}" name="address"/>
+</div>
+<!-- Area -->
+<div class="space-y-1.5">
+<label class="block text-[10px] font-black tracking-widest text-primary uppercase px-1">Area</label>
+<input class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant/30 focus:border-primary focus:ring-0 text-on-surface placeholder-on-surface-variant/40 rounded-t-lg px-4 py-3 transition-all" type="text" value="{{address.area}}" name="area"/>
+</div>
+<!-- Landmark -->
+<div class="space-y-1.5">
+<label class="block text-[10px] font-black tracking-widest text-primary uppercase px-1">Country</label>
+<input class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant/30 focus:border-primary focus:ring-0 text-on-surface placeholder-on-surface-variant/40 rounded-t-lg px-4 py-3 transition-all" placeholder="Near Central Park South" type="text" value="{{address.country}}" name="country"/>
+</div>
+<!-- City -->
+<div class="space-y-1.5">
+<label class="block text-[10px] font-black tracking-widest text-primary uppercase px-1">District</label>
+<input class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant/30 focus:border-primary focus:ring-0 text-on-surface placeholder-on-surface-variant/40 rounded-t-lg px-4 py-3 transition-all" type="text" value="{{address.district}}" name="district"/>
+</div>
+<!-- State/Zip -->
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1.5">
+<label class="block text-[10px] font-black tracking-widest text-primary uppercase px-1">State</label>
+<input class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant/30 focus:border-primary focus:ring-0 text-on-surface placeholder-on-surface-variant/40 rounded-t-lg px-4 py-3 transition-all" type="text" value="{{address.state}}" name="state"/>
+</div>
+<div class="space-y-1.5">
+<label class="block text-[10px] font-black tracking-widest text-primary uppercase px-1">Pincode</label>
+<input class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant/30 focus:border-primary focus:ring-0 text-on-surface placeholder-on-surface-variant/40 rounded-t-lg px-4 py-3 transition-all" type="text" value="{{address.pincode}}" name="pincode"/>
+</div>
+</div>
+</div>
+<!-- Address Type Selector -->
+<div class="space-y-3">
+    <label class="text-[10px] font-bold uppercase tracking-widest text-primary">
+        Address Type
+    </label>
+
+    <div class="flex gap-6 text-sm text-on-surface">
+        <label>
+            <input type="radio" name="address_type" value="Home" checked>
+            Home
+        </label>
+
+        <label>
+            <input type="radio" name="address_type" value="Work">
+            Work
+        </label>
+
+        <label>
+            <input type="radio" name="address_type" value="Other" >
+            Other
+        </label>
+    </div>
+</div>
+<!-- Default Checkbox -->
+<label class="flex items-center space-x-3 cursor-pointer group w-fit">
+<div class="relative">
+<input class="peer hidden" type="checkbox" name="is_default" value="{{address.is_default}}"/>
+<div class="w-5 h-5 border-2 border-outline rounded flex items-center justify-center peer-checked:bg-primary peer-checked:border-primary transition-all">
+<span class="material-symbols-outlined text-on-primary text-[14px] hidden peer-checked:block" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+</div>
+<span class="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Set as default address</span>
+</label>
+<!-- Modal Footer Buttons -->
+<div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 pt-6">
+
+    <!-- SAVE (keep as button for form submit) -->
+    <button class="flex-1 bg-primary-fixed text-on-primary-fixed py-4 rounded-full font-extrabold tracking-widest text-sm hover:bg-primary transition-all active:scale-[0.98]" type="submit">
+        SAVE CHANGES
+    </button>
+
+    <!-- CANCEL (convert to a tag) -->
+    <a href="{% url 'address_page' %}"
+       class="flex-1 border border-outline-variant/40 text-on-surface py-4 rounded-full font-extrabold tracking-widest text-sm hover:bg-surface-bright/20 transition-all text-center flex items-center justify-center">
+        CANCEL
+    </a>
+
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- Footer Implementation from JSON -->
+<footer class="bg-[#001232] w-full py-12 border-t border-[#44474e]/20 mt-20">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 w-full max-w-screen-2xl mx-auto space-y-6 md:space-y-0">
+<div class="text-lg font-bold text-white">STYLE-HUB</div>
+<div class="flex flex-wrap justify-center gap-8 text-sm font-manrope text-[#c5c6cf]">
+<a class="hover:text-white transition-opacity" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-opacity" href="#">Terms of Service</a>
+<a class="hover:text-white transition-opacity" href="#">Support</a>
+</div>
+<div class="text-sm font-manrope text-[#c5c6cf]">
+        © 2024 STYLE-HUB. All rights reserved.
+      </div>
+</div>
+</footer>
+</body></html>

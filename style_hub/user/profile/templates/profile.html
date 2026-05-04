@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "on-primary-fixed": "#1a1c1c",
+                "error-container": "#93000a",
+                "primary-container": "#1d1f20",
+                "tertiary-fixed": "#ffdad8",
+                "on-error-container": "#ffdad6",
+                "tertiary": "#ffb3b1",
+                "surface-dim": "#001232",
+                "on-secondary-container": "#a3b5dc",
+                "on-tertiary-fixed-variant": "#80272b",
+                "on-secondary": "#1d3050",
+                "surface-container-lowest": "#000d28",
+                "on-secondary-fixed": "#051b3a",
+                "on-primary": "#2f3131",
+                "surface-container-high": "#18294b",
+                "surface-bright": "#28395b",
+                "surface-container-low": "#071b3b",
+                "surface-container": "#0c1f40",
+                "surface": "#001232",
+                "surface-variant": "#233456",
+                "outline": "#8f9099",
+                "inverse-on-surface": "#1f3052",
+                "inverse-primary": "#5d5f5f",
+                "error": "#ffb4ab",
+                "secondary-fixed": "#d7e3ff",
+                "surface-tint": "#c6c6c7",
+                "on-tertiary-container": "#d36565",
+                "on-secondary-fixed-variant": "#344768",
+                "primary-fixed": "#e2e2e2",
+                "primary-fixed-dim": "#c6c6c7",
+                "on-tertiary-fixed": "#410007",
+                "primary": "#c6c6c7",
+                "secondary-container": "#344768",
+                "on-surface-variant": "#c5c6cf",
+                "background": "#001232",
+                "on-background": "#d8e2ff",
+                "inverse-surface": "#d8e2ff",
+                "on-surface": "#d8e2ff",
+                "surface-container-highest": "#233456",
+                "secondary": "#b4c7ee",
+                "on-error": "#690005",
+                "on-primary-fixed-variant": "#454747",
+                "tertiary-fixed-dim": "#ffb3b1",
+                "on-tertiary": "#620f17",
+                "on-primary-container": "#858787",
+                "secondary-fixed-dim": "#b4c7ee",
+                "outline-variant": "#44474e",
+                "tertiary-container": "#470009"
+              },
+              fontFamily: {
+                "headline": ["Manrope"],
+                "body": ["Manrope"],
+                "label": ["Manrope"]
+              },
+              borderRadius: {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+            },
+          },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #001232;
+            color: #d8e2ff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(12, 31, 64, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-primary selection:text-on-primary-fixed">
+
+    <!-- TopNavBar -->
+    <nav class="sticky top-0 w-full z-50 bg-[#001232]/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 max-w-full mx-auto shadow-[0_20_40px_rgba(0,13,40,0.4)]">
+        <div class="flex items-center gap-20">
+            <span class="text-2xl font-bold tracking-tighter text-white">STYLE-HUB</span>
+
+            <div class="hidden md:flex gap-10 font-manrope text-sm tracking-tight text-slate-400">
+                <a class="hover:text-white transition-colors" href="{% url "home" %}">Home</a>
+                <a class="hover:text-white transition-colors" href="{% url "products_page" %}">Products</a>
+                <a class="hover:text-white transition-colors" href="{% url "category_page" %}">Categories</a>
+                <a class="hover:text-white transition-colors" href="{% url "about_page" %}">About</a>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-12">
+            <div class="hidden lg:flex items-center bg-white/5 rounded-full px-4 py-1.5 border border-white/5">
+                <span class="material-symbols-outlined text-sm text-slate-400">search</span>
+                <input class="bg-transparent border-none focus:ring-0 text-sm text-slate-200 placeholder-slate-500 w-48"
+                       placeholder="Search..." type="text"/>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button class="p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">favorite</span>
+                </button>
+
+                <button class="p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">shopping_bag</span>
+                </button>
+
+                <button class="p-2 text-white border-b-2 border-slate-200 pb-1 flex items-center">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-12 flex flex-col md:flex-row gap-10">
+
+        <!-- SideNavBar -->
+        <aside class="flex flex-col gap-4 p-4 h-fit ml-0 md:ml-6 bg-[#0c1f40]/70 backdrop-blur-lg rounded-2xl w-full md:w-64 transition-all duration-300 overflow-hidden shadow-2xl shrink-0 border border-white/5">
+
+            
+
+            <nav class="flex flex-col gap-2">
+                <a class="bg-primary text-on-primary-fixed rounded-xl flex items-center gap-4 p-3.5 transition-all duration-200 shadow-[0_0_20px_rgba(198,198,199,0.2)]" href="#">
+                    <span class="material-symbols-outlined">person</span>
+                    <span class="font-manrope text-xs uppercase tracking-widest font-bold">Profile</span>
+                </a>
+
+                <a class="text-slate-300 hover:bg-white/5 flex items-center gap-4 p-3.5 transition-all duration-200 rounded-xl group" href="{% url "address_page" %}">
+                    <span class="material-symbols-outlined text-slate-400 group-hover:text-white">location_on</span>
+                    <span class="font-manrope text-xs uppercase tracking-widest font-bold">Address</span>
+                </a>
+
+                <a class="text-slate-300 hover:bg-white/5 flex items-center gap-4 p-3.5 transition-all duration-200 rounded-xl group" href="#">
+                    <span class="material-symbols-outlined text-slate-400 group-hover:text-white">package_2</span>
+                    <span class="font-manrope text-xs uppercase tracking-widest font-bold">My Orders</span>
+                </a>
+
+                <a class="text-slate-300 hover:bg-white/5 flex items-center gap-4 p-3.5 transition-all duration-200 rounded-xl group" href="#">
+                    <span class="material-symbols-outlined text-slate-400 group-hover:text-white">favorite</span>
+                    <span class="font-manrope text-xs uppercase tracking-widest font-bold">Wishlist</span>
+                </a>
+
+                <a class="text-slate-300 hover:bg-white/5 flex items-center gap-4 p-3.5 transition-all duration-200 rounded-xl group" href="#">
+                    <span class="material-symbols-outlined text-slate-400 group-hover:text-white">account_balance_wallet</span>
+                    <span class="font-manrope text-xs uppercase tracking-widest font-bold">Wallet</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Right Content -->
+        <section class="flex-grow flex flex-col gap-8">
+
+            <!-- Profile Card -->
+           <div class="relative overflow-hidden rounded-[2rem] p-8 md:p-12 glass-card shadow-2xl border border-white/5">
+    <div class="absolute top-0 right-0 p-8">
+    </div>
+
+    <div class="relative z-10 flex flex-col md:flex-row items-center md:items-end gap-8">
+        <div class="w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden shadow-2xl border-4 border-[#0c1f40]">
+            {% if request.user.profile_photo %}
+                <img alt="{{ request.user.username }}"
+                     class="w-full h-full object-cover"
+                     src="{{ request.user.profile_photo.url }}"/>
+            {% else %}
+                <img alt="{{ request.user.username }}"
+                     class="w-full h-full object-cover"
+                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_qu3JW0a-dABmcg5u1tUL_tWFzvBw9gOf6z8ka2lJpUyui3cNZfn878s5XU-Ft8MrMlsGdGwhX5ZLyXSBvETIVILj3sEK2fbsjlTCm_H1FjsLeX9EkOPv83o6GXWxwUwDmKKnfNeVOSDA8nOADWdag--PRpjyrdQ2GcIaL13T-3LhtWf4z1zj_hesYVI-N79eHguteCs8fyykDxZafH84We-_FF55bPo3MdZrN1mGLE-uPmxddcsys2XOD3Y3K2TOrDwgPjcFiaA1"/>
+            {% endif %}
+        </div>
+
+        <div class="text-right md:text-left">
+            <span class="text-primary text-xs uppercase tracking-[0.2em] font-bold mb-2 block">Account Overview</span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tighter mb-6">
+                {{ request.user.username }}
+            </h1>
+
+            <div class="flex flex-wrap justify-center md:justify-start gap-4 text-slate-400 text-sm">
+                <span class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">mail</span>
+                    {{ request.user.email }}
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">call</span>
+                    {{ request.user.phone_number }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Info + Actions -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Personal Info -->
+    <div class="lg:col-span-6 space-y-6">
+        <div class="flex items-center justify-between px-2">
+            <h3 class="text-xl font-bold text-white tracking-tight">Personal Information</h3>
+            <button class="text-primary hover:text-white transition-colors text-sm font-medium">Update Info</button>
+        </div>
+
+        <div class="glass-card rounded-2xl overflow-hidden border border-white/5 divide-y divide-white/5">
+            <div class="flex flex-col md:flex-row md:items-center justify-between p-5 hover:bg-white/5 transition-colors">
+                <span class="text-slate-400 text-sm font-medium uppercase tracking-wider">Username</span>
+                <span class="text-slate-100 font-semibold">{{ request.user.username }}</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center justify-between p-5 hover:bg-white/5 transition-colors">
+                <span class="text-slate-400 text-sm font-medium uppercase tracking-wider">Email Address</span>
+                <span class="text-slate-100 font-semibold">{{ request.user.email }}</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center justify-between p-5 hover:bg-white/5 transition-colors">
+                <span class="text-slate-400 text-sm font-medium uppercase tracking-wider">Phone Number</span>
+                <span class="text-slate-100 font-semibold">{{ request.user.phone_number }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+                <!-- Quick Actions -->
+                <div class="flex flex-col gap-6">
+                    <h3 class="text-xl font-bold text-white tracking-tight px-2">Quick Actions</h3>
+
+                    <!-- Edit Profile -->
+                    <a href="{% url 'editprofile' %}"
+                       class="group w-full flex items-center justify-between p-6 rounded-2xl bg-primary-fixed hover:bg-primary transition-all duration-300">
+                        <div class="flex items-center gap-4">
+                            <span class="material-symbols-outlined text-on-primary-fixed bg-black/10 p-2 rounded-lg">edit_note</span>
+                            <span class="text-on-primary-fixed font-bold tracking-tight">Edit Profile</span>
+                        </div>
+                        <span class="material-symbols-outlined text-on-primary-fixed group-hover:translate-x-1 transition-transform">chevron_right</span>
+                    </a>
+
+                    <!-- Change Password -->
+                    <a href="{% url 'changepassword' %}"
+                       class="group w-full flex items-center justify-between p-6 rounded-2xl glass-card border border-white/5 hover:border-white/20 transition-all duration-300">
+                        <div class="flex items-center gap-5">
+                            <span class="material-symbols-outlined text-slate-200 bg-white/5 p-2 rounded-lg">lock_reset</span>
+                            <span class="text-slate-100 font-bold tracking-tight">Change Password</span>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+                    </a>
+
+                    <!-- Logout -->
+     <!-- LOGOUT BUTTON (ONLY TRIGGER) -->
+<button type="button"
+    onclick="openLogoutModal()"
+    class="group w-full flex items-center justify-between p-6 rounded-2xl bg-error-container/20 border border-error/10 hover:bg-error-container/40 transition-all duration-300">
+
+    <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-error bg-error/10 p-2 rounded-lg">logout</span>
+        <span class="text-error font-bold tracking-tight">Logout</span>
+    </div>
+
+</button>
+   
+                     
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full mt-auto py-12 px-8 bg-[#001232] border-t border-white/5">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full gap-6 max-w-7xl mx-auto">
+            <div class="flex flex-col gap-2 items-center md:items-start">
+                <span class="text-slate-200 font-bold text-xl tracking-tighter">STYLE-HUB</span>
+                <span class="font-manrope text-xs uppercase tracking-widest text-slate-400">© 2024 STYLE-HUB. THE MIDNIGHT ATELIER.</span>
+            </div>
+
+            <div class="flex gap-8">
+                <a class="font-manrope text-xs uppercase tracking-widest text-slate-500 hover:text-white transition-colors" href="#">Terms</a>
+                <a class="font-manrope text-xs uppercase tracking-widest text-slate-500 hover:text-white transition-colors" href="#">Privacy</a>
+                <a class="font-manrope text-xs uppercase tracking-widest text-slate-500 hover:text-white transition-colors" href="#">Support</a>
+                <a class="font-manrope text-xs uppercase tracking-widest text-slate-500 hover:text-white transition-colors" href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+<div id="logoutModal" class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+
+    <div class="glass-card w-full max-w-md rounded-2xl border border-white/10 p-8 shadow-2xl text-center">
+
+        <!-- ICON -->
+        <div class="w-16 h-16 mx-auto mb-5 rounded-full bg-error/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-error text-4xl">logout</span>
+        </div>
+
+        <!-- TITLE -->
+        <h2 class="text-2xl font-extrabold text-white mb-2">
+            Logout?
+        </h2>
+
+        <!-- MESSAGE -->
+        <p class="text-on-surface-variant text-sm mb-8">
+            Are you sure you want to logout from your account?
+        </p>
+
+        <!-- BUTTONS -->
+        <div class="flex flex-col gap-3">
+
+            <!-- CONFIRM LOGOUT -->
+            <form action="{% url 'logout_user' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit"
+                    class="w-full py-4 bg-error text-on-error rounded-full font-bold text-sm tracking-wide hover:brightness-110 active:scale-95 transition-all">
+                    Yes, Logout
+                </button>
+            </form>
+
+            <!-- CANCEL -->
+            <button type="button"
+                onclick="closeLogoutModal()"
+                class="w-full py-4 bg-transparent border border-outline-variant/30 text-on-surface rounded-full font-bold text-sm tracking-wide hover:bg-surface-container-highest active:scale-95 transition-all">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+function openLogoutModal() {
+    const modal = document.getElementById("logoutModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+}
+
+function closeLogoutModal() {
+    const modal = document.getElementById("logoutModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+</script>
+
+</body>
+</html>

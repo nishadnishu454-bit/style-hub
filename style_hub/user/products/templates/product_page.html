@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>STYLE-HUB | Products</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+        rel="stylesheet" />
+
+    <style>
+
+        body {
+            background-color: #001232;
+            color: #d8e2ff;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(40, 57, 91, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-50 bg-[#0c1f40] shadow-xl">
+
+        <nav class="flex justify-between items-center px-8 py-4">
+
+            <div class="text-2xl font-black tracking-tighter text-white uppercase">
+
+                STYLE-HUB
+
+            </div>
+
+            <div class="hidden md:flex items-center space-x-8">
+
+                <a href="{% url 'home' %}"
+                   class="text-slate-400 hover:text-white transition-colors">
+
+                    Home
+
+                </a>
+
+                <a href="{% url 'product_page' %}"
+                   class="text-white border-b-2 border-white pb-1 font-bold">
+
+                    Products
+
+                </a>
+
+                <a href="{% url 'category_page' %}"
+                   class="text-slate-400 hover:text-white transition-colors">
+
+                    Categories
+
+                </a>
+
+                <a href="{% url 'about_page' %}"
+                   class="text-slate-400 hover:text-white transition-colors">
+
+                    About
+
+                </a>
+
+            </div>
+
+            <div class="flex items-center space-x-6">
+
+                <button class="hover:bg-white/10 rounded-full transition-all p-2">
+
+                    <span class="material-symbols-outlined text-slate-200">
+
+                        favorite
+
+                    </span>
+
+                </button>
+
+                <button class="hover:bg-white/10 rounded-full transition-all p-2 relative">
+
+                    <span class="material-symbols-outlined text-slate-200">
+
+                        shopping_cart
+
+                    </span>
+
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></span>
+
+                </button>
+
+                <a href="{% url 'profile' %}"
+                   class="hover:bg-white/10 rounded-full transition-all p-2">
+
+                    <span class="material-symbols-outlined text-slate-200">
+
+                        person
+
+                    </span>
+
+                </a>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+    <!-- MAIN -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+
+        <!-- HEADER -->
+        <header class="mb-16">
+
+            <h1 class="text-6xl font-extrabold tracking-tighter text-white mb-4 uppercase">
+
+                Products
+
+            </h1>
+
+            <p class="text-slate-400 text-xl tracking-wide max-w-2xl font-light">
+
+                Explore our latest men's fashion collection.
+
+            </p>
+
+        </header>
+
+        <!-- CONTENT -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+
+            <!-- SIDEBAR -->
+            <aside class="space-y-10">
+
+                <!-- SEARCH -->
+                <div>
+
+                    <h3 class="text-sm font-bold uppercase tracking-[0.2rem] text-white mb-6">
+
+                        Search
+
+                    </h3>
+
+                    <form method="GET">
+
+                        <input type="text"
+                               name="search"
+                               value="{{ request.GET.search }}"
+                               placeholder="Search products..."
+                               class="w-full bg-[#0c1f40] border-none py-3 px-4 rounded-xl text-white text-sm focus:ring-1 ring-white">
+
+                    </form>
+
+                </div>
+
+                <!-- CATEGORIES -->
+                <div>
+
+                    <h3 class="text-sm font-bold uppercase tracking-[0.2rem] text-white mb-6">
+
+                        Categories
+
+                    </h3>
+
+                    <ul class="space-y-3">
+
+                        {% for category in categories %}
+
+                        <li>
+
+                            <label class="flex items-center">
+
+                                <input type="checkbox"
+                                       class="rounded border-gray-500 bg-transparent text-white focus:ring-white">
+
+                                <span class="ml-3 text-slate-300">
+
+                                    {{ category.category_name }}
+
+                                </span>
+
+                            </label>
+
+                        </li>
+
+                        {% endfor %}
+
+                    </ul>
+
+                </div>
+
+            </aside>
+
+            <!-- PRODUCT GRID -->
+            <div class="lg:col-span-3">
+
+                <!-- ITEMS -->
+                <div class="flex justify-between items-center mb-10">
+
+                    <div class="text-slate-400 font-medium">
+
+                        <span class="text-white">
+
+                            {{ products.count }}
+
+                        </span>
+
+                        Items Found
+
+                    </div>
+
+                </div>
+
+                <!-- GRID -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+
+                    {% for product in products %}
+
+                    <div class="group relative flex flex-col glass-card rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2">
+
+                        <!-- IMAGE -->
+                        <div class="relative aspect-[4/5] overflow-hidden">
+
+                            {% if product.product_image %}
+
+                                <img src="{{ product.product_image.url }}"
+                                     alt="{{ product.product_name }}"
+                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+
+                            {% else %}
+
+                                <div class="w-full h-full flex items-center justify-center bg-[#0c1f40]">
+
+                                    <span class="material-symbols-outlined text-6xl text-slate-500">
+
+                                        image
+
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+                            <!-- WISHLIST -->
+                            <button class="absolute top-5 right-5 p-3 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-black transition-all">
+
+                                <span class="material-symbols-outlined text-[20px]">
+
+                                    favorite
+
+                                </span>
+
+                            </button>
+
+                            <!-- BADGE -->
+                            <span class="absolute top-5 left-5 bg-white text-black px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full">
+
+                                New
+
+                            </span>
+
+                        </div>
+
+                        <!-- CONTENT -->
+                        <div class="p-8 flex flex-col flex-grow">
+
+                            <!-- CATEGORY -->
+                            <div class="flex justify-between items-start mb-2">
+
+                                <span class="text-[10px] font-bold uppercase tracking-[0.2rem] text-slate-300">
+
+                                    {{ product.category.category_name }}
+
+                                </span>
+
+                                <div class="flex text-yellow-500">
+
+                                    <span class="material-symbols-outlined text-xs"
+                                          style="font-variation-settings: 'FILL' 1;">
+
+                                        star
+
+                                    </span>
+
+                                    <span class="text-[10px] text-slate-400 ml-1">
+
+                                        (4.8)
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            <!-- NAME -->
+                            <h3 class="text-xl font-bold text-white mb-3 line-clamp-1">
+
+                                {{ product.product_name }}
+
+                            </h3>
+
+                            <!-- DESCRIPTION -->
+                            <p class="text-sm text-slate-400 mb-6 line-clamp-2">
+
+                                {{ product.description }}
+
+                            </p>
+
+                            <!-- PRICE -->
+                            <div class="mt-auto flex items-center justify-between">
+
+                                <span class="text-2xl font-light text-white">
+
+                                    ₹{{ product.price }}
+
+                                </span>
+
+                                <button class="p-3 bg-white text-black rounded-full hover:bg-slate-200 transition-all">
+
+                                    <span class="material-symbols-outlined">
+
+                                        shopping_bag
+
+                                    </span>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="col-span-full flex flex-col items-center justify-center py-24">
+
+                        <div class="w-24 h-24 rounded-full bg-[#0c1f40] flex items-center justify-center mb-6">
+
+                            <span class="material-symbols-outlined text-5xl text-slate-500">
+
+                                inventory_2
+
+                            </span>
+
+                        </div>
+
+                        <h2 class="text-2xl font-bold text-white mb-3">
+
+                            No Products Found
+
+                        </h2>
+
+                        <p class="text-slate-400 text-sm">
+
+                            Products will appear here once added.
+
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#0c1f40] w-full rounded-t-[2rem] mt-20">
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 py-16 max-w-7xl mx-auto">
+
+            <div>
+
+                <div class="text-xl font-bold text-white mb-4 uppercase tracking-tighter">
+
+                    STYLE-HUB
+
+                </div>
+
+                <p class="text-slate-400 text-sm leading-relaxed">
+
+                    Premium men's fashion collections.
+
+                </p>
+
+            </div>
+
+            <div>
+
+                <h4 class="text-sm uppercase tracking-widest text-white font-bold mb-6">
+
+                    About
+
+                </h4>
+
+                <ul class="space-y-4 text-sm">
+
+                    <li>
+                        <a href="#" class="text-slate-400 hover:text-white">
+                            Our Story
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" class="text-slate-400 hover:text-white">
+                            Sustainability
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <div>
+
+                <h4 class="text-sm uppercase tracking-widest text-white font-bold mb-6">
+
+                    Support
+
+                </h4>
+
+                <ul class="space-y-4 text-sm">
+
+                    <li>
+                        <a href="#" class="text-slate-400 hover:text-white">
+                            Contact
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" class="text-slate-400 hover:text-white">
+                            Shipping
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <div>
+
+                <h4 class="text-sm uppercase tracking-widest text-white font-bold mb-6">
+
+                    Newsletter
+
+                </h4>
+
+                <input type="email"
+                       placeholder="Email Address"
+                       class="w-full bg-[#001232] border-none py-3 px-4 rounded-xl text-xs text-white">
+
+            </div>
+
+        </div>
+
+        <div class="px-12 py-8 border-t border-slate-700 text-center text-slate-400 text-[10px] uppercase tracking-[0.3rem]">
+
+            © 2026 STYLE-HUB
+
+        </div>
+
+    </footer>
+
+</body>
+
+</html>
