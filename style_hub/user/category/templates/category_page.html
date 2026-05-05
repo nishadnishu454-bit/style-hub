@@ -122,7 +122,7 @@
                 </button>
 
                 <div class="text-[#c5c6cf] text-sm font-medium tracking-tight">
-                    SHOWING <span class="text-white">{{ products.count }}</span> MASTERPIECES
+                    SHOWING <span class="text-white">{{ products.paginator.count }}</span> MASTERPIECES
                 </div>
             </div>
 
@@ -159,6 +159,10 @@
                 {% endfor %}
 
             </div>
+
+   
+          
+
         </section>
 
         <!-- PRODUCT GRID -->
@@ -234,7 +238,7 @@
 
                             <p class="text-sm text-[#c5c6cf] line-clamp-2 mb-6">
                                 {{ product.description }}
-                            </p>
+                            </p> 
 
                             <button class="mt-auto w-full bg-[#28395b] text-white border border-white/10 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
                                 Add to Cart
@@ -259,6 +263,40 @@
                 {% endfor %}
 
             </div>
+
+
+            {% if products.paginator.num_pages > 1 %}
+<div class="mt-16 flex justify-center items-center gap-3">
+
+    {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}"
+           class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-[#c5c6cf] hover:text-white">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </a>
+    {% endif %}
+
+    {% for num in products.paginator.page_range %}
+        {% if products.number == num %}
+            <span class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black font-bold">
+                {{ num }}
+            </span>
+        {% else %}
+            <a href="?page={{ num }}"
+               class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0c1f40] text-[#c5c6cf] hover:text-white font-bold">
+                {{ num }}
+            </a>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}"
+           class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-[#c5c6cf] hover:text-white">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </a>
+    {% endif %}
+
+</div>
+{% endif %}
 
         </section>
 

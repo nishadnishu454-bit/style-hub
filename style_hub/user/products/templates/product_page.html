@@ -222,7 +222,7 @@
 
                         <span class="text-white">
 
-                            {{ products.count }}
+                             {{ products.paginator.count }} 
 
                         </span>
 
@@ -233,6 +233,7 @@
                 </div>
 
                 <!-- GRID -->
+
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
 
                     {% for product in products %}
@@ -261,6 +262,8 @@
                                 </div>
 
                             {% endif %}
+
+                            
 
                             <!-- WISHLIST -->
                             <button class="absolute top-5 right-5 p-3 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-black transition-all">
@@ -390,6 +393,41 @@
 
     </main>
 
+
+
+                 <!-- PAGINATION -->
+                        {% if products.paginator.num_pages > 1 %}
+                        <div class="mt-16 flex justify-center items-center gap-3">
+
+                            {% if products.has_previous %}
+                                <a href="?page={{ products.previous_page_number }}"
+                                class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </a>
+                            {% endif %}
+
+                            {% for num in products.paginator.page_range %}
+                                {% if products.number == num %}
+                                    <span class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black font-bold">
+                                        {{ num }}
+                                    </span>
+                                {% else %}
+                                    <a href="?page={{ num }}"
+                                    class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0c1f40] text-slate-400 hover:text-white font-bold">
+                                        {{ num }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if products.has_next %}
+                                <a href="?page={{ products.next_page_number }}"
+                                class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </a>
+                            {% endif %}
+
+                        </div>
+                        {% endif %}
     <!-- FOOTER -->
     <footer class="bg-[#0c1f40] w-full rounded-t-[2rem] mt-20">
 
@@ -484,6 +522,10 @@
             © 2026 STYLE-HUB
 
         </div>
+
+
+
+
 
     </footer>
 
