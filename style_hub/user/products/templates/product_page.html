@@ -152,27 +152,8 @@
 
                             </div>
 
-                            
-                <div>
-                    <h3 class="text-sm font-bold uppercase tracking-[0.2rem] text-white mb-6">
-                        Categories
-                    </h3>
 
-                    <ul class="space-y-3">
-                        {% for category in categories %}
-                        <li>
-                            <label class="flex items-center">
-                                <input type="checkbox"
-                                       class="rounded border-gray-500 bg-transparent text-white focus:ring-white">
-
-                                <span class="ml-3 text-slate-300">
-                                    {{ category.category_name }}
-                                </span>
-                            </label>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                
 
             </aside>
 
@@ -195,22 +176,30 @@
                         </span>
 
                         <select name="sort"
-                                onchange="this.form.submit()"
-                                class="bg-[#0c1f40] text-white border-none rounded-full px-6 py-3 text-sm focus:ring-1 ring-white cursor-pointer">
+                                    onchange="this.form.submit()"
+                                    class="bg-[#0c1f40] text-white border-none rounded-full px-6 py-3 text-sm focus:ring-1 ring-white cursor-pointer">
 
-                            <option value="" {% if sort == '' %}selected{% endif %}>
-                                Newest
-                            </option>
+                                <option value="" {% if sort == '' %}selected{% endif %}>
+                                    Newest
+                                </option>
 
-                            <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>
-                                Price: Low to High
-                            </option>
+                                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>
+                                    Price: Low to High
+                                </option>
 
-                            <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>
-                                Price: High to Low
-                            </option>
+                                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>
+                                    Price: High to Low
+                                </option>
 
-                        </select>
+                                <option value="a_z" {% if sort == 'a_z' %}selected{% endif %}>
+                                    A - Z
+                                </option>
+
+                                <option value="z_a" {% if sort == 'z_a' %}selected{% endif %}>
+                                    Z - A
+                                </option>
+
+                            </select>
                     </form>
 
                 </div>
@@ -220,7 +209,8 @@
 
                     {% for product in products %}
 
-                    <div class="group relative flex flex-col glass-card rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2">
+<a href="{% url 'product_detail' product.id %}"
+   class="group relative flex flex-col glass-card rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2">
 
                         <!-- IMAGE -->
                         <div class="relative aspect-[4/5] overflow-hidden">
@@ -303,7 +293,7 @@
 
                         </div>
 
-                    </div>
+                    </a>
                     
 
                     {% empty %}
@@ -339,39 +329,39 @@
 
     </main>
 
-    <!-- PAGINATION -->
-    {% if products.paginator.num_pages > 1 %}
-    <div class="mt-16 flex justify-center items-center gap-3">
+  <!-- PAGINATION -->
+{% if products.paginator.num_pages > 1 %}
+<div class="mt-16 flex justify-center items-center gap-3">
 
-        {% if products.has_previous %}
-            <a href="?page={{ products.previous_page_number }}&sort={{ sort }}"
-               class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
-                <span class="material-symbols-outlined">chevron_left</span>
-            </a>
-        {% endif %}
-
-        {% for num in products.paginator.page_range %}
-            {% if products.number == num %}
-                <span class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black font-bold">
-                    {{ num }}
-                </span>
-            {% else %}
-                <a href="?page={{ num }}&sort={{ sort }}"
-                   class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0c1f40] text-slate-400 hover:text-white font-bold">
-                    {{ num }}
-                </a>
-            {% endif %}
-        {% endfor %}
-
-        {% if products.has_next %}
-            <a href="?page={{ products.next_page_number }}&sort={{ sort }}"
-               class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
-                <span class="material-symbols-outlined">chevron_right</span>
-            </a>
-        {% endif %}
-
-    </div>
+    {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}&{{ query_params }}"
+           class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </a>
     {% endif %}
+
+    {% for num in products.paginator.page_range %}
+        {% if products.number == num %}
+            <span class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black font-bold">
+                {{ num }}
+            </span>
+        {% else %}
+            <a href="?page={{ num }}&{{ query_params }}"
+               class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0c1f40] text-slate-400 hover:text-white font-bold">
+                {{ num }}
+            </a>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}&{{ query_params }}"
+           class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </a>
+    {% endif %}
+
+</div>
+{% endif %}
 
     <!-- FOOTER -->
     <footer class="bg-[#0c1f40] w-full rounded-t-[2rem] mt-20">
