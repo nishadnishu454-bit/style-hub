@@ -64,15 +64,25 @@
                 </a>
             </div>
 
+            <div class="hidden lg:flex items-center flex-1 max-w-xs mx-8 relative group">
+                <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-white transition-colors text-sm">search</span>
+                <input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-white/20 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-all focus:bg-white/10" placeholder="Search collections..." type="text"/>
+                </div>
+
             <div class="flex items-center space-x-6">
                 <button class="hover:bg-white/10 rounded-full transition-all p-2">
                     <span class="material-symbols-outlined text-slate-200">favorite</span>
                 </button>
 
-                <button class="hover:bg-white/10 rounded-full transition-all p-2 relative">
-                    <span class="material-symbols-outlined text-slate-200">shopping_cart</span>
-                    <span class="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></span>
-                </button>
+                <a href="{% url 'cart_page' %}" class="relative p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">shopping_bag</span>
+
+                    {% if cart_count > 0 %}
+                        <span class="absolute -top-1 -right-1 bg-white text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                            {{ cart_count }}
+                        </span>
+                    {% endif %}
+                </a>
 
                 <a href="{% url 'profile' %}" class="hover:bg-white/10 rounded-full transition-all p-2">
                     <span class="material-symbols-outlined text-slate-200">person</span>

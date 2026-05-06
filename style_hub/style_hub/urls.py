@@ -17,6 +17,7 @@ urlpatterns = [
     path('product_management/',include('admin_panel.productmanagement.urls')),
     path('products/',include('user.products.urls')),
     path('category/',include('user.category.urls')),
+    path('cart/',include('user.cart.urls'),)
    
 
 

@@ -20,34 +20,60 @@ body { font-family: 'Manrope', sans-serif; }
 
 <body class="bg-[#001232] text-[#d8e2ff]">
 
-<!-- Top Navigation Bar -->
-<nav class="fixed top-0 w-full z-50 backdrop-blur-md bg-[#001232] shadow-[0px_20px_40px_rgba(0,13,40,0.4)]">
-    <div class="flex justify-between items-center px-8 h-20 w-full">
-        <div class="text-2xl font-black tracking-tighter text-slate-50 uppercase">STYLE-HUB</div>
+<header class="sticky top-0 z-50 bg-[#0c1f40] shadow-xl">
+        <nav class="flex justify-between items-center px-8 py-4">
 
-        <div class="hidden md:flex gap-8 uppercase tracking-widest text-sm text-slate-400 font-medium">
-            <a class="hover:text-white transition-colors" href="{% url 'home' %}">Home</a>
-            <a class="hover:text-white transition-colors" href="{% url 'product_page' %}">Products</a>
-            <a class="hover:text-white transition-colors" href="{% url 'category_page' %}">Categories</a>
-            <a class="hover:text-white transition-colors" href="{% url 'about_page' %}">About</a>
-        </div>
+            <div class="text-2xl font-black tracking-tighter text-white uppercase">
+                STYLE-HUB
+            </div>
 
-        <div class="flex items-center gap-6 text-slate-200">
-            <span class="material-symbols-outlined cursor-pointer hover:text-white">favorite</span>
-            <span class="material-symbols-outlined cursor-pointer hover:text-white">shopping_bag</span>
-            <a href="{% url 'profile' %}">
-                <span class="material-symbols-outlined cursor-pointer hover:text-white">person</span>
-            </a>
-        </div>
-    </div>
-</nav>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="{% url 'home' %}" class="text-slate-400 hover:text-white transition-colors">Home</a>
 
+                <a href="{% url 'product_page' %}" class="text-white border-b-2 border-white pb-1 font-bold">
+                    Products
+                </a>
+
+                <a href="{% url 'category_page' %}" class="text-slate-400 hover:text-white transition-colors">
+                    Categories
+                </a>
+
+                <a href="{% url 'about_page' %}" class="text-slate-400 hover:text-white transition-colors">
+                    About
+                </a>
+            </div>
+
+            <div class="hidden lg:flex items-center flex-1 max-w-xs mx-8 relative group">
+                <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-white transition-colors text-sm">search</span>
+                <input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-white/20 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-all focus:bg-white/10" placeholder="Search collections..." type="text"/>
+                </div>
+
+            <div class="flex items-center space-x-6">
+                <button class="hover:bg-white/10 rounded-full transition-all p-2">
+                    <span class="material-symbols-outlined text-slate-200">favorite</span>
+                </button>
+
+                <a href="{% url 'cart_page' %}" class="relative p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">shopping_bag</span>
+
+                    {% if cart_count > 0 %}
+                        <span class="absolute -top-1 -right-1 bg-white text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                            {{ cart_count }}
+                        </span>
+                    {% endif %}
+                </a>
+
+                <a href="{% url 'profile' %}" class="hover:bg-white/10 rounded-full transition-all p-2">
+                    <span class="material-symbols-outlined text-slate-200">person</span>
+                </a>
+            </div>
+
+        </nav>
+    </header>
 <main class="pt-32 pb-20 max-w-7xl mx-auto px-6 lg:px-8">
 
-    <!-- Product Main Section -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
 
-        <!-- Left Column: Media -->
         <div class="lg:col-span-7 space-y-6">
 
             <div class="relative aspect-[3/4] overflow-hidden rounded-xl group">
@@ -72,7 +98,6 @@ body { font-family: 'Manrope', sans-serif; }
 
             </div>
 
-            <!-- Thumbnails -->
             <div class="grid grid-cols-4 gap-4">
                 {% for i in "1234" %}
                 <div class="aspect-square rounded-lg overflow-hidden border border-[#44474e] cursor-pointer">
@@ -91,7 +116,6 @@ body { font-family: 'Manrope', sans-serif; }
 
         </div>
 
-        <!-- Right Column: Details -->
         <div class="lg:col-span-5 flex flex-col">
 
             <div class="mb-2">
@@ -139,51 +163,92 @@ body { font-family: 'Manrope', sans-serif; }
                 {{ product.description }}
             </p>
 
-            <!-- Selectors -->
-            <div class="space-y-8 mb-10">
+            <form method="POST" action="{% url 'add_cart' product.id %}">
+                {% csrf_token %}
 
-                <div>
-                    <div class="flex justify-between mb-4">
-                        <span class="text-sm font-bold uppercase tracking-widest">Select Size</span>
+                <div class="space-y-8 mb-10">
+
+                    <div>
+                        <div class="flex justify-between mb-4">
+                            <span class="text-sm font-bold uppercase tracking-widest">Select Size</span>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-3">
+
+                            {% for variant in variants %}
+
+                            <label>
+                               <input type="radio"
+                                    name="variant_id"
+                                    value="{{ variant.id }}"
+                                    class="hidden peer"
+                                    {% if forloop.first %}checked{% endif %}>
+
+                                <div class="py-3 rounded-lg border border-[#44474e] hover:border-[#c6c6c7] text-sm font-bold text-center cursor-pointer peer-checked:border-2 peer-checked:border-[#c6c6c7] peer-checked:bg-[#c6c6c7] peer-checked:text-black">
+                                    {{ variant.size }}
+                                </div>
+                            </label>
+
+                            {% empty %}
+
+                            <p class="text-[#c5c6cf] col-span-4">
+                                No size available
+                            </p>
+
+                            {% endfor %}
+
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-4 gap-3">
-                        <button class="py-3 rounded-lg border border-[#44474e] hover:border-[#c6c6c7] text-sm font-bold">S</button>
-                        <button class="py-3 rounded-lg border-2 border-[#c6c6c7] bg-[#c6c6c7] text-black text-sm font-bold">M</button>
-                        <button class="py-3 rounded-lg border border-[#44474e] hover:border-[#c6c6c7] text-sm font-bold">L</button>
-                        <button class="py-3 rounded-lg border border-[#44474e] hover:border-[#c6c6c7] text-sm font-bold">XL</button>
+                    <div>
+                        <span class="text-sm font-bold uppercase tracking-widest block mb-4">
+                            Stock: {{ product.stock }}
+                        </span>
                     </div>
-                </div>
 
-                <div>
-                    <span class="text-sm font-bold uppercase tracking-widest block mb-4">
-                        Stock: {{ product.stock }}
-                    </span>
-                </div>
+                    <div>
+                        <span class="text-sm font-bold uppercase tracking-widest block mb-4">Quantity</span>
 
-                <div>
-                    <span class="text-sm font-bold uppercase tracking-widest block mb-4">Quantity</span>
-                    <div class="flex items-center w-32 border border-[#44474e] rounded-full overflow-hidden">
-                        <button class="w-10 h-10 flex items-center justify-center hover:bg-[#233456]">-</button>
-                        <span class="flex-1 text-center font-bold">1</span>
-                        <button class="w-10 h-10 flex items-center justify-center hover:bg-[#233456]">+</button>
+                        <div class="flex items-center w-32 border border-[#44474e] rounded-full overflow-hidden">
+
+                            <button type="button"
+                                    onclick="decreaseQty()"
+                                    class="w-10 h-10 flex items-center justify-center hover:bg-[#233456]">
+                                -
+                            </button>
+
+                            <input type="number"
+                                   id="quantity"
+                                   name="quantity"
+                                   value="1"
+                                   min="1"
+                                   class="flex-1 w-12 bg-transparent text-center font-bold text-white border-none focus:ring-0">
+
+                            <button type="button"
+                                    onclick="increaseQty()"
+                                    class="w-10 h-10 flex items-center justify-center hover:bg-[#233456]">
+                                +
+                            </button>
+
+                        </div>
                     </div>
+
                 </div>
 
-            </div>
+                <div class="flex flex-col sm:flex-row gap-4 mb-10">
+                    <button type="submit"
+                            class="flex-1 bg-[#e2e2e2] text-black py-5 rounded-full font-extrabold text-sm uppercase tracking-widest hover:bg-white transition-all">
+                        Add to Cart
+                    </button>
 
-            <!-- Actions -->
-            <div class="flex flex-col sm:flex-row gap-4 mb-10">
-                <button class="flex-1 bg-[#e2e2e2] text-black py-5 rounded-full font-extrabold text-sm uppercase tracking-widest hover:bg-white transition-all">
-                    Add to Cart
-                </button>
+                    <button type="button"
+                            class="flex-1 bg-[#233456] text-white py-5 rounded-full font-extrabold text-sm uppercase tracking-widest border border-[#44474e] hover:bg-[#28395b]">
+                        Buy Now
+                    </button>
+                </div>
 
-                <button class="flex-1 bg-[#233456] text-white py-5 rounded-full font-extrabold text-sm uppercase tracking-widest border border-[#44474e] hover:bg-[#28395b]">
-                    Buy Now
-                </button>
-            </div>
+            </form>
 
-            <!-- Shipping Info -->
             <div class="space-y-4 pt-8 border-t border-[#44474e]/40">
                 <div class="flex items-center gap-4 text-sm text-[#c5c6cf]">
                     <span class="material-symbols-outlined text-[#c6c6c7]">local_shipping</span>
@@ -200,15 +265,12 @@ body { font-family: 'Manrope', sans-serif; }
 
     </div>
 
-    <!-- Reviews Section -->
     <section class="mt-24 py-16 px-8 rounded-3xl bg-[#0c1f40]">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
             <div>
                 <h2 class="text-3xl font-bold mb-2">Customer Reviews</h2>
                 <p class="text-[#c5c6cf]">Authentic feedback from our customers.</p>
             </div>
-
-            
         </div>
 
         <div class="text-[#c5c6cf]">
@@ -216,7 +278,6 @@ body { font-family: 'Manrope', sans-serif; }
         </div>
     </section>
 
-    <!-- Related Products -->
     <section class="mt-32">
         <h2 class="text-4xl font-extrabold tracking-tight mb-12">You May Also Like</h2>
 
@@ -224,8 +285,8 @@ body { font-family: 'Manrope', sans-serif; }
 
             {% for related in related_products %}
 
-                <a href="{% url 'product_detail' related.id %}" class="group cursor-pointer block">
-                    <div class="aspect-[4/5] rounded-xl overflow-hidden bg-[#071b3b] mb-6 relative">
+            <a href="{% url 'product_detail' related.id %}" class="group cursor-pointer block">
+                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-[#071b3b] mb-6 relative">
 
                     {% if related.product_image %}
                         <img alt="{{ related.product_name }}"
@@ -265,7 +326,6 @@ body { font-family: 'Manrope', sans-serif; }
 
 </main>
 
-<!-- Footer -->
 <footer class="w-full mt-24 bg-[#0c1f40]">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 py-16 w-full text-xs tracking-tight text-slate-200">
 
@@ -303,6 +363,21 @@ body { font-family: 'Manrope', sans-serif; }
 
     </div>
 </footer>
+
+<script>
+function increaseQty() {
+    let qty = document.getElementById('quantity');
+    qty.value = parseInt(qty.value) + 1;
+}
+
+function decreaseQty() {
+    let qty = document.getElementById('quantity');
+
+    if (parseInt(qty.value) > 1) {
+        qty.value = parseInt(qty.value) - 1;
+    }
+}
+</script>
 
 </body>
 </html>

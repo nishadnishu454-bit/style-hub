@@ -90,7 +90,8 @@
 <a class="text-slate-400 hover:text-white transition-colors" href="{% url "product_page" %}">Products</a>
 <a class="text-slate-400 hover:text-white transition-colors" href="{% url "category_page" %}">Categories</a>
 <a class="text-slate-400 hover:text-white transition-colors" href="{% url "about_page" %}">About</a>
-</div><div class="hidden lg:flex items-center flex-1 max-w-xs mx-8 relative group">
+</div>
+<div class="hidden lg:flex items-center flex-1 max-w-xs mx-8 relative group">
 <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-white transition-colors text-sm">search</span>
 <input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-white/20 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-all focus:bg-white/10" placeholder="Search collections..." type="text"/>
 </div>
@@ -98,10 +99,17 @@
 <button class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90">
 <span class="material-symbols-outlined">favorite</span>
 </button>
-<button class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 relative">
-<span class="material-symbols-outlined">shopping_cart</span>
-<span class="absolute top-0 right-0 bg-tertiary text-on-tertiary text-[10px] font-bold px-1.5 py-0.5 rounded-full">2</span>
-</button>
+
+<a href="{% url 'cart_page' %}" class="relative p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
+    <span class="material-symbols-outlined">shopping_bag</span>
+
+    {% if cart_count > 0 %}
+        <span class="absolute -top-1 -right-1 bg-white text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            {{ cart_count }}
+        </span>
+    {% endif %}
+</a>
+
 {% if request.user.is_authenticated %}
     <a href="{% url 'profile' %}"
        class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 inline-block">

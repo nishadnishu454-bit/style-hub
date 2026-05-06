@@ -104,9 +104,15 @@
 <input class="bg-transparent border-none focus:ring-0 text-sm w-48 text-on-surface placeholder:text-outline" placeholder="Search curated style..." type="text"/>
 </div>
 <div class="flex items-center space-x-4 text-[#e2e2e2]">
-<button class="hover:bg-[#28395b]/40 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90">
-<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
-</button>
+<a href="{% url 'cart_page' %}" class="relative p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
+    <span class="material-symbols-outlined">shopping_bag</span>
+
+    {% if cart_count > 0 %}
+        <span class="absolute -top-1 -right-1 bg-white text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            {{ cart_count }}
+        </span>
+    {% endif %}
+</a>
 <button class="hover:bg-[#28395b]/40 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90">
 <span class="material-symbols-outlined" data-icon="person">person</span>
 </button>

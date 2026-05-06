@@ -72,8 +72,12 @@ def product_detail(request, id):
         id=id,
         is_deleted=False,
         is_active=True,
-        category__is_deleted=False,
-        category__is_active=True
+    )
+
+
+    variants = product.variants.filter(
+        is_deleted=False,
+        is_active=True
     )
 
     related_products = Product.objects.filter(
@@ -84,6 +88,7 @@ def product_detail(request, id):
 
     context = {
         'product': product,
+        'variants':variants,
         'related_products': related_products,
     }
 
