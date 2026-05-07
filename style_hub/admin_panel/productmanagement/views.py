@@ -8,6 +8,10 @@ import base64
 from django.core.files.base import ContentFile
 from django.contrib.auth.decorators import login_required
 
+
+
+
+
 @login_required(login_url='admin_login')
 def product_listing(request):
     search = request.GET.get('search', '')
@@ -43,6 +47,10 @@ def product_listing(request):
     }
     return render(request, 'productlisting.html', context)
 
+
+
+
+
 @login_required(login_url='admin_login')
 def add_product(request):
     categories = Category.objects.filter(is_deleted=False, is_active=True)
@@ -52,7 +60,7 @@ def add_product(request):
         description = request.POST.get('description')
         category_id = request.POST.get('category')
         
-        # Get cropped images from hidden inputs (base64)
+      
         cropped_images = [
             request.POST.get('cropped_image_1'),
             request.POST.get('cropped_image_2'),
@@ -63,7 +71,7 @@ def add_product(request):
             messages.error(request, 'Basic details are required')
             return redirect('add_product')
 
-        # Check for exactly 3 images
+     
         valid_images = [img for img in cropped_images if img]
         if len(valid_images) < 3:
             messages.error(request, 'Exactly 3 images are required')
@@ -75,20 +83,17 @@ def add_product(request):
             product_name=product_name,
             description=description,
             category=category,
-            # price and stock are now variant level, but model still has them. 
-            # We'll default them or leave them if they are null=True.
-            # Based on model read, they are NOT null=True, so we provide defaults.
             price=0,
             stock=0
         )
 
-        # Save images
+    
         for i, img_data in enumerate(valid_images):
             format, imgstr = img_data.split(';base64,')
             ext = format.split('/')[-1]
             data = ContentFile(base64.b64decode(imgstr), name=f'product_{product.id}_{i}.{ext}')
             
-            # Save the first one to product_image field for backward compatibility if needed
+           
             if i == 0:
                 product.product_image = data
                 product.save()
@@ -100,6 +105,10 @@ def add_product(request):
 
     context = {'categories': categories}
     return render(request, 'addproduct.html', context)
+
+
+
+
 
 @login_required(login_url='admin_login')
 def variant_management(request):
@@ -118,6 +127,9 @@ def variant_management(request):
         'search': search,
     }
     return render(request, 'variant_management.html', context)
+
+
+
 
 @login_required(login_url='admin_login')
 def add_variant(request, product_id):
@@ -167,6 +179,10 @@ def add_variant(request, product_id):
 
     return redirect('variant_management')
 
+
+
+
+
 @login_required(login_url='admin_login')
 def edit_variant(request, variant_id):
     variant = get_object_or_404(ProductVariant, id=variant_id, is_deleted=False)
@@ -177,7 +193,7 @@ def edit_variant(request, variant_id):
         price = request.POST.get('variant_price')
         stock = request.POST.get('variant_stock')
 
-        # Check for duplicates excluding self
+      
         if ProductVariant.objects.filter(product=variant.product, size=size, color=color, is_deleted=False).exclude(id=variant_id).exists():
             messages.error(request, f'Variant {size}/{color} already exists')
             return redirect('variant_management')
@@ -188,7 +204,7 @@ def edit_variant(request, variant_id):
         variant.variant_stock = stock
         variant.save()
 
-        # Handle images if any new ones provided (optional for edit)
+
         for i in range(1, 4):
             img_data = request.POST.get(f'variant_cropped_image_{i}')
             if img_data:
@@ -196,15 +212,16 @@ def edit_variant(request, variant_id):
                 ext = format.split('/')[-1]
                 data = ContentFile(base64.b64decode(imgstr), name=f'variant_{variant.id}_{i}_upd.{ext}')
                 
-                # Replace existing image at this index if possible, or just add
-                # For simplicity, we'll clear and re-add if any new images are provided
-                # but better to handle specifically. 
-                # Let's just clear and re-add for this simple implementation if at least 3 provided
+            
         
         messages.success(request, 'Variant updated successfully')
         return redirect('variant_management')
 
     return redirect('variant_management')
+
+
+
+
 
 @login_required(login_url='admin_login')
 def delete_variant(request, variant_id):
@@ -214,7 +231,8 @@ def delete_variant(request, variant_id):
     messages.success(request, 'Variant deleted successfully')
     return redirect('variant_management')
 
-# Keep other views but update them if needed (like edit_product)
+
+
 @login_required(login_url='admin_login')
 def edit_product(request, id):
     product = get_object_or_404(Product, id=id, is_deleted=False)
@@ -234,26 +252,41 @@ def edit_product(request, id):
     context = {'product': product, 'categories': categories}
     return render(request, 'editproduct.html', context)
 
+
+
+
+
 @login_required(login_url='admin_login')
 def view_product(request, id):
     product = get_object_or_404(Product, id=id, is_deleted=False)
     return render(request, 'viewproduct.html', {'product': product})
 
+
+
+
 @login_required(login_url='admin_login')
 def activate_product(request, id):
+
     product = get_object_or_404(Product, id=id, is_deleted=False)
     product.is_active = True
+
     product.save()
     messages.success(request, 'Product activated successfully')
     return redirect('view_product', id=product.id)
 
+
+
+
 @login_required(login_url='admin_login')
 def deactivate_product(request, id):
     product = get_object_or_404(Product, id=id, is_deleted=False)
+
     product.is_active = False
     product.save()
     messages.success(request, 'Product deactivated successfully')
     return redirect('view_product', id=product.id)
+
+
 
 @login_required(login_url='admin_login')
 def delete_product(request, id):
