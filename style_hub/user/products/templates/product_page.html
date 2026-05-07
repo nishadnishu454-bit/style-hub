@@ -65,14 +65,19 @@
             </div>
 
             <div class="hidden lg:flex items-center flex-1 max-w-xs mx-8 relative group">
-                <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-white transition-colors text-sm">search</span>
-                <input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-white/20 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-all focus:bg-white/10" placeholder="Search collections..." type="text"/>
-                </div>
+                <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-white transition-colors text-sm">
+                    search
+                </span>
+                <input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-white/20 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-all focus:bg-white/10"
+                       placeholder="Search collections..."
+                       type="text"/>
+            </div>
 
             <div class="flex items-center space-x-6">
-                <button class="hover:bg-white/10 rounded-full transition-all p-2">
+
+                <a href="{% url 'wishlist_page' %}" class="hover:bg-white/10 rounded-full transition-all p-2">
                     <span class="material-symbols-outlined text-slate-200">favorite</span>
-                </button>
+                </a>
 
                 <a href="{% url 'cart_page' %}" class="relative p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
                     <span class="material-symbols-outlined">shopping_bag</span>
@@ -94,6 +99,23 @@
 
     <!-- MAIN -->
     <main class="max-w-7xl mx-auto px-6 py-12">
+
+        <!-- Messages Section -->
+        {% if messages %}
+            <div class="mb-12 space-y-3">
+                {% for message in messages %}
+                    <div class="p-4 rounded-xl glass-card border border-white/10 shadow-lg flex items-center gap-3
+                        {% if message.tags == 'error' %}text-red-400{% else %}text-emerald-400{% endif %}">
+                        {% if message.tags == 'error' %}
+                            <span class="material-symbols-outlined">error</span>
+                        {% else %}
+                            <span class="material-symbols-outlined">check_circle</span>
+                        {% endif %}
+                        <p class="text-sm font-bold tracking-tight">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <!-- HEADER -->
         <header class="mb-16">
@@ -118,59 +140,91 @@
                         Search
                     </h3>
 
-                    <form method="GET">
+                    <form method="GET" class="relative">
+                        <input type="hidden" name="category" value="{{ request.GET.category }}">
+                        <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+                        <input type="hidden" name="min_price" value="{{ request.GET.min_price }}">
+                        <input type="hidden" name="max_price" value="{{ request.GET.max_price }}">
+
                         <input type="text"
                                name="search"
                                value="{{ request.GET.search }}"
                                placeholder="Search products..."
-                               class="w-full bg-[#0c1f40] border-none py-3 px-4 rounded-xl text-white text-sm focus:ring-1 ring-white">
+                               class="w-full bg-[#0c1f40] border-none py-3 px-4 pr-16 rounded-xl text-white text-sm focus:ring-1 ring-white">
+
+                        {% if request.GET.search %}
+                        <a href="{% url 'product_page' %}"
+                           class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-red-400 hover:text-red-600">
+                            Clear
+                        </a>
+                        {% endif %}
                     </form>
                 </div>
 
                 <!-- CATEGORIES -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-[0.2rem] text-white mb-6">
+                        Categories
+                    </h3>
+
+                    <div class="space-y-3">
+                        <a href="{% url 'product_page' %}?search={{ request.GET.search }}&sort={{ request.GET.sort }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}"
+                           class="block px-4 py-3 rounded-xl text-sm hover:bg-[#18294b] {% if not request.GET.category %}bg-white text-black font-bold{% else %}bg-[#0c1f40] text-white{% endif %}">
+                            All Categories
+                        </a>
+
+                        {% for category in categories %}
+                        <a href="?category={{ category.id }}&search={{ request.GET.search }}&sort={{ request.GET.sort }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}"
+                           class="block px-4 py-3 rounded-xl text-sm hover:bg-[#18294b] hover:text-white {% if request.GET.category == category.id|stringformat:'s' %}bg-white text-black font-bold{% else %}bg-[#0c1f40] text-slate-300{% endif %}">
+                            {{ category.category_name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
 
                 <!-- PRICE FILTER -->
-                            <div>
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-[0.2rem] text-white mb-6">
+                        Price Filter
+                    </h3>
 
-                                <h3 class="text-sm font-bold uppercase tracking-[0.2rem] text-white mb-6">
-                                    Price Filter
-                                </h3>
+                    <form method="GET" class="space-y-4">
+                        <input type="hidden" name="search" value="{{ request.GET.search }}">
+                        <input type="hidden" name="category" value="{{ request.GET.category }}">
+                        <input type="hidden" name="sort" value="{{ request.GET.sort }}">
 
-                                <form method="GET" class="space-y-4">
+                        <input type="number"
+                               name="min_price"
+                               value="{{ request.GET.min_price }}"
+                               placeholder="Min Price"
+                               class="w-full bg-[#0c1f40] border-none py-3 px-4 rounded-xl text-white text-sm">
 
-                                    <!-- keep sort -->
-                                    <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+                        <input type="number"
+                               name="max_price"
+                               value="{{ request.GET.max_price }}"
+                               placeholder="Max Price"
+                               class="w-full bg-[#0c1f40] border-none py-3 px-4 rounded-xl text-white text-sm">
 
-                                    <input type="number"
-                                        name="min_price"
-                                        value="{{ request.GET.min_price }}"
-                                        placeholder="Min Price"
-                                        class="w-full bg-[#0c1f40] border-none py-3 px-4 rounded-xl text-white text-sm">
+                        <button type="submit"
+                                class="w-full bg-white text-black py-2 rounded-xl text-sm font-bold">
+                            Apply Filter
+                        </button>
 
-                                    <input type="number"
-                                        name="max_price"
-                                        value="{{ request.GET.max_price }}"
-                                        placeholder="Max Price"
-                                        class="w-full bg-[#0c1f40] border-none py-3 px-4 rounded-xl text-white text-sm">
-
-                                    <button type="submit"
-                                            class="w-full bg-white text-black py-2 rounded-xl text-sm font-bold">
-                                        Apply Filter
-                                    </button>
-
-                                </form>
-
-                            </div>
-
-
-                
+                        {% if request.GET.min_price or request.GET.max_price %}
+                        <a href="{% url 'product_page' %}?search={{ request.GET.search }}&category={{ request.GET.category }}&sort={{ request.GET.sort }}"
+                           class="block text-center text-xs text-red-400 hover:text-red-600">
+                            Clear Price Filter
+                        </a>
+                        {% endif %}
+                    </form>
+                </div>
 
             </aside>
 
             <!-- PRODUCT GRID -->
             <div class="lg:col-span-3">
 
-                <!-- ITEMS -->
+                <!-- ITEMS + SORT -->
                 <div class="flex justify-between items-center mb-10">
 
                     <div class="text-slate-400 font-medium">
@@ -181,35 +235,40 @@
                     </div>
 
                     <form method="GET" class="flex items-center gap-3">
+                        <input type="hidden" name="search" value="{{ request.GET.search }}">
+                        <input type="hidden" name="category" value="{{ request.GET.category }}">
+                        <input type="hidden" name="min_price" value="{{ request.GET.min_price }}">
+                        <input type="hidden" name="max_price" value="{{ request.GET.max_price }}">
+
                         <span class="text-slate-400 text-xs uppercase tracking-widest">
                             Sort By:
                         </span>
 
                         <select name="sort"
-                                    onchange="this.form.submit()"
-                                    class="bg-[#0c1f40] text-white border-none rounded-full px-6 py-3 text-sm focus:ring-1 ring-white cursor-pointer">
+                                onchange="this.form.submit()"
+                                class="bg-[#0c1f40] text-white border-none rounded-full px-6 py-3 text-sm focus:ring-1 ring-white cursor-pointer">
 
-                                <option value="" {% if sort == '' %}selected{% endif %}>
-                                    Newest
-                                </option>
+                            <option value="" {% if sort == '' %}selected{% endif %}>
+                                Newest
+                            </option>
 
-                                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>
-                                    Price: Low to High
-                                </option>
+                            <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>
+                                Price: Low to High
+                            </option>
 
-                                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>
-                                    Price: High to Low
-                                </option>
+                            <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>
+                                Price: High to Low
+                            </option>
 
-                                <option value="a_z" {% if sort == 'a_z' %}selected{% endif %}>
-                                    A - Z
-                                </option>
+                            <option value="a_z" {% if sort == 'a_z' %}selected{% endif %}>
+                                A - Z
+                            </option>
 
-                                <option value="z_a" {% if sort == 'z_a' %}selected{% endif %}>
-                                    Z - A
-                                </option>
+                            <option value="z_a" {% if sort == 'z_a' %}selected{% endif %}>
+                                Z - A
+                            </option>
 
-                            </select>
+                        </select>
                     </form>
 
                 </div>
@@ -219,92 +278,99 @@
 
                     {% for product in products %}
 
-<a href="{% url 'product_detail' product.id %}"
-   class="group relative flex flex-col glass-card rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2">
+                    <div class="group relative flex flex-col glass-card rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2">
 
-                        <!-- IMAGE -->
-                        <div class="relative aspect-[4/5] overflow-hidden">
+                        <a href="{% url 'product_detail' product.id %}" class="block">
 
-                            {% if product.product_image %}
-                                <img src="{{ product.product_image.url }}"
-                                     alt="{{ product.product_name }}"
-                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                            {% else %}
-                                <div class="w-full h-full flex items-center justify-center bg-[#0c1f40]">
-                                    <span class="material-symbols-outlined text-6xl text-slate-500">
-                                        image
-                                    </span>
-                                </div>
-                            {% endif %}
+                            <!-- IMAGE -->
+                            <div class="relative aspect-[4/5] overflow-hidden">
 
-                            <!-- WISHLIST -->
-                            <button class="absolute top-5 right-5 p-3 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-black transition-all">
-                                <span class="material-symbols-outlined text-[20px]">
-                                    favorite
+                                {% if product.product_image %}
+                                    <img src="{{ product.product_image.url }}"
+                                         alt="{{ product.product_name }}"
+                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center bg-[#0c1f40]">
+                                        <span class="material-symbols-outlined text-6xl text-slate-500">
+                                            image
+                                        </span>
+                                    </div>
+                                {% endif %}
+
+                                <!-- BADGE -->
+                                <span class="absolute top-5 left-5 bg-white text-black px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full">
+                                    New
                                 </span>
-                            </button>
+                            </div>
 
-                            <!-- BADGE -->
-                            <span class="absolute top-5 left-5 bg-white text-black px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full">
-                                New
+                        </a>
+
+                        <!-- WISHLIST -->
+                        {% if product.variants.first %}
+                        <a href="{% url 'add_to_wishlist' product.variants.first.id %}"
+                           class="absolute top-5 right-5 p-3 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-black transition-all z-10">
+                            <span class="material-symbols-outlined text-[20px]">
+                                favorite
                             </span>
-                        </div>
+                        </a>
+                        {% endif %}
 
                         <!-- CONTENT -->
                         <div class="p-8 flex flex-col flex-grow">
 
-                            <!-- CATEGORY -->
+                            <a href="{% url 'product_detail' product.id %}" class="block">
 
-                            <div class="flex justify-between items-start mb-2">
+                                <!-- CATEGORY + RATING -->
+                                <div class="flex justify-between items-start mb-2">
 
-                                <span class="text-[10px] font-bold uppercase tracking-[0.2rem] text-slate-300">
-                                    {{ product.category.category_name }}
-                                </span>
-
-                                <div class="flex text-yellow-500">
-                                    <span class="material-symbols-outlined text-xs"
-                                          style="font-variation-settings: 'FILL' 1;">
-                                        star
+                                    <span class="text-[10px] font-bold uppercase tracking-[0.2rem] text-slate-300">
+                                        {{ product.category.category_name }}
                                     </span>
 
-                                    <span class="text-[10px] text-slate-400 ml-1">
-                                        (4.8)
-                                    </span>
+                                    <div class="flex text-yellow-500">
+                                        <span class="material-symbols-outlined text-xs"
+                                              style="font-variation-settings: 'FILL' 1;">
+                                            star
+                                        </span>
+
+                                        <span class="text-[10px] text-slate-400 ml-1">
+                                            (4.8)
+                                        </span>
+                                    </div>
+
                                 </div>
 
-                            </div>
-                            
-                            
+                                <!-- NAME -->
+                                <h3 class="text-xl font-bold text-white mb-3 line-clamp-1">
+                                    {{ product.product_name }}
+                                </h3>
 
-                            <!-- NAME -->
-                            <h3 class="text-xl font-bold text-white mb-3 line-clamp-1">
-                                {{ product.product_name }}
-                            </h3>
+                                <!-- DESCRIPTION -->
+                                <p class="text-sm text-slate-400 mb-6 line-clamp-2">
+                                    {{ product.description }}
+                                </p>
 
-                            <!-- DESCRIPTION -->
-                            <p class="text-sm text-slate-400 mb-6 line-clamp-2">
-                                {{ product.description }}
-                            </p>
+                            </a>
 
-                            <!-- PRICE -->
+                            <!-- PRICE + CART -->
                             <div class="mt-auto flex items-center justify-between">
 
                                 <span class="text-2xl font-light text-white">
                                     ₹{{ product.price }}
                                 </span>
 
-                                <button class="p-3 bg-white text-black rounded-full hover:bg-slate-200 transition-all">
+                                <a href="{% url 'product_detail' product.id %}"
+                                   class="p-3 bg-white text-black rounded-full hover:bg-slate-200 transition-all">
                                     <span class="material-symbols-outlined">
                                         shopping_bag
                                     </span>
-                                </button>
+                                </a>
 
                             </div>
 
                         </div>
 
-                    </a>
-                    
+                    </div>
 
                     {% empty %}
 
@@ -329,49 +395,46 @@
                     {% endfor %}
 
                 </div>
-                
 
             </div>
-            
 
         </div>
-        
+
+        <!-- PAGINATION -->
+        {% if products.paginator.num_pages > 1 %}
+        <div class="mt-16 flex justify-center items-center gap-3">
+
+            {% if products.has_previous %}
+                <a href="?page={{ products.previous_page_number }}&search={{ request.GET.search }}&category={{ request.GET.category }}&sort={{ request.GET.sort }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}"
+                   class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </a>
+            {% endif %}
+
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                    <span class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black font-bold">
+                        {{ num }}
+                    </span>
+                {% else %}
+                    <a href="?page={{ num }}&search={{ request.GET.search }}&category={{ request.GET.category }}&sort={{ request.GET.sort }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}"
+                       class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0c1f40] text-slate-400 hover:text-white font-bold">
+                        {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}&search={{ request.GET.search }}&category={{ request.GET.category }}&sort={{ request.GET.sort }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}"
+                   class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </a>
+            {% endif %}
+
+        </div>
+        {% endif %}
 
     </main>
-
-  <!-- PAGINATION -->
-{% if products.paginator.num_pages > 1 %}
-<div class="mt-16 flex justify-center items-center gap-3">
-
-    {% if products.has_previous %}
-        <a href="?page={{ products.previous_page_number }}&{{ query_params }}"
-           class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
-            <span class="material-symbols-outlined">chevron_left</span>
-        </a>
-    {% endif %}
-
-    {% for num in products.paginator.page_range %}
-        {% if products.number == num %}
-            <span class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black font-bold">
-                {{ num }}
-            </span>
-        {% else %}
-            <a href="?page={{ num }}&{{ query_params }}"
-               class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0c1f40] text-slate-400 hover:text-white font-bold">
-                {{ num }}
-            </a>
-        {% endif %}
-    {% endfor %}
-
-    {% if products.has_next %}
-        <a href="?page={{ products.next_page_number }}&{{ query_params }}"
-           class="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-slate-400 hover:text-white">
-            <span class="material-symbols-outlined">chevron_right</span>
-        </a>
-    {% endif %}
-
-</div>
-{% endif %}
 
     <!-- FOOTER -->
     <footer class="bg-[#0c1f40] w-full rounded-t-[2rem] mt-20">
@@ -395,7 +458,7 @@
 
                 <ul class="space-y-4 text-sm">
                     <li>
-                        <a href="#" class="text-slate-400 hover:text-white">
+                        <a href="{% url 'about_page' %}" class="text-slate-400 hover:text-white">
                             Our Story
                         </a>
                     </li>

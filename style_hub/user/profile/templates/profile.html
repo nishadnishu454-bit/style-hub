@@ -177,7 +177,7 @@
                     <span class="font-manrope text-xs uppercase tracking-widest font-bold">My Orders</span>
                 </a>
 
-                <a class="text-slate-300 hover:bg-white/5 flex items-center gap-4 p-3.5 transition-all duration-200 rounded-xl group" href="#">
+                <a class="text-slate-300 hover:bg-white/5 flex items-center gap-4 p-3.5 transition-all duration-200 rounded-xl group" href="{% url 'wishlist_page' %}">
                     <span class="material-symbols-outlined text-slate-400 group-hover:text-white">favorite</span>
                     <span class="font-manrope text-xs uppercase tracking-widest font-bold">Wishlist</span>
                 </a>
@@ -191,6 +191,24 @@
 
         <!-- Right Content -->
         <section class="flex-grow flex flex-col gap-8">
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="mb-6 space-y-3">
+                    {% for message in messages %}
+                        <div class="p-4 rounded-xl text-sm font-bold flex items-center gap-3
+                            {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400
+                            {% else %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% endif %}">
+                            {% if message.tags == 'error' %}
+                                <span class="material-symbols-outlined text-red-400">error</span>
+                            {% else %}
+                                <span class="material-symbols-outlined text-emerald-400">check_circle</span>
+                            {% endif %}
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
             <!-- Profile Card -->
            <div class="relative overflow-hidden rounded-[2rem] p-8 md:p-12 glass-card shadow-2xl border border-white/5">

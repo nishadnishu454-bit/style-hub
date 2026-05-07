@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class WhishlistConfig(AppConfig):
-    name = 'whishlist'
+    name = 'user.whishlist'

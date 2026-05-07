@@ -244,6 +244,22 @@
 <h2 class="text-3xl font-extrabold tracking-tight text-on-surface">Add New Address</h2>
 <p class="text-on-surface-variant text-sm mt-1">Enter a new delivery address for your tailored shipments.</p>
 </div>
+
+<!-- Messages -->
+{% if messages %}
+    <div class="px-8 mb-4 space-y-2">
+        {% for message in messages %}
+            <div class="p-3 rounded-lg text-xs font-bold flex items-center gap-3
+                {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400
+                {% else %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% endif %}">
+                <span class="material-symbols-outlined text-sm">
+                    {% if message.tags == 'error' %}error{% else %}check_circle{% endif %}
+                </span>
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 <!-- Modal Form -->
 <form method="POST" action="{% url 'add_address' %}" class="px-8 pb-2 space-y-1">
     {% csrf_token %}
@@ -314,15 +330,7 @@
     </div>
 </div>
 <!-- Checkbox -->
-<label class="flex items-center space-x-3 cursor-pointer group w-fit">
-<div class="relative">
-<input class="peer hidden" type="checkbox" name="is_default"/>
-<div class="w-5 h-5 border-2 border-outline rounded flex items-center justify-center peer-checked:bg-primary peer-checked:border-primary transition-all">
-<span class="material-symbols-outlined text-on-primary text-[14px] hidden peer-checked:block" style="font-variation-settings: 'wght' 700;">check</span>
-</div>
-</div>
-<span class="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Set as default address</span>
-</label>
+
 <!-- Footer Buttons -->
 <div class="flex items-center justify-end space-x-4 pt-6">
 

@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'user.category',
     'user.core',
     'user.cart',
+    'user.whishlist'
 
     
     

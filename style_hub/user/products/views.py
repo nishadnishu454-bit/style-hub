@@ -1,16 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
-from admin_panel.productmanagement.models import Product
+from admin_panel.productmanagement.models import Product, ProductVariant
 from admin_panel.categorymanagement.models import Category
-from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 
-
-def prodcut_page(request):
+def product_page(request):
     sort = request.GET.get('sort', '')
     search = request.GET.get('search', '')
     min_price = request.GET.get('min_price', '')
     max_price = request.GET.get('max_price', '')
+    category_id = request.GET.get('category')
 
     products = Product.objects.filter(
         is_deleted=False,
@@ -31,6 +30,9 @@ def prodcut_page(request):
             Q(category__category_name__icontains=search)
         )
 
+    if category_id:
+        products = products.filter(category__id=category_id)
+
     if min_price:
         products = products.filter(price__gte=min_price)
 
@@ -48,23 +50,22 @@ def prodcut_page(request):
     else:
         products = products.order_by('-id')
 
+    products = products.distinct()
+
     paginator = Paginator(products, 6)
     page_number = request.GET.get('page')
-    products = paginator.get_page(page_number)
+    products_page = paginator.get_page(page_number)
 
     context = {
-        'products': products,
+        'products': products_page,
         'categories': categories,
+        'category_id': category_id,
         'sort': sort,
         'search': search,
         'min_price': min_price,
         'max_price': max_price,
     }
-
     return render(request, 'product_page.html', context)
-
-
-
 
 def product_detail(request, id):
     product = get_object_or_404(
@@ -74,11 +75,11 @@ def product_detail(request, id):
         is_active=True,
     )
 
-
+    # Prefetch variants and their images
     variants = product.variants.filter(
         is_deleted=False,
         is_active=True
-    )
+    ).prefetch_related('images')
 
     related_products = Product.objects.filter(
         category=product.category,
@@ -88,8 +89,7 @@ def product_detail(request, id):
 
     context = {
         'product': product,
-        'variants':variants,
+        'variants': variants,
         'related_products': related_products,
     }
-
     return render(request, 'product_detial.html', context)

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>STYLE-HUB | Wishlist</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#0c1f40",
+            "on-surface-variant": "#c5c6cf",
+            "primary-fixed": "#e2e2e2",
+            "on-primary-fixed": "#1a1c1c",
+            "secondary-container": "#344768",
+            "primary": "#c6c6c7",
+            "error": "#ffb4ab",
+            "on-primary": "#2f3131"
+          },
+          fontFamily: {
+            "headline": ["Manrope", "sans-serif"],
+            "body": ["Manrope", "sans-serif"],
+            "label": ["Manrope", "sans-serif"]
+          }
+        }
+      }
+    }
+</script>
+
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .glass-panel {
+        background: rgba(40, 57, 91, 0.6);
+        backdrop-filter: blur(20px);
+    }
+
+    body {
+        background-color: #001232;
+        color: #d8e2ff;
+        font-family: 'Manrope', sans-serif;
+    }
+</style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+<header class="sticky top-0 z-50 bg-[#0c1f40] shadow-xl">
+    <nav class="flex justify-between items-center px-8 py-4">
+
+        <div class="text-2xl font-black tracking-tighter text-white uppercase">
+            STYLE-HUB
+        </div>
+
+        <div class="hidden md:flex items-center space-x-8">
+            <a href="{% url 'home' %}" class="text-slate-400 hover:text-white transition-colors">Home</a>
+
+            <a href="{% url 'product_page' %}" class="text-slate-400 hover:text-white transition-colors">
+                Products
+            </a>
+
+            <a href="{% url 'category_page' %}" class="text-slate-400 hover:text-white transition-colors">
+                Categories
+            </a>
+
+            <a href="{% url 'about_page' %}" class="text-slate-400 hover:text-white transition-colors">
+                About
+            </a>
+        </div>
+
+        <div class="hidden lg:flex items-center flex-1 max-w-xs mx-8 relative group">
+            <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-white transition-colors text-sm">
+                search
+            </span>
+
+            <input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-white/20 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-all focus:bg-white/10"
+                   placeholder="Search collections..."
+                   type="text"/>
+        </div>
+
+        <div class="flex items-center space-x-6">
+
+            <a href="{% url 'wishlist_page' %}" class="hover:bg-white/10 rounded-full transition-all p-2">
+                <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">
+                    favorite
+                </span>
+            </a>
+
+            <a href="{% url 'cart_page' %}"
+               class="relative p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
+                <span class="material-symbols-outlined">shopping_bag</span>
+
+                {% if cart_count > 0 %}
+                    <span class="absolute -top-1 -right-1 bg-white text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                        {{ cart_count }}
+                    </span>
+                {% endif %}
+            </a>
+
+            <a href="{% url 'profile' %}" class="hover:bg-white/10 rounded-full transition-all p-2">
+                <span class="material-symbols-outlined text-slate-200">person</span>
+            </a>
+
+        </div>
+
+    </nav>
+</header>
+
+<main class="flex-grow pt-32 pb-24 px-8 max-w-7xl mx-auto w-full">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+        <aside class="lg:col-span-3 space-y-6">
+
+            <div class="bg-surface-container rounded-xl p-8 shadow-2xl border border-white/5">
+                <div class="flex flex-col gap-2">
+
+                    <h3 class="text-on-surface-variant font-label text-xs tracking-widest uppercase mb-4 opacity-60">
+                        Account Hub
+                    </h3>
+
+                    <nav class="flex flex-col gap-1">
+
+                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all group"
+                           href="{% url 'profile' %}">
+                            <span class="material-symbols-outlined text-xl group-hover:text-white">person</span>
+                            <span class="font-medium text-sm tracking-wide">PROFILE</span>
+                        </a>
+
+                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all group"
+                           href="{% url 'address_page' %}">
+                            <span class="material-symbols-outlined text-xl group-hover:text-white">location_on</span>
+                            <span class="font-medium text-sm tracking-wide">ADDRESS</span>
+                        </a>
+
+                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all group"
+                           href="#">
+                            <span class="material-symbols-outlined text-xl group-hover:text-white">inventory_2</span>
+                            <span class="font-medium text-sm tracking-wide">MY ORDERS</span>
+                        </a>
+
+                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg bg-secondary-container text-white transition-all shadow-lg shadow-black/20"
+                           href="{% url 'wishlist_page' %}">
+                            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">
+                                favorite
+                            </span>
+                            <span class="font-bold text-sm tracking-wide">WISHLIST</span>
+                        </a>
+
+                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all group"
+                           href="#">
+                            <span class="material-symbols-outlined text-xl group-hover:text-white">account_balance_wallet</span>
+                            <span class="font-medium text-sm tracking-wide">WALLET</span>
+                        </a>
+
+                    </nav>
+                </div>
+            </div>
+
+        </aside>
+
+        <section class="lg:col-span-9">
+
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-white font-headline tracking-tighter mb-2">
+                        My Wishlist
+                    </h1>
+
+                    <p class="text-on-surface-variant text-lg font-light mb-8">
+                        Save your favorite styles for later.
+                    </p>
+                </div>
+
+                <!-- Messages Section -->
+                {% if messages %}
+                    <div class="mb-10 space-y-3">
+                        {% for message in messages %}
+                            <div class="p-4 rounded-xl glass-panel border border-white/10 shadow-lg flex items-center gap-3
+                                {% if message.tags == 'error' %}text-red-400{% else %}text-emerald-400{% endif %}">
+                                {% if message.tags == 'error' %}
+                                    <span class="material-symbols-outlined">error</span>
+                                {% else %}
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                {% endif %}
+                                <p class="text-sm font-bold tracking-tight">{{ message }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'cart_page' %}"
+                   class="bg-primary-fixed text-on-primary-fixed px-8 py-4 rounded-full font-bold text-sm tracking-tight hover:bg-primary transition-all flex items-center gap-3 active:scale-95 shadow-xl shadow-primary/10">
+                    <span class="material-symbols-outlined">shopping_bag</span>
+                    VIEW CART
+                </a>
+
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+
+                {% for item in wishlist_items %}
+
+                <div class="glass-panel rounded-xl overflow-hidden group shadow-2xl border border-white/5 hover:border-white/20 transition-all flex flex-col h-full">
+
+                    <div class="relative h-80 overflow-hidden">
+
+                        {% if item.variant.product.product_image %}
+                            <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                 src="{{ item.variant.product.product_image.url }}"
+                                 alt="{{ item.variant.product.product_name }}">
+                        {% else %}
+                            <div class="w-full h-full flex items-center justify-center bg-[#0c1f40]">
+                                <span class="material-symbols-outlined text-6xl text-slate-500">
+                                    image
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        <div class="absolute top-4 right-4 flex flex-col gap-2">
+                            <a href="{% url 'remove_wishlist_item' item.id %}"
+                               class="bg-black/40 backdrop-blur-md p-2 rounded-full text-white hover:bg-error transition-colors">
+                                <span class="material-symbols-outlined text-lg">close</span>
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div class="p-6 flex flex-col flex-grow">
+
+                        <div class="flex justify-between items-start mb-2">
+
+                            <div>
+                                <p class="text-[10px] text-primary tracking-[0.15em] font-bold uppercase mb-1">
+                                    {{ item.variant.product.category.category_name }}
+                                </p>
+
+                                <h3 class="text-white text-lg font-bold font-headline leading-tight">
+                                    {{ item.variant.product.product_name }}
+                                </h3>
+
+                                <p class="text-on-surface-variant text-xs mt-2 uppercase tracking-widest">
+                                    Size: {{ item.variant.size }} | Color: {{ item.variant.color }}
+                                </p>
+                            </div>
+
+                            <div class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded">
+                                <span class="text-white text-xs font-bold">4.8</span>
+                                <span class="material-symbols-outlined text-xs text-secondary"
+                                      style="font-variation-settings: 'FILL' 1;">
+                                    star
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-auto pt-6 flex items-center justify-between">
+
+                            <div>
+                                <span class="text-white text-xl font-bold">
+                                    ₹{{ item.variant.variant_price }}
+                                </span>
+
+                                {% if item.variant.variant_stock > 0 %}
+                                    <p class="text-green-300 text-xs mt-1 font-bold">
+                                        In Stock
+                                    </p>
+                                {% else %}
+                                    <p class="text-red-400 text-xs mt-1 font-bold">
+                                        Out of Stock
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            {% if item.variant.variant_stock > 0 %}
+                                <form method="POST" action="{% url 'add_cart' item.variant.product.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="variant_id" value="{{ item.variant.id }}">
+                                    <input type="hidden" name="quantity" value="1">
+
+                                    <button type="submit"
+                                            class="bg-white/10 hover:bg-white text-white hover:text-on-primary p-3 rounded-full transition-all group/btn active:scale-90">
+                                        <span class="material-symbols-outlined text-xl">
+                                            add_shopping_cart
+                                        </span>
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button disabled
+                                        class="bg-white/5 text-slate-500 p-3 rounded-full cursor-not-allowed">
+                                    <span class="material-symbols-outlined text-xl">
+                                        add_shopping_cart
+                                    </span>
+                                </button>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="col-span-full text-center py-20">
+                    <h2 class="text-2xl font-bold text-white mb-3">
+                        Wishlist is empty
+                    </h2>
+
+                    <p class="text-on-surface-variant mb-6">
+                        Add your favorite products here.
+                    </p>
+
+                    <a href="{% url 'product_page' %}"
+                       class="inline-block bg-primary-fixed text-on-primary-fixed px-8 py-4 rounded-full font-bold text-sm">
+                        Explore Products
+                    </a>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+<footer class="w-full py-16 px-8 mt-auto bg-[#0c1f40] border-t border-white/5">
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 w-full max-w-7xl mx-auto">
+
+        <div class="space-y-6">
+            <div class="text-xl font-black text-white">
+                STYLE-HUB
+            </div>
+
+            <p class="text-slate-200 font-manrope text-sm leading-relaxed opacity-60">
+                A digital flagship sanctuary crafted for modern menswear collections.
+            </p>
+
+            <div class="flex gap-4">
+                <a class="text-slate-500 hover:text-white transition-colors" href="#">
+                    <span class="material-symbols-outlined">share</span>
+                </a>
+
+                <a class="text-slate-500 hover:text-white transition-colors" href="#">
+                    <span class="material-symbols-outlined">public</span>
+                </a>
+
+                <a class="text-slate-500 hover:text-white transition-colors" href="#">
+                    <span class="material-symbols-outlined">mail</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <h4 class="text-white font-medium text-sm">Navigation</h4>
+
+            <div class="flex flex-col gap-2">
+                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="{% url 'home' %}">Home</a>
+                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="{% url 'product_page' %}">Products</a>
+                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="{% url 'about_page' %}">About</a>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <h4 class="text-white font-medium text-sm">Services</h4>
+
+            <div class="flex flex-col gap-2">
+                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="#">Privacy Policy</a>
+                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="#">Terms of Service</a>
+                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="#">Shipping & Returns</a>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <h4 class="text-white font-medium text-sm">Join STYLE-HUB</h4>
+
+            <p class="text-slate-500 text-sm">
+                Receive seasonal lookbooks and private collection invitations.
+            </p>
+
+            <div class="flex bg-white/5 rounded-full p-1 border border-white/10 overflow-hidden">
+                <input class="bg-transparent border-none focus:ring-0 text-sm text-white px-4 py-2 w-full"
+                       placeholder="Email address"
+                       type="email"/>
+
+                <button class="bg-primary-fixed text-on-primary-fixed px-4 rounded-full font-bold text-xs uppercase tracking-tighter hover:bg-white transition-colors">
+                    Join
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

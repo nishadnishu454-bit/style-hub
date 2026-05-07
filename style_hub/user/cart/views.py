@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Cart
+from user.whishlist.models import Wishlist
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from admin_panel.productmanagement.models import ProductVariant, Product
@@ -8,8 +9,14 @@ from admin_panel.productmanagement.models import ProductVariant, Product
 @login_required(login_url='login')
 def cart_page(request):
     cart_items = Cart.objects.filter(
-        user=request.user
-    ).select_related('variant', 'variant__product', 'variant__product__category')
+    user=request.user,
+    variant__is_deleted=False,
+    variant__is_active=True,
+    variant__product__is_deleted=False,
+    variant__product__is_active=True,
+    variant__product__category__is_deleted=False,
+    variant__product__category__is_active=True
+)
 
     sub_total = 0
 
@@ -75,15 +82,13 @@ def add_cart(request, id):
 
     messages.success(request, 'Product added to cart')
     return redirect('cart_page')
-
-
-
+   
 
 @login_required(login_url='login')
 def increase_cart_quantity(request, id):
     cart_item = get_object_or_404(Cart, id=id, user=request.user)
 
-    if cart_item.quantity < cart_item.variant.variant_stock:
+    if cart_item.quantity < cart_item.variant.variant_stock and cart_item.quantity < 5:
         cart_item.quantity += 1
         cart_item.save()
     else:
@@ -112,3 +117,4 @@ def remove_cart_item(request, id):
 
     messages.success(request, 'Item removed from cart')
     return redirect('cart_page')
+

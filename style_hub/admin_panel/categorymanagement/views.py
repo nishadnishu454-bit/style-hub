@@ -46,7 +46,10 @@ def activate_category(request, id):
     category.is_active = True
     category.save()
 
-    Product.objects.filter(category=category,is_deleted=False).update(is_active=False)
+    Product.objects.filter(
+        category=category,
+        is_deleted=False
+    ).update(is_active=True)
 
     messages.success(request, 'Category activated successfully')
 
@@ -56,17 +59,19 @@ def activate_category(request, id):
 
 def deactivate_category(request, id):
 
-    category = get_object_or_404(Category,id=id,is_deleted=False)
+    category = get_object_or_404(Category, id=id, is_deleted=False)
 
     category.is_active = False
     category.save()
 
-    Product.objects.filter(category=category,is_deleted=True).update(is_active=True)
+    Product.objects.filter(
+        category=category,
+        is_deleted=False
+    ).update(is_active=False)
 
     messages.success(request, 'Category deactivated successfully')
 
     return redirect('category_listing')
-
 
 
 

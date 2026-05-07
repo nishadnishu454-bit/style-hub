@@ -243,6 +243,22 @@
                         <p class="text-on-surface-variant text-sm">Update your personal information</p>
                     </div>
 
+                    <!-- Messages Section -->
+                    {% if messages %}
+                        <div class="mt-4 space-y-2">
+                            {% for message in messages %}
+                                <div class="p-3 rounded-lg text-xs font-bold flex items-center gap-3
+                                    {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400
+                                    {% else %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% endif %}">
+                                    <span class="material-symbols-outlined text-sm">
+                                        {% if message.tags == 'error' %}error{% else %}check_circle{% endif %}
+                                    </span>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
                     <a href="{% url 'profile' %}" class="w-10 h-10 rounded-full hover:bg-surface-variant flex items-center justify-center transition-colors">
                         <span class="material-symbols-outlined text-on-surface-variant">close</span>
                     </a>

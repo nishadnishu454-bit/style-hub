@@ -94,6 +94,23 @@
     <!-- MAIN CONTENT -->
     <main class="flex-1 p-8">
 
+        {% if messages %}
+            <div class="mb-8 space-y-3">
+                {% for message in messages %}
+                    <div class="p-4 rounded-sm text-[11px] font-bold uppercase tracking-widest flex items-center gap-3
+                        {% if message.tags == 'error' %}bg-red-50 border border-red-100 text-red-600
+                        {% else %}bg-green-50 border border-green-100 text-green-600{% endif %}">
+                        {% if message.tags == 'error' %}
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        {% else %}
+                            <i class="fa-solid fa-circle-check"></i>
+                        {% endif %}
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <!-- TOP NAVBAR -->
         <header class="flex justify-between items-center mb-12">
             <form method="GET" class="relative w-1/2">
@@ -239,7 +256,10 @@
                             View
                         </a>
 
-                       
+                        <a href="{% url 'variant_management' %}?search={{ product.product_name }}"
+                           class="text-[10px] font-black uppercase tracking-widest text-black hover:underline cursor-pointer">
+                            Variants
+                        </a>
                     </td>
                 </tr>
 
@@ -297,6 +317,13 @@
         </footer>
 
     </main>
+
+    </script>
+
+</body>
+</html>
+
+    </script>
 
 </body>
 </html>

@@ -127,7 +127,7 @@
 <span class="material-symbols-outlined">package_2</span>
 <span>My Orders</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="{% url "wishlist_page" %}">
 <span class="material-symbols-outlined">favorite</span>
 <span>Wishlist</span>
 </a>
@@ -140,10 +140,28 @@
 <!-- Content Area -->
 <section class="flex-1 p-8 lg:p-12 bg-[#001232]">
 <!-- Header -->
-<div class="mb-12">
-<h1 class="text-4xl font-extrabold tracking-tighter text-white mb-2 uppercase font-headline">My Addresses</h1>
-<p class="text-on-surface-variant font-medium tracking-wide">Manage your saved delivery addresses</p>
-</div>
+    <div class="mb-12">
+        <h1 class="text-4xl font-extrabold tracking-tighter text-white mb-2 uppercase font-headline">My Addresses</h1>
+        <p class="text-on-surface-variant font-medium tracking-wide">Manage your saved delivery addresses</p>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="mb-8 space-y-3">
+            {% for message in messages %}
+                <div class="p-4 rounded-xl text-sm font-bold flex items-center gap-3
+                    {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400
+                    {% else %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% endif %}">
+                    {% if message.tags == 'error' %}
+                        <span class="material-symbols-outlined text-red-400">error</span>
+                    {% else %}
+                        <span class="material-symbols-outlined text-emerald-400">check_circle</span>
+                    {% endif %}
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 <!-- Action Bar -->
 <!-- 🔥 ACTION BAR (UPDATED SEARCH WORKING) -->
 <div class="flex flex-col sm:flex-row justify-between items-center gap-6 mb-10">
