@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>STYLE-HUB | Return Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        body { font-family: 'Manrope', sans-serif; background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="flex text-slate-800">
+
+    <aside class="w-64 min-h-screen bg-white border-r border-slate-100 flex flex-col p-6 sticky top-0">
+        <div class="mb-10">
+            <h1 class="text-xl font-black tracking-tighter italic">STYLE-HUB</h1>
+            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Admin Console</p>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-1">
+            <a href="{% url 'admin_dashboard' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
+                <i class="fas fa-th-large w-6 text-sm"></i><span class="nav-text">Dashboard</span>
+            </a>
+            <a href="{% url 'product_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
+                <i class="fas fa-archive w-6 text-sm"></i><span class="nav-text">Products</span>
+            </a>
+            <a href="{% url 'category_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
+                <i class="fas fa-network-wired w-6 text-sm"></i><span class="nav-text">Categories</span>
+            </a>
+            <a href="{% url 'orders_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
+                <i class="fas fa-shopping-bag w-6 text-sm"></i><span class="nav-text">Orders</span>
+            </a>
+            <a href="{% url 'user_management' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
+                <i class="fas fa-user-friends w-6 text-sm"></i><span class="nav-text">Users</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 bg-gray-100 text-black rounded-sm border-l-4 border-black">
+                <i class="fas fa-arrow-rotate-left w-6 text-sm"></i><span class="nav-text">Returns</span>
+            </a>
+        </nav>
+
+        <div class="p-4 mt-auto">
+            <a href="{% url 'admin_logout' %}"
+               onclick="return confirm('Are you sure you want to logout?')"
+               class="flex items-center justify-center w-full px-4 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+               <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 bg-[#fcfcfc] min-h-screen p-10">
+        
+        <header class="flex justify-between items-start mb-10">
+            <div>
+                <h2 class="text-3xl font-extrabold tracking-tight">Return Management</h2>
+                <p class="text-slate-400 text-sm mt-1">Review and process customer return requests.</p>
+            </div>
+            <div class="flex items-center gap-4 bg-white p-2 pr-4 rounded-xl border border-slate-100 shadow-sm">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=000&color=fff" class="w-10 h-10 rounded-lg" alt="Admin">
+                <div>
+                    <p class="text-xs font-bold leading-none">Admin User</p>
+                    <p class="text-[10px] text-slate-400 uppercase font-black tracking-tighter">Super Admin</p>
+                </div>
+            </div>
+        </header>
+
+        {% if messages %}
+        <div class="mb-8 space-y-3">
+            {% for message in messages %}
+            <div class="p-4 rounded-xl glass-card border border-slate-100 shadow-lg flex items-center gap-3 bg-white
+                {% if message.tags == 'error' %}text-red-500{% else %}text-emerald-600{% endif %}">
+                <span class="material-symbols-outlined">
+                    {% if message.tags == 'error' %}error{% else %}check_circle{% endif %}
+                </span>
+                <p class="text-sm font-bold tracking-tight">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <section class="mb-12">
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Full Order Return Requests</h3>
+            <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50/50 border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Order ID</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Customer</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Reason</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">Amount</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        {% for order in orders %}
+                        <tr>
+                            <td class="px-6 py-6 font-bold text-blue-600 text-sm">#{{ order.order_number }}</td>
+                            <td class="px-6 py-6 text-sm font-semibold">{{ order.user.username }}</td>
+                            <td class="px-6 py-6 text-xs text-slate-500 max-w-xs">{{ order.reason }}</td>
+                            <td class="px-6 py-6 text-center font-bold text-sm">₹{{ order.total_amount }}</td>
+                            <td class="px-6 py-6 text-right space-x-2">
+                                <form action="{% url 'approve_return' %}" method="POST" class="inline" onsubmit="return confirm('Approve this return?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    <button class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all">Approve</button>
+                                </form>
+                                <form action="{% url 'reject_return' %}" method="POST" class="inline" onsubmit="return confirm('Reject this return?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    <button class="bg-rose-500 text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 italic text-sm">No full order return requests.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Individual Item Return Requests</h3>
+            <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50/50 border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Item / Order</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Customer</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Reason</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">Value</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        {% for item in items %}
+                        <tr>
+                            <td class="px-6 py-6">
+                                <p class="text-sm font-bold">{{ item.product_name }}</p>
+                                <p class="text-[10px] text-blue-600 font-bold uppercase tracking-tighter mt-0.5">Order #{{ item.order.order_number }}</p>
+                            </td>
+                            <td class="px-6 py-6 text-sm font-semibold">{{ item.order.user.username }}</td>
+                            <td class="px-6 py-6 text-xs text-slate-500 max-w-xs">{{ item.reason }}</td>
+                            <td class="px-6 py-6 text-center font-bold text-sm">₹{{ item.total_price }}</td>
+                            <td class="px-6 py-6 text-right space-x-2">
+                                <form action="{% url 'approve_return' %}" method="POST" class="inline" onsubmit="return confirm('Approve this return?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                                    <button class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all">Approve</button>
+                                </form>
+                                <form action="{% url 'reject_return' %}" method="POST" class="inline" onsubmit="return confirm('Reject this return?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                                    <button class="bg-rose-500 text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 italic text-sm">No individual item return requests.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

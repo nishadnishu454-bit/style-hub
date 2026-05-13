@@ -35,6 +35,10 @@ def login_page(request):
         if user is None:
             messages.error(request, 'Invalid credentials')
             return redirect('login')
+        
+        if user.is_staff or user.is_superuser:
+            messages.error(request, 'Admin cannot login from user side')
+            return redirect('login')
 
         if not user.is_email_verified:
             messages.error(request, 'Please verify your email first')
@@ -46,6 +50,7 @@ def login_page(request):
             messages.error(request, "Your account is blocked")
             return redirect('login')
         
+                
 
         login(request, user)
         messages.success(request, 'Login Successful')

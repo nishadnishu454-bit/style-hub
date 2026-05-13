@@ -41,7 +41,7 @@
                 <span class="nav-text">Categories</span>
             </a>
 
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
+            <a href="{% url 'orders_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
                 <i class="fas fa-shopping-bag w-6 text-sm"></i>
                 <span class="nav-text">Orders</span>
             </a>
@@ -66,7 +66,7 @@
                 <span class="nav-text">Profile</span>
             </a>
 
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
+            <a href="{% url 'return_requests' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
                 <i class="fas fa-arrow-rotate-left w-6 text-sm"></i>
                 <span class="nav-text">Returns</span>
             </a>
@@ -82,8 +82,12 @@
             </a>
         </nav>
 
-        <div class="p-8">
-            <div class="h-8 w-1 bg-blue-500"></div>
+        <div class="p-4 mt-auto">
+            <a href="{% url 'admin_logout' %}"
+               onclick="return confirm('Are you sure you want to logout?')"
+               class="flex items-center justify-center w-full px-4 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+               <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
         </div>
     </aside>
 

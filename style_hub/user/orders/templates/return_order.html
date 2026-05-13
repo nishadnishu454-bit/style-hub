@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return Order | MIDNIGHT ATELIER</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "tertiary-fixed": "#ffdad8",
+            "on-secondary-container": "#a3b5dc",
+            "primary": "#c6c6c7",
+            "surface-container-highest": "#233456",
+            "on-error": "#690005",
+            "on-secondary": "#1d3050",
+            "surface-bright": "#28395b",
+            "background": "#001232",
+            "tertiary-fixed-dim": "#ffb3b1",
+            "on-surface": "#d8e2ff",
+            "surface-dim": "#001232",
+            "outline": "#8f9099",
+            "on-primary-fixed": "#1a1c1c",
+            "surface-tint": "#c6c6c7",
+            "surface-variant": "#233456",
+            "error-container": "#93000a",
+            "on-background": "#d8e2ff",
+            "on-primary-container": "#858787",
+            "on-primary-fixed-variant": "#454747",
+            "on-error-container": "#ffdad6",
+            "surface-container-low": "#071b3b",
+            "on-tertiary-fixed-variant": "#80272b",
+            "error": "#ffb4ab",
+            "on-secondary-fixed": "#051b3a",
+            "primary-fixed-dim": "#c6c6c7",
+            "secondary": "#b4c7ee",
+            "tertiary": "#ffb3b1",
+            "on-tertiary-container": "#d36565",
+            "on-tertiary-fixed": "#410007",
+            "surface-container": "#0c1f40",
+            "on-secondary-fixed-variant": "#344768",
+            "on-tertiary": "#620f17",
+            "secondary-fixed-dim": "#b4c7ee",
+            "surface-container-lowest": "#000d28",
+            "secondary-fixed": "#d7e3ff",
+            "on-primary": "#2f3131",
+            "inverse-surface": "#d8e2ff",
+            "primary-fixed": "#e2e2e2",
+            "outline-variant": "#44474e",
+            "surface-container-high": "#18294b",
+            "surface": "#001232",
+            "inverse-primary": "#5d5f5f",
+            "primary-container": "#1d1f20",
+            "inverse-on-surface": "#1f3052",
+            "on-surface-variant": "#c5c6cf",
+            "secondary-container": "#344768",
+            "tertiary-container": "#470009"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Manrope"],
+            "label": ["Manrope"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .glass-card {
+      background: rgba(40, 57, 91, 0.6);
+      backdrop-filter: blur(20px);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-on-surface min-h-screen">
+<!-- TopNavBar (Shared Component Execution) -->
+<header class="sticky top-0 w-full z-50 bg-[#001232]/80 backdrop-blur-xl flex justify-between items-center px-12 h-20 w-full shadow-[0_20px_40px_rgba(0,13,40,0.4)]">
+<div class="text-2xl font-black tracking-tighter text-slate-100 uppercase font-headline">MIDNIGHT ATELIER</div>
+<nav class="hidden md:flex items-center gap-8 font-headline tracking-tight">
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#">Home</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#">Products</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#">Categories</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#">About</a>
+</nav>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-slate-200 hover:bg-slate-700/30 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90" data-icon="favorite">favorite</button>
+<button class="material-symbols-outlined text-slate-200 hover:bg-slate-700/30 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90" data-icon="shopping_bag">shopping_bag</button>
+<button class="material-symbols-outlined text-slate-200 hover:bg-slate-700/30 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90" data-icon="person">person</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 lg:px-12 py-12">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+<!-- Left Sidebar Navigation -->
+<aside class="md:col-span-3">
+<div class="bg-surface-container rounded-xl p-6 shadow-[0_20px_40px_rgba(0,13,40,0.4)] sticky top-32">
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-4 p-4 rounded-lg text-slate-500 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-medium">Profile</span>
+</a>
+<a class="flex items-center gap-4 p-4 rounded-lg text-slate-500 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+<span class="font-medium">Address</span>
+</a>
+<!-- Active State: My Orders -->
+<a class="flex items-center gap-4 p-4 rounded-lg bg-surface-container-highest text-on-surface shadow-sm transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="font-bold">My Orders</span>
+</a>
+<a class="flex items-center gap-4 p-4 rounded-lg text-slate-500 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-medium">Wishlist</span>
+</a>
+<a class="flex items-center gap-4 p-4 rounded-lg text-slate-500 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-medium">Wallet</span>
+</a>
+</div>
+<div class="mt-12 pt-8 border-t border-outline-variant/20">
+<div class="flex items-center gap-3 px-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant">Need Help?</p>
+<p class="text-sm font-bold">Contact Support</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Right Content Area -->
+<section class="md:col-span-9 space-y-10">
+<!-- Header -->
+<header class="space-y-2">
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface font-headline uppercase">Return Order</h1>
+<p class="text-on-surface-variant text-lg">Submit a return request for your delivered item</p>
+</header>
+<!-- Order Item Card -->
+<div class="glass-card rounded-xl p-8 flex flex-col md:flex-row gap-8 items-start md:items-center">
+<div class="w-32 h-40 bg-surface-container-highest rounded-lg overflow-hidden shrink-0">
+<img alt="Atelier Midnight Coat" class="w-full h-full object-cover grayscale contrast-125" data-alt="Close-up of a high-end black wool coat with premium texture, studio lighting on deep navy background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPycwphMym6nSQA7XzmPFzi7sTRSwtiGgo1EyeOU5IuuEHAFSp-Cn_6YJQVRCKT-Mv4arN6NNkGuWO1nUME00Y3b1NqlQS9y5wgAeLv0Oh2OqyRA4Ay_7GtMwNqz3vH1PcPibtgUDFr2N9u-M2kkTlaqE-G2tsCgQaHWOdt8m3OdsLbfat67BL6y410D3sHGjWdEP8PuEu6U2ByTZIn00-ze98IgTX1O9xDyPE16bbg1Q-iNTPEYift3Mb1YRQTocIGulqV-7iSfQY"/>
+</div>
+<div class="flex-grow space-y-2">
+<div class="flex flex-wrap gap-2">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Order #SH-882910</span>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Delivered Oct 24, 2024</span>
+</div>
+<h2 class="text-2xl font-bold text-on-surface">Atelier Midnight Coat</h2>
+<div class="flex gap-8 pt-2">
+<div>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Size</p>
+<p class="font-bold">L</p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Qty</p>
+<p class="font-bold">1</p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Status</p>
+<p class="font-bold text-secondary">Delivered</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+<!-- Return Form -->
+<div class="lg:col-span-2 space-y-8">
+<form class="space-y-8">
+<!-- Reason Selection -->
+<div class="space-y-3">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Reason for Return</label>
+<select class="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-xl py-4 px-6 text-on-surface appearance-none">
+<option>Wrong size</option>
+<option>Damaged or Defective</option>
+<option>Product not as described</option>
+<option>Changed my mind</option>
+<option>Other</option>
+</select>
+</div>
+<!-- Comments -->
+<div class="space-y-3">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Additional Comments</label>
+<textarea class="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-xl py-4 px-6 text-on-surface placeholder:text-slate-600 resize-none" placeholder="Describe the issue in detail..." rows="4"></textarea>
+</div>
+<!-- Image Upload -->
+<div class="space-y-3">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Upload Images (Optional)</label>
+<div class="border-2 border-dashed border-outline-variant/30 rounded-xl p-8 flex flex-col items-center justify-center gap-4 hover:bg-surface-container-low transition-colors group cursor-pointer">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant group-hover:text-primary transition-colors" data-icon="cloud_upload">cloud_upload</span>
+<div class="text-center">
+<p class="font-bold">Click to upload or drag and drop</p>
+<p class="text-sm text-on-surface-variant">PNG, JPG up to 10MB</p>
+</div>
+</div>
+</div>
+<!-- Refund Method -->
+<div class="space-y-3">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Refund Method</label>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<label class="relative flex items-center p-4 bg-surface-container rounded-xl cursor-pointer border-2 border-transparent has-[:checked]:border-primary transition-all">
+<input checked="" class="hidden" name="refund" type="radio" value="original"/>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+<div>
+<p class="font-bold">Original Method</p>
+<p class="text-xs text-on-surface-variant">5-7 business days</p>
+</div>
+</div>
+</label>
+<label class="relative flex items-center p-4 bg-surface-container rounded-xl cursor-pointer border-2 border-transparent has-[:checked]:border-primary transition-all">
+<input class="hidden" name="refund" type="radio" value="wallet"/>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="account_balance_wallet">account_balance_wallet</span>
+<div>
+<p class="font-bold">Atelier Wallet</p>
+<p class="text-xs text-on-surface-variant">Instant refund</p>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Terms -->
+<div class="flex items-start gap-3">
+<div class="pt-1">
+<input class="w-5 h-5 rounded border-outline-variant bg-surface-container text-primary focus:ring-offset-background" id="policy" type="checkbox"/>
+</div>
+<label class="text-sm text-on-surface-variant leading-relaxed" for="policy">
+                  I agree to the <a class="text-on-surface underline font-medium" href="#">Return Policy</a>. I confirm that the item is in its original condition with all tags attached.
+                </label>
+</div>
+<!-- Actions -->
+<div class="flex flex-col sm:flex-row gap-4 pt-6">
+<button class="bg-primary-fixed text-on-primary-fixed px-8 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-primary transition-all duration-300 scale-95 active:scale-90 flex-grow shadow-lg shadow-primary/10" type="submit">
+                  Submit Return Request
+                </button>
+<button class="px-8 py-4 rounded-full font-bold uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-all" type="button">
+                  Cancel
+                </button>
+</div>
+<div class="text-center">
+<a class="text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center gap-2" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
+                  Back to Orders
+                </a>
+</div>
+</form>
+</div>
+<!-- Sidebar Info Cards -->
+<aside class="space-y-6">
+<!-- Refund Estimate -->
+<div class="bg-surface-container-high rounded-xl p-6 space-y-4">
+<h3 class="font-bold text-lg">Refund Estimate</h3>
+<div class="space-y-2">
+<div class="flex justify-between text-on-surface-variant">
+<span>Item Subtotal</span>
+<span>$845.00</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span>Shipping Fee</span>
+<span>$0.00</span>
+</div>
+<div class="flex justify-between font-bold text-on-surface text-xl pt-2 border-t border-outline-variant/10">
+<span>Total Refund</span>
+<span class="text-secondary">$845.00</span>
+</div>
+</div>
+</div>
+<!-- Pickup Information -->
+<div class="bg-surface-container rounded-xl p-6 space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+<h3 class="font-bold">Pickup Information</h3>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                Our courier will collect the package from your saved address within <strong>24-48 hours</strong> of approval.
+              </p>
+<div class="bg-surface-container-low p-4 rounded-lg">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant mb-1">Current Address</p>
+<p class="text-sm font-medium">124 Atelier Blvd, Suite 800<br/>New York, NY 10012</p>
+</div>
+</div>
+<!-- Policy Highlight -->
+<div class="bg-surface-container rounded-xl p-6 space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="verified_user">verified_user</span>
+<h3 class="font-bold">Return Policy</h3>
+</div>
+<ul class="space-y-3">
+<li class="flex gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-secondary shrink-0" data-icon="check_circle">check_circle</span>
+<span>14-day return window from delivery date.</span>
+</li>
+<li class="flex gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-secondary shrink-0" data-icon="check_circle">check_circle</span>
+<span>Items must be unwashed and unworn.</span>
+</li>
+<li class="flex gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-secondary shrink-0" data-icon="check_circle">check_circle</span>
+<span>Original packaging and tags required.</span>
+</li>
+</ul>
+</div>
+</aside>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer (Shared Component Execution) -->
+<footer class="w-full py-12 bg-[#0c1f40] border-t border-slate-800/20">
+<div class="flex flex-col items-center gap-8 px-12 max-w-7xl mx-auto">
+<div class="text-lg font-bold text-slate-200 font-headline tracking-tighter">MIDNIGHT ATELIER</div>
+<div class="flex flex-wrap justify-center gap-8 font-['Manrope'] text-sm tracking-widest uppercase">
+<a class="text-slate-500 hover:text-slate-200 transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:text-slate-200 transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="text-slate-500 hover:text-slate-200 transition-colors opacity-80 hover:opacity-100" href="#">Shipping</a>
+<a class="text-slate-500 hover:text-slate-200 transition-colors opacity-80 hover:opacity-100" href="#">Returns</a>
+</div>
+<div class="text-slate-400 font-['Manrope'] text-sm tracking-widest uppercase opacity-80">
+        © 2024 THE MIDNIGHT ATELIER. ALL RIGHTS RESERVED.
+      </div>
+</div>
+</footer>
+</body></html>

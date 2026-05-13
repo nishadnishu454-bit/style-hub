@@ -183,7 +183,6 @@
                     </p>
                 </div>
 
-                <!-- Messages Section -->
                 {% if messages %}
                     <div class="mb-10 space-y-3">
                         {% for message in messages %}
@@ -216,9 +215,9 @@
 
                     <div class="relative h-80 overflow-hidden">
 
-                        {% if item.variant.product.product_image %}
+                        {% if item.variant.images.first %}
                             <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                 src="{{ item.variant.product.product_image.url }}"
+                                 src="{{ item.variant.images.first.image.url }}"
                                  alt="{{ item.variant.product.product_name }}">
                         {% else %}
                             <div class="w-full h-full flex items-center justify-center bg-[#0c1f40]">

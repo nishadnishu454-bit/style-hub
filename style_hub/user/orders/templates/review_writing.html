@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Write a Review | {{ product.product_name }} | STYLE-HUB</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed": "#051b3a",
+                        "tertiary-fixed-dim": "#ffb3b1",
+                        "error": "#ffb4ab",
+                        "primary-container": "#1d1f20",
+                        "tertiary-container": "#470009",
+                        "surface-bright": "#28395b",
+                        "surface-tint": "#c6c6c7",
+                        "surface-dim": "#001232",
+                        "surface-container": "#0c1f40",
+                        "on-primary-fixed-variant": "#454747",
+                        "surface-container-highest": "#233456",
+                        "tertiary": "#ffb3b1",
+                        "on-error": "#690005",
+                        "surface-container-high": "#18294b",
+                        "on-secondary-fixed-variant": "#344768",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdad8",
+                        "on-secondary": "#1d3050",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "secondary": "#b4c7ee",
+                        "on-tertiary-container": "#d36565",
+                        "surface-container-low": "#071b3b",
+                        "error-container": "#93000a",
+                        "on-primary": "#2f3131",
+                        "primary-fixed": "#e2e2e2",
+                        "inverse-surface": "#d8e2ff",
+                        "inverse-primary": "#5d5f5f",
+                        "on-tertiary-fixed": "#410007",
+                        "on-primary-container": "#858787",
+                        "secondary-fixed": "#d7e3ff",
+                        "surface-variant": "#233456",
+                        "outline": "#8f9099",
+                        "on-surface-variant": "#c5c6cf",
+                        "on-surface": "#d8e2ff",
+                        "inverse-on-surface": "#1f3052",
+                        "outline-variant": "#44474e",
+                        "on-tertiary": "#620f17",
+                        "background": "#001232",
+                        "surface": "#001232",
+                        "surface-container-lowest": "#000d28",
+                        "secondary-fixed-dim": "#b4c7ee",
+                        "on-tertiary-fixed-variant": "#80272b",
+                        "secondary-container": "#344768",
+                        "on-background": "#d8e2ff",
+                        "primary": "#c6c6c7",
+                        "on-secondary-container": "#a3b5dc"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-panel {
+            background: rgba(40, 57, 91, 0.6);
+            backdrop-filter: blur(20px);
+        }
+
+        .star-active {
+            font-variation-settings: 'FILL' 1 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-surface font-body text-on-surface">
+
+<nav class="fixed top-0 w-full z-50 bg-[#001232] shadow-xl flex justify-between items-center px-12 py-6">
+    <div class="flex items-center gap-12">
+        <a href="{% url 'home' %}" class="text-2xl font-black tracking-tighter text-[#e2e2e2]">
+            STYLE-HUB
+        </a>
+
+        <div class="hidden md:flex gap-8 items-center">
+            <a class="text-sm text-[#c5c6cf] hover:text-[#e2e2e2]" href="{% url 'home' %}">
+                Home
+            </a>
+
+            <a class="text-sm text-[#e2e2e2] border-b-2 border-[#e2e2e2] pb-1" href="{% url 'product_page' %}">
+                Products
+            </a>
+        </div>
+    </div>
+</nav>
+
+{% if messages %}
+<div class="fixed top-24 right-6 z-50 space-y-3">
+    {% for message in messages %}
+    <div class="px-6 py-4 rounded-xl bg-green-600 text-white shadow-xl">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<main class="min-h-screen pt-32 pb-24 px-6 md:px-12 flex flex-col items-center">
+
+    <div class="w-full max-w-4xl mb-12">
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-2">
+            Share Your Experience
+        </h1>
+
+        <p class="text-on-surface-variant font-medium tracking-wide uppercase">
+            Your insight defines our future collections.
+        </p>
+    </div>
+
+    <div class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+        <div class="lg:col-span-8 glass-panel rounded-xl p-8 shadow-2xl">
+
+            <div class="flex gap-6 items-center mb-10 pb-8 border-b border-outline-variant/20">
+
+                <div class="w-24 h-32 rounded-lg overflow-hidden bg-surface-container-high">
+
+                    {% if order_item.variant.images.first %}
+                    <img
+                        alt="{{ product.product_name }}"
+                        class="w-full h-full object-cover"
+                        src="{{ order_item.variant.images.first.image.url }}"
+                    >
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-xs text-on-surface-variant">
+                        No Image
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <div>
+                    <span class="text-primary text-[10px] font-bold tracking-[0.2em] uppercase mb-1 block">
+                        The Midnight Atelier
+                    </span>
+
+                    <h3 class="text-xl font-bold text-on-surface tracking-tight">
+                        {{ product.product_name }}
+                    </h3>
+
+                    <p class="text-on-surface-variant text-sm mb-2">
+                        {{ product.category.category_name }} • {{ order_item.variant.size }} • {{ order_item.variant.color }}
+                    </p>
+
+                    <span class="text-lg font-medium text-secondary">
+                        ₹{{ order_item.price }}
+                    </span>
+                </div>
+
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" class="space-y-8">
+                {% csrf_token %}
+
+                <div class="text-center mb-10">
+                    <p class="text-sm font-semibold tracking-widest uppercase text-on-surface-variant mb-4">
+                        Tap to rate this product
+                    </p>
+
+                    <div class="flex justify-center gap-2 text-primary" id="star-container">
+                        {% for i in "12345" %}
+                        <input
+                            type="radio"
+                            name="rating"
+                            value="{{ forloop.counter }}"
+                            id="star{{ forloop.counter }}"
+                            class="hidden"
+                            required
+                        >
+
+                        <label
+                            for="star{{ forloop.counter }}"
+                            class="material-symbols-outlined text-4xl cursor-pointer hover:scale-110 transition-transform"
+                        >
+                            star
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">
+                        Review Title
+                    </label>
+
+                    <input
+                        name="title"
+                        required
+                        class="w-full bg-surface-container-low/50 border-b border-outline-variant/30 focus:border-primary border-t-0 border-x-0 px-4 py-4 text-on-surface outline-none"
+                        placeholder="Summarize your experience..."
+                        type="text"
+                    />
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">
+                        Your Review
+                    </label>
+
+                    <textarea
+                        name="content"
+                        required
+                        id="review-text"
+                        class="w-full bg-surface-container-low/50 border border-outline-variant/20 rounded-xl px-4 py-4 text-on-surface focus:ring-1 focus:ring-primary outline-none resize-none"
+                        rows="6"
+                        maxlength="1000"
+                    ></textarea>
+
+                    <div class="flex justify-end">
+                        <span id="char-count" class="text-[10px] font-medium text-on-surface-variant tracking-wider uppercase">
+                            0 / 1000 Characters
+                        </span>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <label class="flex items-center gap-3 px-6 py-4 rounded-full border border-outline-variant/30 text-on-surface hover:bg-surface-bright/40 transition-all cursor-pointer group">
+                        <span class="material-symbols-outlined text-primary group-hover:scale-110">
+                            add_a_photo
+                        </span>
+
+                        <span class="text-sm font-bold">
+                            Add Photos
+                        </span>
+
+                        <input type="file" name="images" multiple class="hidden">
+                    </label>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 pt-8">
+
+                    <button
+                        class="flex-1 bg-primary-fixed text-on-primary-fixed font-bold py-5 rounded-full hover:bg-primary transition-all active:scale-95 shadow-xl"
+                        type="submit"
+                    >
+                        Submit Review
+                    </button>
+
+                    <a
+                        href="/orders/orders_view/?order_id={{ order_item.order.id }}"
+                        class="px-10 py-5 rounded-full font-bold text-on-surface-variant hover:text-on-surface text-center"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+            </form>
+
+        </div>
+
+        <aside class="lg:col-span-4 space-y-8">
+            <div class="bg-surface-container rounded-xl p-8 border border-outline-variant/10">
+                <h4 class="text-lg font-bold text-on-surface mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-secondary">
+                        lightbulb
+                    </span>
+                    Review Tips
+                </h4>
+
+                <ul class="space-y-6">
+                    <li class="flex gap-4">
+                        <span class="text-secondary font-black text-lg">
+                            01
+                        </span>
+
+                        <div>
+                            <p class="text-sm font-bold text-on-surface mb-1">
+                                Authenticity First
+                            </p>
+
+                            <p class="text-xs text-on-surface-variant">
+                                Genuine feedback helps fellow shoppers make the right choice.
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+    </div>
+</main>
+
+<script>
+    const stars = document.querySelectorAll('#star-container label');
+    const textarea = document.getElementById('review-text');
+    const charCount = document.getElementById('char-count');
+
+    stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+            stars.forEach((s, i) => {
+                if (i <= index) {
+                    s.classList.add('star-active');
+                } else {
+                    s.classList.remove('star-active');
+                }
+            });
+        });
+    });
+
+    textarea.addEventListener('input', () => {
+        charCount.innerText = `${textarea.value.length} / 1000 Characters`;
+    });
+</script>
+
+</body>
+</html>

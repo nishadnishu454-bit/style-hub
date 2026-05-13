@@ -19,7 +19,9 @@ urlpatterns = [
     path('category/',include('user.category.urls')),
     path('cart/',include('user.cart.urls')),
     path('whislist/',include('user.whishlist.urls')),
-   
+    path('order_management/',include('admin_panel.ordermanagement.urls')),
+    path('checkout/',include('user.checkout.urls')),
+    path('orders/',include('user.orders.urls'))
 
 
 ]

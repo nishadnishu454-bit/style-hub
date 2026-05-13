@@ -4,19 +4,27 @@ from user.whishlist.models import Wishlist
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from admin_panel.productmanagement.models import ProductVariant, Product
+from django.http import JsonResponse
+import json
 
 
 @login_required(login_url='login')
 def cart_page(request):
     cart_items = Cart.objects.filter(
-    user=request.user,
-    variant__is_deleted=False,
-    variant__is_active=True,
-    variant__product__is_deleted=False,
-    variant__product__is_active=True,
-    variant__product__category__is_deleted=False,
-    variant__product__category__is_active=True
-)
+        user=request.user,
+        variant__is_deleted=False,
+        variant__is_active=True,
+        variant__product__is_deleted=False,
+        variant__product__is_active=True,
+        variant__product__category__is_deleted=False,
+        variant__product__category__is_active=True
+    ).select_related(
+        'variant',
+        'variant__product',
+        'variant__product__category'
+    ).prefetch_related(
+        'variant__images'
+    )
 
     sub_total = 0
 
@@ -25,7 +33,14 @@ def cart_page(request):
         sub_total += item.item_total
 
     discount = 0
-    delivery_charge = 0 if sub_total >= 500 else 50
+
+    if sub_total == 0:
+        delivery_charge = 0
+    elif sub_total >= 500:
+        delivery_charge = 0
+    else:
+        delivery_charge = 50
+
     total_amount = sub_total - discount + delivery_charge
 
     context = {
@@ -43,7 +58,14 @@ def cart_page(request):
 
 @login_required(login_url='login')
 def add_cart(request, id):
-    product = get_object_or_404(Product, id=id, is_deleted=False, is_active=True)
+    product = get_object_or_404(
+        Product,
+        id=id,
+        is_deleted=False,
+        is_active=True,
+        category__is_deleted=False,
+        category__is_active=True
+    )
 
     variant_id = request.POST.get('variant_id')
     quantity = int(request.POST.get('quantity', 1))
@@ -60,8 +82,16 @@ def add_cart(request, id):
         is_deleted=False
     )
 
+    if variant.variant_stock <= 0:
+        messages.error(request, 'This product is out of stock')
+        return redirect('product_detail', id=product.id)
+
     if quantity > variant.variant_stock:
         messages.error(request, 'Selected quantity is more than available stock')
+        return redirect('product_detail', id=product.id)
+
+    if quantity > 5:
+        messages.error(request, 'Maximum 5 quantity allowed')
         return redirect('product_detail', id=product.id)
 
     cart_item, created = Cart.objects.get_or_create(
@@ -77,12 +107,21 @@ def add_cart(request, id):
             messages.error(request, 'Not enough stock available')
             return redirect('product_detail', id=product.id)
 
+        if new_quantity > 5:
+            messages.error(request, 'Maximum 5 quantity allowed')
+            return redirect('product_detail', id=product.id)
+
         cart_item.quantity = new_quantity
         cart_item.save()
 
+    Wishlist.objects.filter(
+        user=request.user,
+        variant=variant
+    ).delete()
+
     messages.success(request, 'Product added to cart')
     return redirect('cart_page')
-   
+
 
 @login_required(login_url='login')
 def increase_cart_quantity(request, id):
@@ -110,6 +149,77 @@ def decrease_cart_quantity(request, id):
     return redirect('cart_page')
 
 
+
+
+@login_required(login_url='login')
+def update_cart_quantity_ajax(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            cart_id = data.get('cart_id')
+            action = data.get('action')
+            
+            cart_item = get_object_or_404(Cart, id=cart_id, user=request.user)
+            variant = cart_item.variant
+            
+            deleted = False
+            message = ""
+            status = True
+            
+            if action == 'increase':
+                if cart_item.quantity < variant.variant_stock:
+                    if cart_item.quantity < 5:
+                        cart_item.quantity += 1
+                        cart_item.save()
+                    else:
+                        status = False
+                        message = "Maximum 5 quantity allowed"
+                else:
+                    status = False
+                    message = "Stock limit reached"
+                    
+            elif action == 'decrease':
+                if cart_item.quantity > 1:
+                    cart_item.quantity -= 1
+                    cart_item.save()
+                else:
+                    cart_item.delete()
+                    deleted = True
+            
+            # Recalculate totals
+            cart_items = Cart.objects.filter(user=request.user)
+            sub_total = sum(item.variant.variant_price * item.quantity for item in cart_items)
+            
+            discount = 0
+            if sub_total == 0:
+                delivery_charge = 0
+            elif sub_total >= 500:
+                delivery_charge = 0
+            else:
+                delivery_charge = 50
+                
+            total_amount = sub_total - discount + delivery_charge
+            item_total = cart_item.variant.variant_price * cart_item.quantity if not deleted else 0
+            
+            return JsonResponse({
+                'status': status,
+                'message': message,
+                'quantity': cart_item.quantity,
+                'item_total': item_total,
+                'subtotal': sub_total,
+                'discount': discount,
+                'delivery_charge': "FREE" if delivery_charge == 0 and sub_total > 0 else f"₹{delivery_charge}",
+                'total_amount': total_amount,
+                'cart_count': cart_items.count(),
+                'deleted': deleted
+            })
+            
+        except Exception as e:
+            return JsonResponse({'status': False, 'message': str(e)})
+            
+    return JsonResponse({'status': False, 'message': 'Invalid request'})
+
+
 @login_required(login_url='login')
 def remove_cart_item(request, id):
     cart_item = get_object_or_404(Cart, id=id, user=request.user)
@@ -117,4 +227,3 @@ def remove_cart_item(request, id):
 
     messages.success(request, 'Item removed from cart')
     return redirect('cart_page')
-

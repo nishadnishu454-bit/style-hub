@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>STYLE-HUB | My Orders</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#0c1f40",
+              "tertiary-fixed-dim": "#ffb3b1",
+              "secondary-fixed": "#d7e3ff",
+              "surface-tint": "#c6c6c7",
+              "surface-dim": "#001232",
+              "inverse-surface": "#d8e2ff",
+              "surface-container-high": "#18294b",
+              "on-secondary-fixed-variant": "#344768",
+              "on-tertiary-fixed": "#410007",
+              "on-error": "#690005",
+              "inverse-primary": "#5d5f5f",
+              "surface-container-highest": "#233456",
+              "outline-variant": "#44474e",
+              "inverse-on-surface": "#1f3052",
+              "surface-container-low": "#071b3b",
+              "secondary-container": "#344768",
+              "secondary": "#b4c7ee",
+              "primary-fixed-dim": "#c6c6c7",
+              "primary": "#c6c6c7",
+              "surface-bright": "#28395b",
+              "on-primary": "#2f3131",
+              "surface-variant": "#233456",
+              "on-surface-variant": "#c5c6cf",
+              "primary-fixed": "#e2e2e2",
+              "on-primary-container": "#858787",
+              "on-tertiary": "#620f17",
+              "on-secondary": "#1d3050",
+              "on-surface": "#d8e2ff",
+              "on-primary-fixed": "#1a1c1c",
+              "on-primary-fixed-variant": "#454747",
+              "background": "#001232",
+              "surface": "#001232",
+              "secondary-fixed-dim": "#b4c7ee",
+              "on-tertiary-fixed-variant": "#80272b",
+              "on-error-container": "#ffdad6",
+              "on-background": "#d8e2ff",
+              "error-container": "#93000a",
+              "tertiary-fixed": "#ffdad8",
+              "tertiary": "#ffb3b1",
+              "surface-container-lowest": "#000d28",
+              "on-secondary-fixed": "#051b3a",
+              "error": "#ffb4ab",
+              "tertiary-container": "#470009",
+              "primary-container": "#1d1f20",
+              "outline": "#8f9099",
+              "on-tertiary-container": "#d36565",
+              "on-secondary-container": "#a3b5dc"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background: linear-gradient(180deg, #001232 0%, #0c1f40 100%);
+            min-height: 100vh;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(40, 57, 91, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(198, 198, 199, 0.1);
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface antialiased">
+<!-- TopNavBar -->
+<nav class="sticky top-0 w-full z-50 bg-[#001232]/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 max-w-full no-border shadow-[0_20px_40px_rgba(0,13,40,0.4)]">
+    <div class="text-2xl font-black tracking-tighter text-white font-manrope">STYLE-HUB</div>
+    <div class="hidden md:flex items-center space-x-8 font-manrope tracking-tight">
+        <a class="text-slate-400 hover:text-white transition-colors" href="{% url 'home' %}">Home</a>
+        <a class="text-slate-400 hover:text-white transition-colors" href="{% url 'product_page' %}">Products</a>
+        <a class="text-slate-400 hover:text-white transition-colors" href="{% url 'category_page' %}">Categories</a>
+        <a class="text-slate-400 hover:text-white transition-colors" href="{% url 'about_page' %}">About</a>
+    </div>
+    <div class="hidden lg:flex items-center flex-1 max-w-xs mx-8 relative group">
+        <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-white transition-colors text-sm">search</span>
+        <input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-white/20 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-all focus:bg-white/10" placeholder="Search collections..." type="text"/>
+    </div>
+    <div class="flex items-center space-x-6 text-slate-200">
+        <a href="{% url 'wishlist_page' %}">
+            <span class="material-symbols-outlined">favorite</span>
+        </a>
+
+        <a href="{% url 'cart_page' %}" class="relative p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
+            <span class="material-symbols-outlined">shopping_bag</span>
+            {% if cart_count > 0 %}
+                <span class="absolute -top-1 -right-1 bg-white text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {{ cart_count }}
+                </span>
+            {% endif %}
+        </a>
+
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 inline-block">
+                <span class="material-symbols-outlined">person</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 inline-block">
+                <span class="material-symbols-outlined">person</span>
+            </a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- Messages Section -->
+{% if messages %}
+    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4">
+        <div class="space-y-3">
+            {% for message in messages %}
+                <div class="p-4 rounded-xl glass-card border border-white/10 shadow-2xl flex items-center gap-3 animate-bounce-in
+                    {% if message.tags == 'error' %}text-red-400{% else %}text-emerald-400{% endif %}">
+                    {% if message.tags == 'error' %}
+                        <span class="material-symbols-outlined">error</span>
+                    {% else %}
+                        <span class="material-symbols-outlined">check_circle</span>
+                    {% endif %}
+                    <p class="text-sm font-bold tracking-tight">{{ message }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        setTimeout(() => {
+            const msgs = document.querySelector('.fixed.top-24');
+            if (msgs) {
+                msgs.style.transition = 'opacity 0.5s ease';
+                msgs.style.opacity = '0';
+                setTimeout(() => msgs.remove(), 500);
+            }
+        }, 5000);
+    </script>
+{% endif %}
+
+<main class="max-w-7xl mx-auto px-6 py-12 lg:py-20">
+<div class="flex flex-col lg:flex-row gap-10 items-start">
+<!-- Left Sidebar -->
+<aside class="w-full lg:w-72 shrink-0">
+<div class="glass-card rounded-xl p-6 shadow-2xl">
+<a class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors mb-8 group" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
+<span class="text-sm font-medium">Go Back</span>
+</a>
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-medium">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+<span class="font-medium">Address</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-secondary-container text-on-surface border border-primary/20 shadow-[0_0_15px_rgba(198,198,199,0.15)] transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="font-bold">My Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-medium">Wishlist</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-medium">Wallet</span>
+</a>
+</nav>
+<div class="mt-12 pt-6 border-t border-outline-variant/20">
+<button class="flex items-center gap-3 px-4 py-3 rounded-full text-error hover:bg-error/10 transition-all duration-300 w-full">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-medium">Sign Out</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Right Content Area -->
+<section class="flex-1 w-full space-y-8">
+<header>
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">My Orders</h1>
+<p class="text-on-surface-variant text-lg">Track and manage your recent purchases and returns.</p>
+</header>
+<!-- Actions Row -->
+<div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+<form method="GET" action="{% url 'user_orders_listing' %}" class="relative w-full sm:max-w-md">
+    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+    <input name="search" value="{{ search_query }}" class="w-full pl-12 pr-6 py-3.5 bg-surface-container-highest/40 border-none rounded-full text-on-surface focus:ring-2 focus:ring-primary/50 placeholder:text-on-surface-variant/50" placeholder="Search by Order ID or Product..." type="text"/>
+</form>
+<div class="flex gap-2">
+    <a href="?status=Delivered" class="px-4 py-2 rounded-full {% if status_filter == 'Delivered' %}bg-primary text-on-primary-fixed{% else %}bg-surface-container-highest{% endif %} text-xs font-bold uppercase">Delivered</a>
+    <a href="?status=Shipped" class="px-4 py-2 rounded-full {% if status_filter == 'Shipped' %}bg-primary text-on-primary-fixed{% else %}bg-surface-container-highest{% endif %} text-xs font-bold uppercase">Shipped</a>
+    <a href="{% url 'user_orders_listing' %}" class="px-4 py-2 rounded-full bg-surface-container-highest text-xs font-bold uppercase">Clear</a>
+</div>
+</div>
+<!-- Orders Table -->
+<div class="glass-card rounded-2xl overflow-hidden shadow-xl">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-highest/60 text-on-surface-variant text-xs uppercase tracking-widest font-bold">
+<th class="px-8 py-5">Products</th>
+<th class="px-6 py-5">Order ID</th>
+<th class="px-6 py-5">Total Amount</th>
+<th class="px-6 py-5">Status</th>
+<th class="px-8 py-5 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+{% for order in orders %}
+<tr class="group hover:bg-surface-bright/20 transition-colors">
+<td class="px-8 py-6">
+    {% with first_item=order.items.all.0 %}
+    <div class="flex items-center gap-4">
+        <div class="h-16 w-16 rounded-lg overflow-hidden bg-surface-container shrink-0 border border-outline-variant/10">
+            {% with primary_image=first_item.variant.images.all.0 %}
+            <img alt="{{ first_item.product_name }}" class="h-full w-full object-cover" src="{% if primary_image %}{{ primary_image.image.url }}{% endif %}"/>
+            {% endwith %}
+        </div>
+        <div>
+            <h4 class="font-bold text-on-surface">{{ first_item.product_name }}</h4>
+            <p class="text-xs text-on-surface-variant">
+                {% if order.items.count > 1 %}+ {{ order.items.count|add:"-1" }} more items{% else %}Size: {{ first_item.variant.size }}{% endif %}
+            </p>
+        </div>
+    </div>
+    {% endwith %}
+</td>
+<td class="px-6 py-6 font-mono text-sm text-secondary">#{{ order.order_number }}</td>
+<td class="px-6 py-6 font-bold">₹{{ order.total_amount }}</td>
+<td class="px-6 py-6">
+    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider 
+        {% if order.order_status == 'Delivered' %}bg-emerald-100 text-emerald-900 border-emerald-200/50
+        {% elif order.order_status == 'Cancelled' %}bg-rose-100 text-rose-900 border-rose-200/50
+        {% elif order.order_status == 'Shipped' %}bg-blue-100 text-blue-900 border-blue-200/50
+        {% else %}bg-amber-100 text-amber-900 border-amber-200/50{% endif %} border">
+        {{ order.order_status }}
+    </span>
+</td>
+<td class="px-8 py-6 text-right">
+    <a href="{% url 'orders_view' %}?order_id={{ order.id }}" class="px-5 py-2 rounded-full bg-primary hover:bg-primary-fixed text-on-primary-fixed font-bold text-sm transition-all">View</a>
+</td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5" class="px-8 py-20 text-center text-on-surface-variant italic">You have no orders yet.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex flex-col sm:flex-row items-center justify-between py-10 gap-6 border-t border-outline-variant/10 mt-8">
+<p class="text-sm font-label text-on-surface-variant uppercase tracking-widest">
+    Showing {{ orders.start_index }} to {{ orders.end_index }} of {{ orders.paginator.count }} orders
+</p>
+{% if orders.has_other_pages %}
+<nav aria-label="Pagination" class="flex items-center gap-2">
+    {% if orders.has_previous %}
+    <a href="?page={{ orders.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant/20 text-on-surface-variant hover:bg-surface-bright/50 transition-all">
+        <span class="material-symbols-outlined text-xl" data-icon="chevron_left">chevron_left</span>
+    </a>
+    {% endif %}
+
+    {% for i in orders.paginator.page_range %}
+        {% if orders.number == i %}
+        <span class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-on-primary-fixed font-bold text-sm shadow-lg shadow-primary/20 transition-all">{{ i }}</span>
+        {% elif i > orders.number|add:'-3' and i < orders.number|add:'3' %}
+        <a href="?page={{ i }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant/20 text-on-surface-variant hover:bg-surface-bright/50 transition-all text-sm font-medium">{{ i }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if orders.has_next %}
+    <a href="?page={{ orders.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant/20 text-on-surface-variant hover:bg-surface-bright/50 transition-all">
+        <span class="material-symbols-outlined text-xl" data-icon="chevron_right">chevron_right</span>
+    </a>
+    {% endif %}
+</nav>
+{% endif %}
+</div>
+</section>
+</div>
+</main>
+<!-- Footer Section -->
+<footer class="w-full mt-auto py-12 bg-[#001232] border-t border-slate-800/20">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 gap-6 font-manrope text-sm tracking-wide text-slate-400">
+<div class="text-lg font-bold text-slate-200 uppercase">STYLE-HUB</div>
+<div class="flex gap-8">
+<a class="hover:text-slate-100 transition-all" href="#">Privacy Policy</a>
+<a class="hover:text-slate-100 transition-all" href="#">Terms of Service</a>
+<a class="hover:text-slate-100 transition-all" href="#">Contact</a>
+</div>
+<div class="text-slate-500">© 2024 STYLE-HUB. THE MIDNIGHT ATELIER.</div>
+</div>
+</footer>
+</body></html>

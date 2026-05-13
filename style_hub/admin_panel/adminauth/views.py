@@ -4,6 +4,14 @@ from django.contrib.auth import authenticate,login,logout
 # Create your views here.
 
 def admin_login(request):
+
+
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect('admin_dashboard')
+    
+    if request.user.is_authenticated and not request.user.is_staff:
+        messages.error(request, 'Normal users cannot access admin panel')
+        return redirect('home')
     
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -36,19 +44,21 @@ def admin_login(request):
 
 def admin_forgottpassword(request):
 
-
-
     return render(request,'adminauth/admin_forgottpassword.html')
-
 
 
 def admin_emailverification(request):
     return render(request,'admin_emailverification.html')
 
 
-
 def admin_resetpassword(request):
-    return render(request,'adminauth/admin_resetpassword')
+    return render(request,'adminauth/admin_resetpassword.html')
+
+
+def admin_logout(request):
+    logout(request)
+    messages.success(request,'Admin logged out Successfully')
+    return redirect('admin_login')
 
 
 
