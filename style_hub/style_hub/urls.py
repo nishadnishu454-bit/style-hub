@@ -21,7 +21,10 @@ urlpatterns = [
     path('whislist/',include('user.whishlist.urls')),
     path('order_management/',include('admin_panel.ordermanagement.urls')),
     path('checkout/',include('user.checkout.urls')),
-    path('orders/',include('user.orders.urls'))
+    path('orders/',include('user.orders.urls')),
+    path('coupon_management/',include('admin_panel.couponmanagement.urls')),
+    path('wallet/',include('user.wallet.urls')),
+   
 
 
 ]

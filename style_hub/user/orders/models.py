@@ -45,6 +45,9 @@ class Order(models.Model):
     reason = models.TextField(null=True, blank=True)
     ordered_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
+    razorpay_payment_id = models.CharField(max_length=255, null=True, blank=True)
+    razorpay_signature = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.order_number
@@ -105,3 +108,7 @@ class ReviewImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.review.title}"
+    
+
+
+    

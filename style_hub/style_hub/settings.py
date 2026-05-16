@@ -57,7 +57,10 @@ INSTALLED_APPS = [
     'user.whishlist',
     'admin_panel.ordermanagement',
     'user.checkout',
-    'user.orders'
+    'user.orders',
+    'admin_panel.couponmanagement',
+    'user.wallet',
+
 
     
     
@@ -188,3 +191,10 @@ EMAIL_USE_TLS = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+
+# razorpay
+
+RAZORPAY_KEY_ID = "rzp_test_SpthW9rIxx2QBV"
+RAZORPAY_KEY_SECRET = "By2YNeCQYRBelwdKNLKCZdlR"
