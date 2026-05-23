@@ -7,7 +7,7 @@ from django.core.files.base import ContentFile
 
 import base64
 
-from .models import Product, ProductVariant, ProductVariantImage
+from .models import Product, ProductVariant, ProductVariantImage, Offer
 from admin_panel.categorymanagement.models import Category
 
 
@@ -435,3 +435,186 @@ def decode_base64_image(img_data, filename):
         base64.b64decode(imgstr),
         name=f'{filename}.{ext}'
     )
+
+
+@login_required(login_url='admin_login')
+def offer_listing(request):
+    search = request.GET.get('search', '')
+    offers = Offer.objects.filter(is_deleted=False).order_by('-id')
+    if search:
+        offers = offers.filter(Q(name__icontains=search) | Q(product__product_name__icontains=search) | Q(category__category_name__icontains=search))
+    
+    paginator = Paginator(offers, 10)
+    page_number = request.GET.get('page')
+    offers_page = paginator.get_page(page_number)
+    
+    context = {
+        'offers': offers_page,
+        'search': search,
+    }
+    return render(request, 'offer_listing.html', context)
+
+
+@login_required(login_url='admin_login')
+def add_offer(request):
+    products = Product.objects.filter(is_deleted=False, is_active=True)
+    categories = Category.objects.filter(is_deleted=False, is_active=True)
+    
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        discount_type = request.POST.get('discount_type', '').strip()
+        discount_value = request.POST.get('discount_value', '').strip()
+        start_date = request.POST.get('start_date', '').strip()
+        end_date = request.POST.get('end_date', '').strip()
+        offer_target = request.POST.get('offer_target', '').strip() # 'product' or 'category'
+        product_id = request.POST.get('product')
+        category_id = request.POST.get('category')
+        
+        if not name or not discount_type or not discount_value or not start_date or not end_date:
+            messages.error(request, 'All fields are required')
+            return redirect('add_offer')
+            
+        try:
+            from decimal import Decimal
+            discount_value = Decimal(discount_value)
+            if discount_value <= 0:
+                messages.error(request, 'Discount value must be greater than 0')
+                return redirect('add_offer')
+            if discount_type == 'PERCENTAGE' and discount_value > 100:
+                messages.error(request, 'Percentage discount cannot exceed 100%')
+                return redirect('add_offer')
+        except ValueError:
+            messages.error(request, 'Invalid discount value')
+            return redirect('add_offer')
+            
+        from datetime import datetime
+        try:
+            s_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            e_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+            if e_date <= s_date:
+                messages.error(request, 'End date must be after start date')
+                return redirect('add_offer')
+        except ValueError:
+            messages.error(request, 'Invalid dates format (should be YYYY-MM-DD)')
+            return redirect('add_offer')
+            
+        prod = None
+        cat = None
+        if offer_target == 'product' and product_id:
+            prod = get_object_or_404(Product, id=product_id, is_deleted=False)
+        elif offer_target == 'category' and category_id:
+            cat = get_object_or_404(Category, id=category_id, is_deleted=False)
+        else:
+            messages.error(request, 'Please select a product or category for the offer')
+            return redirect('add_offer')
+            
+        Offer.objects.create(
+            name=name,
+            discount_type=discount_type,
+            discount_value=discount_value,
+            start_date=s_date,
+            end_date=e_date,
+            product=prod,
+            category=cat,
+            is_active=True
+        )
+        messages.success(request, 'Offer created successfully')
+        return redirect('offer_listing')
+        
+    context = {
+        'products': products,
+        'categories': categories,
+    }
+    return render(request, 'add_offer.html', context)
+
+
+@login_required(login_url='admin_login')
+def edit_offer(request, id):
+    offer = get_object_or_404(Offer, id=id, is_deleted=False)
+    products = Product.objects.filter(is_deleted=False, is_active=True)
+    categories = Category.objects.filter(is_deleted=False, is_active=True)
+    
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        discount_type = request.POST.get('discount_type', '').strip()
+        discount_value = request.POST.get('discount_value', '').strip()
+        start_date = request.POST.get('start_date', '').strip()
+        end_date = request.POST.get('end_date', '').strip()
+        offer_target = request.POST.get('offer_target', '').strip()
+        product_id = request.POST.get('product')
+        category_id = request.POST.get('category')
+        
+        if not name or not discount_type or not discount_value or not start_date or not end_date:
+            messages.error(request, 'All fields are required')
+            return redirect('edit_offer', id=id)
+            
+        try:
+            from decimal import Decimal
+            discount_value = Decimal(discount_value)
+            if discount_value <= 0:
+                messages.error(request, 'Discount value must be greater than 0')
+                return redirect('edit_offer', id=id)
+            if discount_type == 'PERCENTAGE' and discount_value > 100:
+                messages.error(request, 'Percentage discount cannot exceed 100%')
+                return redirect('edit_offer', id=id)
+        except ValueError:
+            messages.error(request, 'Invalid discount value')
+            return redirect('edit_offer', id=id)
+            
+        from datetime import datetime
+        try:
+            s_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            e_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+            if e_date <= s_date:
+                messages.error(request, 'End date must be after start date')
+                return redirect('edit_offer', id=id)
+        except ValueError:
+            messages.error(request, 'Invalid dates format (should be YYYY-MM-DD)')
+            return redirect('edit_offer', id=id)
+            
+        prod = None
+        cat = None
+        if offer_target == 'product' and product_id:
+            prod = get_object_or_404(Product, id=product_id, is_deleted=False)
+        elif offer_target == 'category' and category_id:
+            cat = get_object_or_404(Category, id=category_id, is_deleted=False)
+        else:
+            messages.error(request, 'Please select a product or category for the offer')
+            return redirect('edit_offer', id=id)
+            
+        offer.name = name
+        offer.discount_type = discount_type
+        offer.discount_value = discount_value
+        offer.start_date = s_date
+        offer.end_date = e_date
+        offer.product = prod
+        offer.category = cat
+        offer.save()
+        
+        messages.success(request, 'Offer updated successfully')
+        return redirect('offer_listing')
+        
+    context = {
+        'offer': offer,
+        'products': products,
+        'categories': categories,
+    }
+    return render(request, 'edit_offer.html', context)
+
+
+@login_required(login_url='admin_login')
+def delete_offer(request, id):
+    offer = get_object_or_404(Offer, id=id, is_deleted=False)
+    offer.is_deleted = True
+    offer.save()
+    messages.success(request, 'Offer deleted successfully')
+    return redirect('offer_listing')
+
+
+@login_required(login_url='admin_login')
+def toggle_offer_status(request, id):
+    offer = get_object_or_404(Offer, id=id, is_deleted=False)
+    offer.is_active = not offer.is_active
+    offer.save()
+    messages.success(request, f'Offer status changed to {"Active" if offer.is_active else "Inactive"}')
+    return redirect('offer_listing')

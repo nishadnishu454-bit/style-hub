@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from admin_panel.productmanagement.models import ProductVariant
+from user.cart.models import Cart
 from .models import Wishlist
 
 
@@ -22,11 +23,14 @@ def wishlist_page(request):
         'variant__product__category'
     ).prefetch_related(
         'variant__images'
-    ).order_by('-id') 
+    ).order_by('-id')
+
+    cart_count = Cart.objects.filter(user=request.user).count()
 
     context = {
         'wishlist_items': wishlist_items,
-        'wishlist_count': wishlist_items.count()
+        'wishlist_count': wishlist_items.count(),
+        'cart_count': cart_count,
     }
 
     return render(request, 'wishlist.html', context)

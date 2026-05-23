@@ -14,66 +14,7 @@
 </head>
 <body class="flex min-h-screen">
 
-<aside class="w-64 min-h-screen bg-white border-r border-slate-100 flex flex-col p-6 sticky top-0">
-        <div class="mb-10">
-            <h1 class="text-xl font-black tracking-tighter italic">STYLE-HUB</h1>
-            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Admin Console</p>
-        </div>
-
-        <nav class="flex-1 px-4 space-y-1">
-            <a href="{% url 'admin_dashboard' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-th-large w-6 text-sm"></i><span class="nav-text">Dashboard</span>
-            </a>
-
-            <a href="{% url 'product_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-archive w-6 text-sm"></i><span class="nav-text">Products</span>
-            </a>
-
-            <a href="{% url 'category_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-network-wired w-6 text-sm"></i><span class="nav-text">Categories</span>
-            </a>
-
-            <a href="{% url 'orders_listing' %}" class="flex items-center px-4 py-3 bg-gray-100 text-black rounded-sm border-l-4 border-black">
-                <i class="fas fa-shopping-bag w-6 text-sm"></i><span class="nav-text">Orders</span>
-            </a>
-
-            <a href="{% url 'user_management' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-user-friends w-6 text-sm"></i><span class="nav-text">Users</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-ticket-alt w-6 text-sm"></i><span class="nav-text">Coupons</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-tag w-6 text-sm"></i><span class="nav-text">Offers</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="far fa-user-circle w-6 text-sm"></i><span class="nav-text">Profile</span>
-            </a>
-
-            <a href="{% url 'return_requests' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-arrow-rotate-left w-6 text-sm"></i><span class="nav-text">Returns</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="far fa-comment-dots w-6 text-sm"></i><span class="nav-text">Reviews</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-comment-dots w-6 text-sm"></i><span class="nav-text">Banners</span>
-            </a>
-        </nav>
-
-        <div class="p-4 mt-auto">
-            <a href="{% url 'admin_logout' %}"
-               onclick="return confirm('Are you sure you want to logout?')"
-               class="flex items-center justify-center w-full px-4 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
-               <i class="fas fa-sign-out-alt mr-2"></i> Logout
-            </a>
-        </div>
-    </aside>
+{% include 'admin_sidebar.html' %}
 
     <div class="flex-1 flex flex-col">
         <header class="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-10">
@@ -90,6 +31,22 @@
         </header>
 
         <main class="p-10 max-w-6xl">
+            {% if messages %}
+                <div class="mb-8 space-y-3">
+                    {% for message in messages %}
+                        <div class="p-4 rounded-sm text-[11px] font-bold uppercase tracking-widest flex items-center gap-3
+                            {% if message.tags == 'error' %}bg-red-50 border border-red-100 text-red-600
+                            {% else %}bg-green-50 border border-green-100 text-green-600{% endif %}">
+                            {% if message.tags == 'error' %}
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-circle-check"></i>
+                            {% endif %}
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <a href="#" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-black mb-6">
                 <span class="material-symbols-outlined text-sm">arrow_back</span>
                 Back to Orders
@@ -103,6 +60,11 @@
                     <p class="text-slate-400 font-medium mt-2">
                         Status: <span class="text-blue-600 font-bold uppercase">{{ order.order_status }}</span>
                     </p>
+                    {% if order.reason %}
+                    <p class="text-rose-600 font-bold text-xs mt-2 uppercase tracking-wide">
+                        Reason: <span class="text-slate-700 normal-case font-medium">{{ order.reason }}</span>
+                    </p>
+                    {% endif %}
                 </div>
                 
                 <div class="flex gap-4">
@@ -131,7 +93,7 @@
                         onsubmit="return confirm('Are you sure you want to update the order status?')">
                         {% csrf_token %}
                         <select name="order_status" class="bg-white border border-slate-200 rounded-md px-4 py-2 text-sm font-bold outline-none">
-                            {% for val, name in order.ORDER_STATUS %}
+                            {% for val, name in allowed_statuses %}
                             <option value="{{ val }}" {% if order.order_status == val %}selected{% endif %}>{{ name }}</option>
                             {% endfor %}
                         </select>
@@ -211,6 +173,9 @@
                                             <div>
                                                 <p class="text-sm font-bold">{{ item.product_name }}</p>
                                                 <p class="text-[9px] text-slate-400 uppercase font-bold">Size: {{ item.variant.size }} / {{ item.variant.color }}</p>
+                                                {% if item.reason %}
+                                                <p class="text-[9px] text-rose-500 font-bold mt-1">REASON: <span class="text-slate-600 normal-case font-medium">{{ item.reason }}</span></p>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </td>

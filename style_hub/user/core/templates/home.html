@@ -82,47 +82,7 @@
     </style>
 </head>
 <body class="bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary">
-<!-- TopNavBar -->
-<nav class="sticky top-0 w-full z-50 bg-[#001232]/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 max-w-full no-border shadow-[0_20px_40px_rgba(0,13,40,0.4)]">
-<div class="text-2xl font-black tracking-tighter text-white font-manrope">STYLE-HUB</div>
-<div class="hidden md:flex items-center space-x-8 font-manrope tracking-tight">
-<a class="text-white border-b-2 border-white/20 pb-1" href="{% url "home" %}">Home</a>
-<a class="text-slate-400 hover:text-white transition-colors" href="{% url "product_page" %}">Products</a>
-<a class="text-slate-400 hover:text-white transition-colors" href="{% url "category_page" %}">Categories</a>
-<a class="text-slate-400 hover:text-white transition-colors" href="{% url "about_page" %}">About</a>
-</div>
-<div class="hidden lg:flex items-center flex-1 max-w-xs mx-8 relative group">
-<span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-white transition-colors text-sm">search</span>
-<input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-white/20 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-all focus:bg-white/10" placeholder="Search collections..." type="text"/>
-</div>
-<div class="flex items-center space-x-6 text-slate-200">
-<a href="{% url 'wishlist_page' %}">
-<span class="material-symbols-outlined">favorite</span>
-</a>
-
-<a href="{% url 'cart_page' %}" class="relative p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
-    <span class="material-symbols-outlined">shopping_bag</span>
-
-    {% if cart_count > 0 %}
-        <span class="absolute -top-1 -right-1 bg-white text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-            {{ cart_count }}
-        </span>
-    {% endif %}
-</a>
-
-{% if request.user.is_authenticated %}
-    <a href="{% url 'profile' %}"
-       class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 inline-block">
-        <span class="material-symbols-outlined">person</span>
-    </a>
-{% else %}
-    <a href="{% url 'login' %}"
-       class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 inline-block">
-        <span class="material-symbols-outlined">person</span>
-    </a>
-{% endif %}
-</div>
-</nav>
+{% include 'user_navbar.html' %}
 <main>
     <!-- Messages Section -->
     {% if messages %}
@@ -189,31 +149,31 @@
 </div>
 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-[800px] md:h-[600px]">
 <!-- Shirts -->
-<div class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.shirts %}{% url 'product_page' %}?category={{ category_map.shirts }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="close-up of a crisp white linen shirt on a hanger with clean shadows and high-end retail aesthetic" src="https://images.squarespace-cdn.com/content/v1/67c446f1faaf6d5dabbbd29c/c147c204-4fb5-4f01-8d15-6bf692a08c5c/closeup-photo-fashionable-clothes-hangers-shop.jpg"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
 <h3 class="text-2xl font-bold text-white">Shirts</h3>
 <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Premium Cotton &amp; Silk</p>
 </div>
-</div>
+</a>
 <!-- T-Shirts -->
-<div class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.t_shirts %}{% url 'product_page' %}?category={{ category_map.t_shirts }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="minimalist studio shot of high-quality oversized t-shirts in earth tones draped elegantly" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDL9XF0RA5E3NY1T4jjhY3uBioiiurJb8Croyxj7cr9iu6jgwtakx4kfhvBvuz7SC3XQwQBC7Gpy5ea97v1aMfDQEBKl7_N-R8eFI9NXF8uiMwsaHAH2HH_cOTB_TIb2eNj7EsRaBdVAO54lPhxWZTykyf3CeCqq8Kz8BIyt8gfkUdaKLEiY1t8RQ8i1m-dmURBE6k-5RegGk9kaRT1xuCbNS7ulGGK0IWox4iDlecj_fNPaDk3xdUomoAY4twzFCGOqIqG6cfbBZLV"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
 <h3 class="text-2xl font-bold text-white">T-Shirts</h3>
 <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Essentials Reimagined</p>
 </div>
-</div>
+</a>
 <!-- Jeans -->
-<div class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.pants %}{% url 'product_page' %}?category={{ category_map.pants }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="stack of high-quality raw indigo denim jeans showing texture and stitching details in moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkdDPZ3fK9ZRRALu6AoC4h64CW-6iYX8qvkWQtHs0yP6wlH8Ummr-exzfn97qk5NJ3xrSE1oFq960o86l1qzNC4MUQjeSYdsidqGcCBeFtMg8xE2yGUcfpo8CU3ebcvSPH4lwmI-F36vQP_tATIrxlOvleia1w4s-yORFBPr3V1XqAKS29uOrQvhk3Dt0nGqjRImxrtVJCCm7Ayw9MXM05y6ozoJwToFw1Xgb-0q5GFWtz-OOCO3SXz6eOWBxAMltVkmGffi5y5DF3"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
 <h3 class="text-2xl font-bold text-white">Pants</h3>
 <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Japanese Raw Denim</p>
 </div>
-</div>
+</a>
 <!-- Jerseys -->
-<div class="md:col-span-5 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.jerseys %}{% url 'product_page' %}?category={{ category_map.jerseys }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-5 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
     <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         src="https://c8.alamy.com/comp/2KFK5W7/calcutta-india-november-15-2022-soccer-jerseys-of-various-country-are-hanging-in-a-retail-shop-to-sell-2KFK5W7.jpg"
         alt="football jerseys hanging in store"/>
@@ -224,10 +184,10 @@
             Sporty & Stylish Wear
         </p>
     </div>
-</div>
+</a>
 
 <!-- Hoodies -->
-<div class="md:col-span-3 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.hoodies %}{% url 'product_page' %}?category={{ category_map.hoodies }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-3 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
     <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         src="https://img.freepik.com/free-photo/fashionable-men-jacket-hanging-clothing-store-generated-by-ai_188544-40066.jpg?semt=ais_hybrid&w=740&q=80"
         alt="man wearing stylish hoodie"/>
@@ -238,7 +198,7 @@
             Comfort Meets Style
         </p>
     </div>
-</div>
+</a>
 </div>
 </div>
 </section>
@@ -326,58 +286,7 @@
 </div>
 </div>
 </section>
-<!-- Referral / Invite Section -->
-<section class="py-24 px-8 bg-[#0B1E3F]">
-<div class="max-w-7xl mx-auto">
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-surface-container-high/40 rounded-[2.5rem] p-8 md:p-16 border border-white/5 relative overflow-hidden">
-<!-- Decorative Element -->
-<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full"></div>
-<div class="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/10 blur-[100px] rounded-full"></div>
-<div class="relative z-10">
-<h2 class="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight leading-tight">Invite Your Friends &amp; Earn Rewards</h2>
-<p class="text-on-surface-variant text-lg md:text-xl mb-8 font-light max-w-lg">Share STYLE-HUB with your friends and get exclusive discounts on your next purchase.</p>
-<div class="flex flex-col sm:flex-row gap-4 items-center">
-<button class="w-full sm:w-auto px-10 py-4 bg-white text-[#0B1E3F] rounded-full font-bold text-lg hover:scale-105 transition-all duration-300 shadow-xl shadow-white/5">
-                            Invite Now
-                        </button>
-<div class="flex items-center space-x-4">
-<div class="flex space-x-3">
-</div>
-</div>
-</div>
-<div class="mt-10 flex items-center bg-primary/10 border border-primary/20 rounded-2xl p-4 w-fit">
-<span class="material-symbols-outlined text-primary-fixed mr-3">redeem</span>
-<span class="text-white font-bold">Get ₹100 for every successful referral</span>
-</div>
-</div>
-<div class="relative z-10 flex justify-center lg:justify-end">
-<div class="glass-card p-10 rounded-[2rem] border border-white/10 w-full max-w-sm shadow-2xl relative">
-<div class="absolute top-0 right-0 p-6 opacity-20">
-<span class="material-symbols-outlined text-6xl">token</span>
-</div>
-<span class="text-primary-fixed text-xs font-bold uppercase tracking-[0.2em] mb-4 block">Your Referral Code</span>
-<div class="bg-[#0B1E3F]/80 border border-dashed border-white/30 rounded-xl p-8 mb-6 flex flex-col items-center">
-<span class="text-4xl font-black text-white tracking-[0.1em] mb-4">STYLE123</span>
-<button class="flex items-center text-primary-fixed hover:text-white transition-colors text-sm font-bold group">
-<span class="material-symbols-outlined text-sm mr-2">content_copy</span>
-                                Copy Code
-                            </button>
-</div>
-<div class="space-y-4">
-<div class="flex items-center text-xs text-on-surface-variant font-medium">
-<span class="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] mr-2">1</span>
-                                Friend joins &amp; shops
-                            </div>
-<div class="flex items-center text-xs text-on-surface-variant font-medium">
-<span class="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] mr-2">2</span>
-                                You both get rewarded
-                            </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
+
 <!-- Featured Split Layout -->
 <section class="py-24 px-8 bg-surface">
 <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">

@@ -48,6 +48,7 @@ class Order(models.Model):
     razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
     razorpay_payment_id = models.CharField(max_length=255, null=True, blank=True)
     razorpay_signature = models.CharField(max_length=255, null=True, blank=True)
+    coupon = models.ForeignKey('couponmanagement.Coupon', on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
 
     def __str__(self):
         return self.order_number

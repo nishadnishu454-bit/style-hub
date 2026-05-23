@@ -14,41 +14,7 @@
 </head>
 <body class="flex text-slate-800">
 
-    <aside class="w-64 min-h-screen bg-white border-r border-slate-100 flex flex-col p-6 sticky top-0">
-        <div class="mb-10">
-            <h1 class="text-xl font-black tracking-tighter italic">STYLE-HUB</h1>
-            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Admin Console</p>
-        </div>
-
-        <nav class="flex-1 px-4 space-y-1">
-            <a href="{% url 'admin_dashboard' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-th-large w-6 text-sm"></i><span class="nav-text">Dashboard</span>
-            </a>
-            <a href="{% url 'product_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-archive w-6 text-sm"></i><span class="nav-text">Products</span>
-            </a>
-            <a href="{% url 'category_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-network-wired w-6 text-sm"></i><span class="nav-text">Categories</span>
-            </a>
-            <a href="{% url 'orders_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-shopping-bag w-6 text-sm"></i><span class="nav-text">Orders</span>
-            </a>
-            <a href="{% url 'user_management' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-user-friends w-6 text-sm"></i><span class="nav-text">Users</span>
-            </a>
-            <a href="#" class="flex items-center px-4 py-3 bg-gray-100 text-black rounded-sm border-l-4 border-black">
-                <i class="fas fa-arrow-rotate-left w-6 text-sm"></i><span class="nav-text">Returns</span>
-            </a>
-        </nav>
-
-        <div class="p-4 mt-auto">
-            <a href="{% url 'admin_logout' %}"
-               onclick="return confirm('Are you sure you want to logout?')"
-               class="flex items-center justify-center w-full px-4 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
-               <i class="fas fa-sign-out-alt mr-2"></i> Logout
-            </a>
-        </div>
-    </aside>
+    {% include 'admin_sidebar.html' %}
 
     <main class="flex-1 bg-[#fcfcfc] min-h-screen p-10">
         

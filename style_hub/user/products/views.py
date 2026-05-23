@@ -5,6 +5,8 @@ from admin_panel.productmanagement.models import Product, ProductVariant
 from admin_panel.categorymanagement.models import Category
 from user.cart.models import Cart
 from django.db.models import Q,Min
+from django.contrib import messages
+from decimal import Decimal
 
 def product_page(request):
     sort = request.GET.get('sort', '')
@@ -20,7 +22,8 @@ def product_page(request):
         category__is_active=True,
         variants__is_deleted=False,
         variants__is_active=True
-
+    ).select_related(
+        'category'
     ).annotate(
         display_price=Min('variants__variant_price')
     ).prefetch_related(
@@ -71,11 +74,14 @@ def product_page(request):
         product.display_variant = variant
 
         if variant:
+            product.display_price = variant.offer_price
             product.display_image = variant.images.filter(is_primary=True).first()
+
             if not product.display_image:
                 product.display_image = variant.images.first()
         else:
             product.display_image = None
+            product.display_price = Decimal('0.00')
 
     paginator = Paginator(products, 6)
     page_number = request.GET.get('page')
@@ -90,6 +96,7 @@ def product_page(request):
         'min_price': min_price,
         'max_price': max_price,
     }
+
     return render(request, 'product_page.html', context)
 
 
@@ -100,6 +107,8 @@ def product_detail(request, id):
         id=id,
         is_deleted=False,
         is_active=True,
+        category__is_deleted=False,
+        category__is_active=True,
     )
 
     # Prefetch variants and their images
@@ -146,15 +155,16 @@ def product_detail(request, id):
 
 @login_required(login_url='login')
 def buy_now(request):
-
     variant_id = request.GET.get('variant_id')
-
     variant = get_object_or_404(
         ProductVariant,
         id=variant_id,
         is_deleted=False,
         is_active=True
     )
+    if variant.variant_stock <= 0:
+        messages.error(request, 'Product out of stock')
+        return redirect('product_detail', id=variant.product.id)
 
     cart_item, created = Cart.objects.get_or_create(
         user=request.user,
@@ -165,7 +175,7 @@ def buy_now(request):
     )
 
     if not created:
-        cart_item.quantity += 1
+        cart_item.quantity = 1
         cart_item.save()
 
     return redirect('checkout')

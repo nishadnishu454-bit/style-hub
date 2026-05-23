@@ -4,12 +4,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
+from django.http import HttpResponse
 from django.db.models import Q
-from user.orders.models import Order, OrderItem , Review , ReviewImage
-from django.urls import reverse
+from user.orders.models import Order, OrderItem, Review, ReviewImage
+from user.wallet.utils import credit_wallet
 
 
-# Create your views here.
 @login_required(login_url='login')
 def user_orders_listing(request):
     search_query = request.GET.get('search', '')
@@ -43,14 +46,12 @@ def user_orders_listing(request):
     return render(request, 'orderslisting.html', context)
 
 
-
-
-
 @login_required(login_url='login')
 def orders_view(request):
     order_id = request.GET.get('order_id')
+
     if not order_id:
-        return redirect('orders_listing')
+        return redirect('user_orders_listing')
 
     order = get_object_or_404(
         Order.objects.select_related('address').prefetch_related(
@@ -63,14 +64,26 @@ def orders_view(request):
         user=request.user
     )
 
-    return render(request, 'ordersview.html', {'order': order})
+    from decimal import Decimal
+    offer_discount = Decimal('0.00')
+    for item in order.items.all():
+        if item.variant:
+            orig_price = item.variant.variant_price
+            if orig_price > item.price:
+                offer_discount += (orig_price - item.price) * item.quantity
+    original_subtotal = order.subtotal + offer_discount
 
+    context = {
+        'order': order,
+        'offer_discount': offer_discount,
+        'original_subtotal': original_subtotal,
+    }
 
+    return render(request, 'ordersview.html', context)
 
 
 @login_required(login_url='login')
 def order_success(request):
-
     order_id = request.session.get('order_id')
 
     if not order_id:
@@ -92,14 +105,25 @@ def order_success(request):
 
 @login_required(login_url='login')
 def invoice(request):
-    from reportlab.pdfgen import canvas
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib import colors
-    from reportlab.lib.units import inch
-    from django.http import HttpResponse
-
     order_id = request.GET.get('order_id')
-    order = get_object_or_404(Order.objects.select_related('address').prefetch_related('items', 'items__variant'), id=order_id, user=request.user)
+
+    order = get_object_or_404(
+        Order.objects.select_related('address').prefetch_related(
+            'items',
+            'items__variant'
+        ),
+        id=order_id,
+        user=request.user
+    )
+
+    from decimal import Decimal
+    offer_discount = Decimal('0.00')
+    for item in order.items.all():
+        if item.variant:
+            orig_price = item.variant.variant_price
+            if orig_price > item.price:
+                offer_discount += (orig_price - item.price) * item.quantity
+    original_subtotal = order.subtotal + offer_discount
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="invoice_{order.order_number}.pdf"'
@@ -107,73 +131,84 @@ def invoice(request):
     p = canvas.Canvas(response, pagesize=A4)
     width, height = A4
 
-    # Header
     p.setFont("Helvetica-Bold", 24)
-    p.drawCentredString(width/2, height - 1*inch, "STYLE-HUB")
+    p.drawCentredString(width / 2, height - 1 * inch, "STYLE-HUB")
     p.setFont("Helvetica", 12)
-    p.drawCentredString(width/2, height - 1.3*inch, "The Midnight Atelier")
-    
-    p.line(1*inch, height - 1.5*inch, width - 1*inch, height - 1.5*inch)
+    p.drawCentredString(width / 2, height - 1.3 * inch, "The Midnight Atelier")
 
-    # Order Info
+    p.line(1 * inch, height - 1.5 * inch, width - 1 * inch, height - 1.5 * inch)
+
     p.setFont("Helvetica-Bold", 12)
-    p.drawString(1*inch, height - 2*inch, f"Invoice Number: #INV-{order.order_number}")
-    p.drawString(1*inch, height - 2.2*inch, f"Order Date: {order.ordered_at.strftime('%B %d, %Y')}")
-    
-    # Billing Address
-    p.drawString(1*inch, height - 2.7*inch, "Bill To:")
+    p.drawString(1 * inch, height - 2 * inch, f"Invoice Number: #INV-{order.order_number}")
+    p.drawString(1 * inch, height - 2.2 * inch, f"Order Date: {order.ordered_at.strftime('%B %d, %Y')}")
+
+    p.drawString(1 * inch, height - 2.7 * inch, "Bill To:")
     p.setFont("Helvetica", 10)
+
     addr = order.address
+
     if addr:
-        p.drawString(1*inch, height - 2.9*inch, f"{addr.full_name}")
-        p.drawString(1*inch, height - 3.1*inch, f"{addr.house_name}, {addr.address}")
-        p.drawString(1*inch, height - 3.3*inch, f"{addr.area}, {addr.district}")
-        p.drawString(1*inch, height - 3.5*inch, f"{addr.state}, {addr.pincode}")
+        p.drawString(1 * inch, height - 2.9 * inch, f"{addr.full_name}")
+        p.drawString(1 * inch, height - 3.1 * inch, f"{addr.house_name}, {addr.address}")
+        p.drawString(1 * inch, height - 3.3 * inch, f"{addr.area}, {addr.district}")
+        p.drawString(1 * inch, height - 3.5 * inch, f"{addr.state}, {addr.pincode}")
     else:
-        p.drawString(1*inch, height - 2.9*inch, "N/A")
+        p.drawString(1 * inch, height - 2.9 * inch, "N/A")
 
-    # Table Header
-    y = height - 4.2*inch
+    y = height - 4.2 * inch
     p.setFont("Helvetica-Bold", 10)
-    p.drawString(1*inch, y, "Product Name")
-    p.drawString(3.5*inch, y, "Qty")
-    p.drawString(4.5*inch, y, "Unit Price")
-    p.drawString(5.5*inch, y, "Total")
-    p.line(1*inch, y - 0.1*inch, width - 1*inch, y - 0.1*inch)
+    p.drawString(1 * inch, y, "Product Name")
+    p.drawString(3.5 * inch, y, "Qty")
+    p.drawString(4.5 * inch, y, "Unit Price")
+    p.drawString(5.5 * inch, y, "Total")
+    p.line(1 * inch, y - 0.1 * inch, width - 1 * inch, y - 0.1 * inch)
 
-    # Items
-    y -= 0.3*inch
+    y -= 0.3 * inch
     p.setFont("Helvetica", 10)
+
     for item in order.items.all():
         size = item.variant.size if item.variant else "N/A"
-        p.drawString(1*inch, y, f"{item.product_name} ({size})")
-        p.drawString(3.5*inch, y, f"{item.quantity}")
-        p.drawString(4.5*inch, y, f"INR {item.price}")
-        p.drawString(5.5*inch, y, f"INR {item.total_price}")
-        y -= 0.25*inch
-        if y < 1*inch:
-            p.showPage()
-            y = height - 1*inch
 
-    # Totals
-    y -= 0.2*inch
-    p.line(4*inch, y, width - 1*inch, y)
-    y -= 0.3*inch
-    p.drawString(4.5*inch, y, "Subtotal:")
-    p.drawRightString(width - 1*inch, y, f"INR {order.subtotal}")
-    y -= 0.2*inch
-    p.drawString(4.5*inch, y, "Discount:")
-    p.drawRightString(width - 1*inch, y, f"- INR {order.discount_amount}")
-    y -= 0.2*inch
-    p.drawString(4.5*inch, y, "Delivery:")
-    p.drawRightString(width - 1*inch, y, f"INR {order.delivery_charge}")
-    y -= 0.3*inch
+        p.drawString(1 * inch, y, f"{item.product_name} ({size})")
+        p.drawString(3.5 * inch, y, f"{item.quantity}")
+        p.drawString(4.5 * inch, y, f"INR {item.price}")
+        p.drawString(5.5 * inch, y, f"INR {item.total_price}")
+
+        y -= 0.25 * inch
+
+        if y < 1 * inch:
+            p.showPage()
+            y = height - 1 * inch
+
+    y -= 0.2 * inch
+    p.line(4 * inch, y, width - 1 * inch, y)
+
+    y -= 0.3 * inch
+    p.drawString(4.5 * inch, y, "Subtotal:")
+    p.drawRightString(width - 1 * inch, y, f"INR {original_subtotal}")
+
+    if offer_discount > 0:
+        y -= 0.2 * inch
+        p.drawString(4.5 * inch, y, "Offer Discount:")
+        p.drawRightString(width - 1 * inch, y, f"- INR {offer_discount}")
+
+    if order.discount_amount > 0:
+        y -= 0.2 * inch
+        p.drawString(4.5 * inch, y, "Coupon Discount:")
+        p.drawRightString(width - 1 * inch, y, f"- INR {order.discount_amount}")
+
+    y -= 0.2 * inch
+    p.drawString(4.5 * inch, y, "Delivery:")
+    p.drawRightString(width - 1 * inch, y, f"INR {order.delivery_charge}")
+
+    y -= 0.3 * inch
     p.setFont("Helvetica-Bold", 12)
-    p.drawString(4.5*inch, y, "Final Total:")
-    p.drawRightString(width - 1*inch, y, f"INR {order.total_amount}")
+    p.drawString(4.5 * inch, y, "Final Total:")
+    p.drawRightString(width - 1 * inch, y, f"INR {order.total_amount}")
 
     p.showPage()
     p.save()
+
     return response
 
 
@@ -182,13 +217,23 @@ def order_cancel_success(request):
     if request.method == 'POST':
         order_id = request.POST.get('order_id')
         item_id = request.POST.get('item_id')
-        reason = request.POST.get('reason', 'Cancelled by user')
+        reason = request.POST.get('reason', '').strip()
+
+        if not reason:
+            messages.error(request, 'Cancellation reason is required')
+            if item_id:
+                item = get_object_or_404(OrderItem, id=item_id, order__user=request.user)
+                return redirect(f"{reverse('orders_view')}?order_id={item.order.id}")
+            elif order_id:
+                return redirect(f"{reverse('orders_view')}?order_id={order_id}")
+            return redirect('user_orders_listing')
 
         if item_id:
             item = get_object_or_404(OrderItem, id=item_id, order__user=request.user)
+
             if item.item_status not in ['Pending', 'Confirmed', 'Shipped']:
                 messages.error(request, f"Item cannot be cancelled in its current status: {item.item_status}")
-                return redirect('orders_view')
+                return redirect(f"{reverse('orders_view')}?order_id={item.order.id}")
 
             with transaction.atomic():
                 item.item_status = 'Cancelled'
@@ -199,20 +244,33 @@ def order_cancel_success(request):
                     item.variant.variant_stock += item.quantity
                     item.variant.save()
 
-                # Check if all items in the order are cancelled
                 order = item.order
+
+                if order.payment_status == 'Completed':
+                    credit_wallet(
+                        user=request.user,
+                        amount=item.total_price,
+                        purpose='Item Cancellation Refund',
+                        order=order
+                    )
+
                 if not order.items.exclude(item_status='Cancelled').exists():
                     order.order_status = 'Cancelled'
+
+                    if order.payment_status == 'Completed':
+                        order.payment_status = 'Refunded'
+
                     order.save()
 
-            messages.success(request, "Item cancelled successfully.")
+            messages.success(request, "Item cancelled successfully. Refund added to wallet.")
             return redirect(f"{reverse('orders_view')}?order_id={item.order.id}")
 
         elif order_id:
             order = get_object_or_404(Order, id=order_id, user=request.user)
+
             if order.order_status not in ['Pending', 'Confirmed', 'Shipped']:
                 messages.error(request, f"Order cannot be cancelled in its current status: {order.order_status}")
-                return redirect('orders_view')
+                return redirect(f"{reverse('orders_view')}?order_id={order.id}")
 
             with transaction.atomic():
                 order.order_status = 'Cancelled'
@@ -224,20 +282,30 @@ def order_cancel_success(request):
                         item.item_status = 'Cancelled'
                         item.reason = reason
                         item.save()
+
                         if item.variant:
                             item.variant.variant_stock += item.quantity
                             item.variant.save()
 
-            messages.success(request, "Order cancelled successfully.")
+                if order.payment_status == 'Completed':
+                    credit_wallet(
+                        user=request.user,
+                        amount=order.total_amount,
+                        purpose='Order Cancellation Refund',
+                        order=order
+                    )
+
+                    order.payment_status = 'Refunded'
+                    order.save()
+
+            messages.success(request, "Order cancelled successfully. Refund added to wallet.")
             return redirect(f"{reverse('orders_view')}?order_id={order.id}")
 
     return render(request, 'order_cancel_success.html')
 
 
-
 @login_required(login_url='login')
 def review_writing(request):
-
     item_id = request.GET.get('item_id')
 
     if not item_id:
@@ -262,7 +330,6 @@ def review_writing(request):
         return redirect(f'/orders/orders_view/?order_id={order_item.order.id}')
 
     if request.method == 'POST':
-
         rating = request.POST.get('rating')
         title = request.POST.get('title', '').strip()
         content = request.POST.get('content', '').strip()
@@ -310,10 +377,11 @@ def return_order(request):
 
         if not reason:
             messages.error(request, "Return reason is required.")
-            return redirect('orders_listing')
+            return redirect('user_orders_listing')
 
         if item_id:
             item = get_object_or_404(OrderItem, id=item_id, order__user=request.user)
+
             if item.item_status != 'Delivered':
                 messages.error(request, "Only delivered items can be returned.")
                 return redirect(f"{reverse('orders_view')}?order_id={item.order.id}")
@@ -322,19 +390,20 @@ def return_order(request):
             item.reason = reason
             item.save()
 
-            # Check if all delivered items in the order are now in return requested
             order = item.order
-            if not order.items.filter(item_status='Delivered').exists():
-                 # If all items are returned or cancelled or requested for return
-                 if order.items.filter(item_status='Return Requested').exists():
-                     order.order_status = 'Return Requested'
-                     order.save()
+
+            if not order.items.exclude(
+                item_status__in=['Return Requested', 'Returned', 'Cancelled']
+            ).exists():
+                order.order_status = 'Return Requested'
+                order.save()
 
             messages.success(request, "Return request submitted successfully.")
             return redirect(f"{reverse('orders_view')}?order_id={item.order.id}")
 
         elif order_id:
             order = get_object_or_404(Order, id=order_id, user=request.user)
+
             if order.order_status != 'Delivered':
                 messages.error(request, "Only delivered orders can be returned.")
                 return redirect(f"{reverse('orders_view')}?order_id={order.id}")
@@ -352,4 +421,4 @@ def return_order(request):
             messages.success(request, "Order return request submitted successfully.")
             return redirect(f"{reverse('orders_view')}?order_id={order.id}")
 
-    return redirect('orders_listing')
+    return redirect('user_orders_listing')

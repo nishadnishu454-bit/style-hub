@@ -104,6 +104,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'user.core.middleware.ClearMessagesMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
@@ -186,7 +187,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'stylehub140@gmail.com'
-EMAIL_HOST_PASSWORD = 'lvjduahtphcqyvkk'
+EMAIL_HOST_PASSWORD = 'asvfpuxmmbxwcghn'
 EMAIL_USE_TLS = True
 
 MEDIA_URL = '/media/'

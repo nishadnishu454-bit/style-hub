@@ -131,19 +131,27 @@ def edit_category(request,id):
     category=get_object_or_404(Category,id=id,is_deleted=False)
 
     if request.method == 'POST':
-        category_name = request.POST.get('category_name')
-        description = request.POST.get('description')
+        category_name = request.POST.get('category_name', '').strip()
+        description = request.POST.get('description', '').strip()
         category_image = request.FILES.get('category_image')
 
+        if not category_name:
+            messages.error(request, 'Category name is required')
+            return redirect('edit_category', id=id)
+
         existing_category = Category.objects.filter(
-                category_name__iexact=category_name,
-                is_deleted=False
-            ).exclude(id=id)
+            category_name__iexact=category_name,
+            is_deleted=False
+        ).exclude(id=id)
+
+        if existing_category.exists():
+            messages.error(request, 'Category name already exists')
+            return redirect('edit_category', id=id)
 
         category.category_name = category_name
         category.description = description
         if category_image:
-                category.category_image = category_image
+            category.category_image = category_image
 
         category.save()
         messages.success(request,'Category updated successfully')

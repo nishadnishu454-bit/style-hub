@@ -38,66 +38,7 @@
 <body class="flex min-h-screen">
 
     <!-- SIDEBAR -->
-    <aside class="w-64 bg-white border-r border-gray-100 flex flex-col sticky top-0 h-screen">
-        <div class="p-8">
-            <h1 class="text-xl font-extrabold tracking-widest text-gray-800">STYLE-HUB</h1>
-            <p class="text-[10px] text-gray-400 uppercase tracking-tighter font-bold">Admin Atelier</p>
-        </div>
-
-        <nav class="flex-1 px-4 space-y-1">
-            <a href="{% url 'admin_dashboard' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-th-large w-6 text-sm"></i><span class="nav-text">Dashboard</span>
-            </a>
-
-            <a href="" class="flex items-center px-4 py-3 bg-gray-100 text-black rounded-sm border-l-4 border-black ">
-                <i class="fas fa-archive w-6 text-sm"></i><span class="nav-text">Products</span>
-            </a>
-
-            <a href="{% url 'category_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-network-wired w-6 text-sm"></i><span class="nav-text">Categories</span>
-            </a>
-
-            <a href="{% url 'orders_listing' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-shopping-bag w-6 text-sm"></i><span class="nav-text">Orders</span>
-            </a>
-
-            <a href="{% url 'user_management' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-user-friends w-6 text-sm"></i><span class="nav-text">Users</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-ticket-alt w-6 text-sm"></i><span class="nav-text">Coupons</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-tag w-6 text-sm"></i><span class="nav-text">Offers</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="far fa-user-circle w-6 text-sm"></i><span class="nav-text">Profile</span>
-            </a>
-
-            <a href="{% url 'return_requests' %}" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-arrow-rotate-left w-6 text-sm"></i><span class="nav-text">Returns</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="far fa-comment-dots w-6 text-sm"></i><span class="nav-text">Reviews</span>
-            </a>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:text-black transition">
-                <i class="fas fa-comment-dots w-6 text-sm"></i><span class="nav-text">Banners</span>
-            </a>
-        </nav>
-
-        <div class="p-4 mt-auto">
-            <a href="{% url 'admin_logout' %}"
-               onclick="return confirm('Are you sure you want to logout?')"
-               class="flex items-center justify-center w-full px-4 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
-               <i class="fas fa-sign-out-alt mr-2"></i> Logout
-            </a>
-        </div>
-    </aside>
+    {% include 'admin_sidebar.html' %}
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 p-8">

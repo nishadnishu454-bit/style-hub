@@ -2,14 +2,15 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import CustomUser as User, OTP
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 import random
-
+from .utils import send_branded_otp_email
+import re
+from django.contrib.auth import get_user_model
 
 def login_page(request):
     if request.user.is_authenticated:
@@ -58,71 +59,147 @@ def login_page(request):
 
     return render(request, 'authentication/login.html')
 
+User = get_user_model()
 
 def signup_page(request):
+    ref_code = request.GET.get('ref')
+
+    if ref_code:
+        request.session['referral_code'] = ref_code
+
     if request.method == 'POST':
-        username = request.POST.get('username')
+        username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip().lower()
-        phone_number = request.POST.get('phone_number')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-
+        phone_number = request.POST.get('phone_number', '').strip()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
         terms = request.POST.get('terms')
-
 
         if not username or not email or not phone_number or not password or not confirm_password:
             messages.error(request, 'All fields are required')
             return redirect('signup')
 
-        if password != confirm_password:
-            messages.error(request, 'Passwords do not match')
+        # Username validations
+        if len(username) < 3:
+            messages.error(request, 'Username must be at least 3 characters')
             return redirect('signup')
 
-        if len(password) < 6:
-            messages.error(request, 'Password must be at least 6 characters')
+        if len(username) > 20:
+            messages.error(request, 'Username cannot exceed 20 characters')
             return redirect('signup')
 
-        if User.objects.filter(username=username).exists():
+        if ' ' in username:
+            messages.error(request, 'Username cannot contain spaces')
+            return redirect('signup')
+
+        if not re.match(r'^[A-Za-z][A-Za-z0-9_]*$', username):
+            messages.error(request, 'Username must start with a letter and can only contain letters, numbers, and underscore')
+            return redirect('signup')
+
+        if username.isdigit():
+            messages.error(request, 'Username cannot contain only numbers')
+            return redirect('signup')
+
+        if User.objects.filter(username__iexact=username).exists():
             messages.error(request, 'Username already exists')
             return redirect('signup')
-        
-        if not terms:
-            messages.error(request, "Please accept Terms and Privacy Policy")
-            return redirect('signup')
-        
 
+        # Email validations
+        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w{2,}$'
+
+        if not re.match(email_pattern, email):
+            messages.error(request, 'Enter a valid email address')
+            return redirect('signup')
 
         if User.objects.filter(email__iexact=email).exists():
             messages.error(request, 'Email already exists')
             return redirect('signup')
-        
-        
+
+        # Phone validations
+        if not phone_number.isdigit():
+            messages.error(request, 'Phone number must contain only digits')
+            return redirect('signup')
+
+        if len(phone_number) != 10:
+            messages.error(request, 'Phone number must be 10 digits')
+            return redirect('signup')
+
+        if phone_number[0] not in ['6', '7', '8', '9']:
+            messages.error(request, 'Enter a valid Indian phone number')
+            return redirect('signup')
+
+        if User.objects.filter(phone_number=phone_number).exists():
+            messages.error(request, 'Phone number already exists')
+            return redirect('signup')
+
+        # Password validations
+        if password != confirm_password:
+            messages.error(request, 'Passwords do not match')
+            return redirect('signup')
+
+        if len(password) < 8:
+            messages.error(request, 'Password must be at least 8 characters')
+            return redirect('signup')
+
+        if not re.search(r'[A-Z]', password):
+            messages.error(request, 'Password must contain at least one uppercase letter')
+            return redirect('signup')
+
+        if not re.search(r'[a-z]', password):
+            messages.error(request, 'Password must contain at least one lowercase letter')
+            return redirect('signup')
+
+        if not re.search(r'\d', password):
+            messages.error(request, 'Password must contain at least one number')
+            return redirect('signup')
+
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            messages.error(request, 'Password must contain at least one special character')
+            return redirect('signup')
+
+        if username.lower() in password.lower():
+            messages.error(request, 'Password should not contain your username')
+            return redirect('signup')
+
+        if not terms:
+            messages.error(request, "Please accept Terms and Privacy Policy")
+            return redirect('signup')
+
+        referred_by_user = None
+        referral_code_input = request.POST.get('referral_code', '').strip().upper()
+        session_ref_code = referral_code_input or request.session.get('referral_code')
+
+        if session_ref_code:
+            try:
+                referred_by_user = User.objects.get(referral_code=session_ref_code)
+            except User.DoesNotExist:
+                if referral_code_input:
+                    messages.error(request, 'Invalid referral code')
+                    return redirect('signup')
 
         user = User.objects.create_user(
             username=username,
             email=email,
             phone_number=phone_number,
             password=password,
-            is_email_verified=False
+            is_email_verified=False,
+            referred_by=referred_by_user
         )
-        
 
-        
         OTP.objects.filter(user=user, purpose='signup_verification').delete()
 
         otp = str(random.randint(100000, 999999))
+
         OTP.objects.create(
             user=user,
             code=otp,
             purpose='signup_verification'
         )
 
-        send_mail(
-            'STYLE-HUB Email Verification',
-            f'Your OTP is {otp}',
-            settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=False,
+        send_branded_otp_email(
+            email=email,
+            otp=otp,
+            purpose_text="Email Verification"
         )
 
         request.session['verification_user_id'] = user.id
@@ -173,9 +250,27 @@ def email_verfication(request):
             user.is_email_verified = True
             user.save()
 
+            if user.referred_by:
+                from user.authentication.models import Referral
+                from user.wallet.utils import credit_wallet
+                referral, created = Referral.objects.get_or_create(
+                    referred_user=user,
+                    defaults={
+                        'referrer': user.referred_by,
+                        'benefit_amount_referred': 50.00,
+                        'benefit_amount_referrer': 100.00,
+                        'is_referrer_rewarded': False
+                    }
+                )
+                if created:
+                    credit_wallet(user, 50.00, 'Referral Signup Benefit')
+                    messages.success(request, 'You received ₹50 referral signup bonus in your wallet!')
+
             otp_obj.delete()
             if 'verification_user_id' in request.session:
                 del request.session['verification_user_id']
+            if 'referral_code' in request.session:
+                del request.session['referral_code']
 
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, 'Email verified successfully')
@@ -213,12 +308,10 @@ def forgott_password(request):
             purpose='password_reset'
         )
 
-        send_mail(
-            'STYLE-HUB Password Reset OTP',
-            f'Your OTP for password reset is {otp}',
-            settings.EMAIL_HOST_USER,
-            [user.email],
-            fail_silently=False,
+        send_branded_otp_email(
+            email=user.email,
+            otp=otp,
+            purpose_text="Password Reset"
         )
 
         request.session['reset_user_id'] = user.id
@@ -328,12 +421,10 @@ def resend_otp(request):
         purpose=purpose
     )
 
-    send_mail(
-        "STYLE-HUB OTP Verification",
-        f"Your new OTP is {otp}",
-        settings.EMAIL_HOST_USER,
-        [email],
-        fail_silently=False,
+    send_branded_otp_email(
+        email=email,
+        otp=otp,
+        purpose_text="OTP Verification"
     )
 
     return JsonResponse({"success": True, "message": "New OTP sent"})

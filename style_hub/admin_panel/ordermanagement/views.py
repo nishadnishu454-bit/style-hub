@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 
 from user.orders.models import Order, OrderItem
-from admin_panel.productmanagement.models import ProductVariant
+from user.wallet.utils import credit_wallet
 
 
 def is_admin(user):
@@ -21,7 +21,6 @@ def orders_listing(request):
     payment = request.GET.get('payment', '')
     date = request.GET.get('date', '')
     sort = request.GET.get('sort', '')
-   
 
     orders = Order.objects.select_related('user').prefetch_related(
         'items',
@@ -39,7 +38,6 @@ def orders_listing(request):
             Q(items__variant__size__icontains=search)
         ).distinct()
 
-        
     if status:
         orders = orders.filter(order_status=status)
 
@@ -61,9 +59,6 @@ def orders_listing(request):
     paginator = Paginator(orders, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    
-
 
     context = {
         'orders': page_obj,
@@ -90,9 +85,24 @@ def order_details(request, id):
         'variant__product'
     )
 
+    VALID_TRANSITIONS = {
+        'Pending': ['Pending', 'Confirmed', 'Cancelled'],
+        'Confirmed': ['Confirmed', 'Shipped', 'Cancelled'],
+        'Shipped': ['Shipped', 'Out for Delivery', 'Cancelled'],
+        'Out for Delivery': ['Out for Delivery', 'Delivered', 'Cancelled'],
+        'Delivered': ['Delivered'],
+        'Cancelled': ['Cancelled'],
+        'Return Requested': ['Return Requested', 'Returned', 'Return Rejected'],
+        'Returned': ['Returned'],
+        'Return Rejected': ['Return Rejected'],
+    }
+
+    allowed_statuses = [status for status in order.ORDER_STATUS if status[0] in VALID_TRANSITIONS.get(order.order_status, [order.order_status])]
+
     context = {
         'order': order,
         'order_items': order_items,
+        'allowed_statuses': allowed_statuses,
     }
 
     return render(request, 'orderdetails.html', context)
@@ -110,23 +120,39 @@ def update_status(request, id):
         if new_status == old_status:
             return redirect('order_details', id=order.id)
 
+        VALID_TRANSITIONS = {
+            'Pending': ['Pending', 'Confirmed', 'Cancelled'],
+            'Confirmed': ['Confirmed', 'Shipped', 'Cancelled'],
+            'Shipped': ['Shipped', 'Out for Delivery', 'Cancelled'],
+            'Out for Delivery': ['Out for Delivery', 'Delivered', 'Cancelled'],
+            'Delivered': ['Delivered'],
+            'Cancelled': ['Cancelled'],
+            'Return Requested': ['Return Requested', 'Returned', 'Return Rejected'],
+            'Returned': ['Returned'],
+            'Return Rejected': ['Return Rejected'],
+        }
+
+        if new_status not in VALID_TRANSITIONS.get(old_status, []):
+            messages.error(request, f'Invalid status transition from {old_status} to {new_status}')
+            return redirect('order_details', id=order.id)
+
         with transaction.atomic():
             order.order_status = new_status
             order.save()
 
-            # If order is cancelled or returned, revert stock for all items that weren't already cancelled/returned
             if new_status in ['Cancelled', 'Returned'] and old_status not in ['Cancelled', 'Returned', 'Return Requested']:
                 for item in order.items.all():
                     if item.item_status not in ['Cancelled', 'Returned']:
                         if item.variant:
                             item.variant.variant_stock += item.quantity
                             item.variant.save()
+
                         item.item_status = new_status
                         item.save()
             else:
-                # Update individual item statuses to match the new order status
-                # (Assuming admin status change applies to all items unless they were manually changed)
-                order.items.exclude(item_status__in=['Cancelled', 'Returned', 'Return Requested']).update(item_status=new_status)
+                order.items.exclude(
+                    item_status__in=['Cancelled', 'Returned', 'Return Requested']
+                ).update(item_status=new_status)
 
         messages.success(request, f'Order status updated to {new_status}')
         return redirect('order_details', id=order.id)
@@ -138,20 +164,39 @@ def update_status(request, id):
 @user_passes_test(is_admin, login_url='admin_login')
 def return_requests(request):
     search = request.GET.get('search', '')
-    
-    # Filter for orders or items that have "Return Requested" status
-    orders = Order.objects.filter(order_status='Return Requested').select_related('user').prefetch_related('items')
-    items = OrderItem.objects.filter(item_status='Return Requested').select_related('order', 'order__user', 'variant', 'variant__product')
+
+    orders = Order.objects.filter(
+        order_status='Return Requested'
+    ).select_related('user').prefetch_related('items')
+
+    items = OrderItem.objects.filter(
+        item_status='Return Requested'
+    ).exclude(
+        order__order_status='Return Requested'
+    ).select_related(
+        'order',
+        'order__user',
+        'variant',
+        'variant__product'
+    )
 
     if search:
-        orders = orders.filter(Q(order_number__icontains=search) | Q(user__username__icontains=search))
-        items = items.filter(Q(order__order_number__icontains=search) | Q(order__user__username__icontains=search))
+        orders = orders.filter(
+            Q(order_number__icontains=search) |
+            Q(user__username__icontains=search)
+        )
+
+        items = items.filter(
+            Q(order__order_number__icontains=search) |
+            Q(order__user__username__icontains=search)
+        )
 
     context = {
         'orders': orders,
         'items': items,
         'search': search,
     }
+
     return render(request, 'return_requests.html', context)
 
 
@@ -163,37 +208,80 @@ def approve_return(request):
         item_id = request.POST.get('item_id')
 
         with transaction.atomic():
+
             if item_id:
-                item = get_object_or_404(OrderItem, id=item_id)
+                item = get_object_or_404(
+                    OrderItem.objects.select_related('order', 'variant'),
+                    id=item_id
+                )
+
+                if item.item_status != 'Return Requested':
+                    messages.error(request, 'This item is not requested for return')
+                    return redirect('return_requests')
+
                 item.item_status = 'Returned'
                 item.save()
+
                 if item.variant:
                     item.variant.variant_stock += item.quantity
                     item.variant.save()
-                
-                # Update order status if all items are now Returned/Cancelled
+
+                if item.order.payment_status in ['Completed','completed']:
+                    refund_amount = item.price * item.quantity
+
+                    credit_wallet(
+                        user=item.order.user,
+                        amount=refund_amount,
+                        purpose='Return Refund',
+                        order=item.order
+                    )
+
                 order = item.order
+
                 if not order.items.exclude(item_status__in=['Returned', 'Cancelled']).exists():
                     order.order_status = 'Returned'
-                    order.save()
-                
-                messages.success(request, f"Return approved for item: {item.product_name}")
-            
+                    order.payment_status = 'refunded'
+                order.save()
+
+                messages.success(request, f'Return approved and refund processed for item: {item.product_name}')
+
             elif order_id:
-                order = get_object_or_404(Order, id=order_id)
+                order = get_object_or_404(
+                    Order.objects.prefetch_related('items__variant'),
+                    id=order_id
+                )
+
+                if order.order_status != 'Return Requested':
+                    messages.error(request, 'This order is not requested for return')
+                    return redirect('return_requests')
+
                 order.order_status = 'Returned'
                 order.save()
+
                 for item in order.items.all():
                     if item.item_status == 'Return Requested':
                         item.item_status = 'Returned'
                         item.save()
+
                         if item.variant:
                             item.variant.variant_stock += item.quantity
                             item.variant.save()
-                
-                messages.success(request, f"Return approved for order: {order.order_number}")
+
+                if order.payment_status == 'Completed':
+                    credit_wallet(
+                        user=order.user,
+                        amount=order.total_amount,
+                        purpose='Return Refund',
+                        order=order
+                    )
+
+                    order.payment_status = 'refunded'
+                    order.save()
+
+                messages.success(request, f'Return approved and refund processed for order: {order.order_number}')
 
         return redirect('return_requests')
+
     return redirect('orders_listing')
 
 
@@ -205,27 +293,34 @@ def reject_return(request):
         item_id = request.POST.get('item_id')
 
         if item_id:
-            item = get_object_or_404(OrderItem, id=item_id)
+            item = get_object_or_404(
+                OrderItem.objects.select_related('order'),
+                id=item_id
+            )
+
             item.item_status = 'Return Rejected'
             item.save()
-            
-            # Reset order status if it was Return Requested
+
             order = item.order
+
             if order.order_status == 'Return Requested':
                 order.order_status = 'Delivered'
                 order.save()
-                
-            messages.info(request, f"Return rejected for item: {item.product_name}")
-        
+
+            messages.info(request, f'Return rejected for item: {item.product_name}')
+
         elif order_id:
             order = get_object_or_404(Order, id=order_id)
+
             order.order_status = 'Return Rejected'
             order.save()
+
             for item in order.items.filter(item_status='Return Requested'):
                 item.item_status = 'Return Rejected'
                 item.save()
-                
-            messages.info(request, f"Return rejected for order: {order.order_number}")
+
+            messages.info(request, f'Return rejected for order: {order.order_number}')
 
         return redirect('return_requests')
+
     return redirect('orders_listing')

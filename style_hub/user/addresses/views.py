@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Address
 from django.db.models import Q
+from django.urls import reverse
 
 
 @login_required(login_url='login')
@@ -25,6 +26,7 @@ def address_page(request):
 
 @login_required(login_url='login')
 def add_address_page(request):
+    next_url = request.GET.get('next') or request.POST.get('next', '')
     if request.method == 'POST':
         full_name = request.POST.get('full_name')
         phone_number = request.POST.get('phone_number')
@@ -40,15 +42,15 @@ def add_address_page(request):
 
         if not full_name or not phone_number or not house_name or not address or not area or not country or not district or not state or not pincode or not address_type:
             messages.error(request, "All fields are required")
-            return redirect('add_address')
+            return redirect(reverse('add_address') + (f"?next={next_url}" if next_url else ""))
 
         if not phone_number.isdigit() or len(phone_number) != 10:
             messages.error(request, "Invalid phone number")
-            return redirect('add_address')
+            return redirect(reverse('add_address') + (f"?next={next_url}" if next_url else ""))
 
         if not pincode.isdigit() or len(pincode) != 6:
             messages.error(request, "Invalid pincode")
-            return redirect('add_address')
+            return redirect(reverse('add_address') + (f"?next={next_url}" if next_url else ""))
 
         if is_default:
             Address.objects.filter(user=request.user, is_default=True).update(is_default=False)
@@ -69,9 +71,11 @@ def add_address_page(request):
         )
 
         messages.success(request, "Address added successfully")
+        if next_url == 'checkout':
+            return redirect('checkout')
         return redirect('address_page')
 
-    return render(request, 'add_address.html')
+    return render(request, 'add_address.html', {'next': next_url})
 
 
 @login_required(login_url='login')
@@ -90,6 +94,7 @@ def set_default_address(request, id):
 @login_required(login_url='login')
 def edit_address_page(request, id):
     address_obj = get_object_or_404(Address, id=id, user=request.user)
+    next_url = request.GET.get('next') or request.POST.get('next', '')
 
     if request.method == 'POST':
         full_name = request.POST.get('full_name')
@@ -106,15 +111,15 @@ def edit_address_page(request, id):
 
         if not full_name or not phone_number or not house_name or not address or not area or not country or not district or not state or not pincode or not address_type:
             messages.error(request, "All fields are required")
-            return redirect('edit_address', id=id)
+            return redirect(reverse('edit_address', id=id) + (f"?next={next_url}" if next_url else ""))
 
         if not phone_number.isdigit() or len(phone_number) != 10:
             messages.error(request, "Invalid phone number")
-            return redirect('edit_address', id=id)
+            return redirect(reverse('edit_address', id=id) + (f"?next={next_url}" if next_url else ""))
 
         if not pincode.isdigit() or len(pincode) != 6:
             messages.error(request, "Invalid pincode")
-            return redirect('edit_address', id=id)
+            return redirect(reverse('edit_address', id=id) + (f"?next={next_url}" if next_url else ""))
 
         if is_default:
             Address.objects.filter(user=request.user, is_default=True).exclude(id=id).update(is_default=False)
@@ -133,9 +138,11 @@ def edit_address_page(request, id):
         address_obj.save()
 
         messages.success(request, "Address updated successfully")
+        if next_url == 'checkout':
+            return redirect('checkout')
         return redirect('address_page')
 
-    return render(request, 'edit_address.html', {'address': address_obj})
+    return render(request, 'edit_address.html', {'address': address_obj, 'next': next_url})
 
 
 @login_required(login_url='login')

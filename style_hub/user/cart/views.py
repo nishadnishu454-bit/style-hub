@@ -29,8 +29,15 @@ def cart_page(request):
     sub_total = 0
 
     for item in cart_items:
-        item.item_total = item.variant.variant_price * item.quantity
+        item.item_total = item.variant.offer_price * item.quantity
         sub_total += item.item_total
+
+    # Calculate offer discount
+    offer_discount = sum(
+        (item.variant.variant_price - item.variant.offer_price) * item.quantity 
+        for item in cart_items
+    )
+    original_subtotal = sub_total + offer_discount
 
     discount = 0
 
@@ -47,6 +54,8 @@ def cart_page(request):
         'cart_items': cart_items,
         'subtotal': sub_total,
         'sub_total': sub_total,
+        'original_subtotal': original_subtotal,
+        'offer_discount': offer_discount,
         'discount': discount,
         'delivery_charge': delivery_charge,
         'total_amount': total_amount,
@@ -187,8 +196,19 @@ def update_cart_quantity_ajax(request):
                     deleted = True
             
             # Recalculate totals
-            cart_items = Cart.objects.filter(user=request.user)
-            sub_total = sum(item.variant.variant_price * item.quantity for item in cart_items)
+            cart_items = Cart.objects.filter(
+                user=request.user,
+                variant__is_deleted=False,
+                variant__is_active=True,
+                variant__product__is_deleted=False,
+                variant__product__is_active=True,
+                variant__product__category__is_deleted=False,
+                variant__product__category__is_active=True
+                )
+            
+            sub_total = sum(item.variant.offer_price * item.quantity for item in cart_items)
+            offer_discount = sum((item.variant.variant_price - item.variant.offer_price) * item.quantity for item in cart_items)
+            original_subtotal = sub_total + offer_discount
             
             discount = 0
             if sub_total == 0:
@@ -199,14 +219,17 @@ def update_cart_quantity_ajax(request):
                 delivery_charge = 50
                 
             total_amount = sub_total - discount + delivery_charge
-            item_total = cart_item.variant.variant_price * cart_item.quantity if not deleted else 0
+            item_total = cart_item.variant.offer_price * cart_item.quantity if not deleted else 0
             
             return JsonResponse({
                 'status': status,
                 'message': message,
                 'quantity': cart_item.quantity,
                 'item_total': item_total,
+                'sub_total': sub_total,
                 'subtotal': sub_total,
+                'original_subtotal': original_subtotal,
+                'offer_discount': offer_discount,
                 'discount': discount,
                 'delivery_charge': "FREE" if delivery_charge == 0 and sub_total > 0 else f"₹{delivery_charge}",
                 'total_amount': total_amount,
