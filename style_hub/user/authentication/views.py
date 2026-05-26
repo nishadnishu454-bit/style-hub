@@ -17,12 +17,15 @@ def login_page(request):
         return redirect('profile')
 
     if request.method == 'POST':
+        old_data = request.POST
         username_or_email = request.POST.get('username_or_email')
         password = request.POST.get('password')
 
         if not username_or_email or not password:
             messages.error(request, 'All fields are required')
-            return redirect('login')
+            context={'old_data':old_data}
+
+            return render(request, 'authentication/login.html', context)
         
 
         user = None
@@ -35,11 +38,14 @@ def login_page(request):
 
         if user is None:
             messages.error(request, 'Invalid credentials')
-            return redirect('login')
+            context={'old_data':old_data}
+            return render(request, 'authentication/login.html', context)
+
         
         if user.is_staff or user.is_superuser:
             messages.error(request, 'Admin cannot login from user side')
-            return redirect('login')
+            context={'old_data':old_data}
+            return render(request, 'authentication/login.html', context)
 
         if not user.is_email_verified:
             messages.error(request, 'Please verify your email first')
@@ -49,7 +55,8 @@ def login_page(request):
         
         if not user.is_active:
             messages.error(request, "Your account is blocked")
-            return redirect('login')
+            context={'old_data':old_data}
+            return render(request, 'authentication/login.html', context)
         
                 
 
@@ -59,6 +66,7 @@ def login_page(request):
 
     return render(request, 'authentication/login.html')
 
+
 User = get_user_model()
 
 def signup_page(request):
@@ -67,7 +75,13 @@ def signup_page(request):
     if ref_code:
         request.session['referral_code'] = ref_code
 
+    old_data = {}
+    referral_code = request.session.get('referral_code', '')
+
+
     if request.method == 'POST':
+        old_data = request.POST
+
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip().lower()
         phone_number = request.POST.get('phone_number', '').strip()
@@ -75,95 +89,100 @@ def signup_page(request):
         confirm_password = request.POST.get('confirm_password', '')
         terms = request.POST.get('terms')
 
+        context={
+            'old_data':old_data,
+            'referral_code': referral_code
+            }
+
         if not username or not email or not phone_number or not password or not confirm_password:
             messages.error(request, 'All fields are required')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         # Username validations
         if len(username) < 3:
             messages.error(request, 'Username must be at least 3 characters')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if len(username) > 20:
             messages.error(request, 'Username cannot exceed 20 characters')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if ' ' in username:
             messages.error(request, 'Username cannot contain spaces')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if not re.match(r'^[A-Za-z][A-Za-z0-9_]*$', username):
             messages.error(request, 'Username must start with a letter and can only contain letters, numbers, and underscore')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if username.isdigit():
             messages.error(request, 'Username cannot contain only numbers')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if User.objects.filter(username__iexact=username).exists():
             messages.error(request, 'Username already exists')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         # Email validations
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w{2,}$'
 
         if not re.match(email_pattern, email):
             messages.error(request, 'Enter a valid email address')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if User.objects.filter(email__iexact=email).exists():
             messages.error(request, 'Email already exists')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         # Phone validations
         if not phone_number.isdigit():
             messages.error(request, 'Phone number must contain only digits')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if len(phone_number) != 10:
             messages.error(request, 'Phone number must be 10 digits')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if phone_number[0] not in ['6', '7', '8', '9']:
             messages.error(request, 'Enter a valid Indian phone number')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if User.objects.filter(phone_number=phone_number).exists():
             messages.error(request, 'Phone number already exists')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         # Password validations
         if password != confirm_password:
             messages.error(request, 'Passwords do not match')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if len(password) < 8:
             messages.error(request, 'Password must be at least 8 characters')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if not re.search(r'[A-Z]', password):
             messages.error(request, 'Password must contain at least one uppercase letter')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if not re.search(r'[a-z]', password):
             messages.error(request, 'Password must contain at least one lowercase letter')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if not re.search(r'\d', password):
             messages.error(request, 'Password must contain at least one number')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
             messages.error(request, 'Password must contain at least one special character')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if username.lower() in password.lower():
             messages.error(request, 'Password should not contain your username')
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         if not terms:
             messages.error(request, "Please accept Terms and Privacy Policy")
-            return redirect('signup')
+            return render(request, 'authentication/signup.html', context)
 
         referred_by_user = None
         referral_code_input = request.POST.get('referral_code', '').strip().upper()
@@ -175,7 +194,7 @@ def signup_page(request):
             except User.DoesNotExist:
                 if referral_code_input:
                     messages.error(request, 'Invalid referral code')
-                    return redirect('signup')
+                    return render(request, 'authentication/signup.html', context)
 
         user = User.objects.create_user(
             username=username,
@@ -206,8 +225,13 @@ def signup_page(request):
 
         messages.success(request, 'OTP sent to your email')
         return redirect('email_verfication')
+    
+    context = {
+        'old_data': old_data,
+        'referral_code': referral_code
+    }
 
-    return render(request, 'authentication/signup.html')
+    return render(request, 'authentication/signup.html',context)
 
 
 def email_verfication(request):

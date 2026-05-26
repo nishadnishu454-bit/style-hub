@@ -137,6 +137,7 @@ body {
                         placeholder="alex_styles"
                         type="text"
                         name="username"
+                        value="{{ old_data.username }}"
                         required
                     />
                 </div>
@@ -148,6 +149,7 @@ body {
                         placeholder="alex@stylehub.com"
                         type="email"
                         name="email"
+                        value="{{ old_data.email }}"
                         required
                     />
                 </div>
@@ -160,19 +162,22 @@ body {
                     placeholder="+91 9876543210"
                     type="tel"
                     name="phone_number"
+                    value="{{ old_data.phone_number }}"
                     required
                 />
             </div>
 
             <div class="space-y-2">
-                <label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">Referral Code (Optional)</label>
-                <input
-                    class="w-full bg-surface-container-high/40 border-none rounded-xl px-4 py-4 text-white placeholder:text-outline/50 focus:ring-2 focus:ring-primary/30 transition-all outline-none text-glow uppercase tracking-widest"
-                    placeholder="E.g. ABC123D"
-                    type="text"
-                    name="referral_code"
-                    value="{% if request.session.referral_code %}{{ request.session.referral_code }}{% endif %}"
-                />
+                <label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">
+                    Referral Code (Optional)
+                </label>
+
+                    <input
+                        class="w-full bg-surface-container-high/40 border-none rounded-xl px-4 py-4 text-white uppercase tracking-widest"
+                        placeholder="E.g. ABC123D"
+                        type="text"
+                        name="referral_code"
+                        value="{% if old_data.referral_code %}{{ old_data.referral_code }}{% else %}{{ referral_code }}{% endif %}"                    />
             </div>
 
            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -189,6 +194,7 @@ body {
                 placeholder="••••••••"
                 type="password"
                 name="password"
+                value="{{ old_data.password }}"
                 required
             />
 
@@ -213,6 +219,7 @@ body {
                 placeholder="••••••••"
                 type="password"
                 name="confirm_password"
+                value="{{ old_data.confirm_password }}"
                 required
             />
 
