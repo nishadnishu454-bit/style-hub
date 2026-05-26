@@ -310,6 +310,7 @@ def add_variant(request, product_id):
                 ProductVariantImage.objects.create(
                     variant=variant,
                     image=image_file,
+                    position=index + 1,
                     is_primary=True if index == 0 else False
                 )
 
@@ -326,6 +327,7 @@ def add_variant(request, product_id):
 
 @login_required(login_url='admin_login')
 def edit_variant(request, variant_id):
+
     variant = get_object_or_404(
         ProductVariant,
         id=variant_id,
@@ -333,6 +335,7 @@ def edit_variant(request, variant_id):
     )
 
     if request.method == 'POST':
+
         size = request.POST.get('size', '').strip()
         color = request.POST.get('color', '').strip()
         price = request.POST.get('variant_price')
@@ -344,6 +347,7 @@ def edit_variant(request, variant_id):
             request.POST.get('variant_cropped_image_3')
         ]
 
+        # VALIDATION
         if not size or not color or not price or not stock:
             messages.error(request, 'All variant details are required')
             return redirect('variant_management')
@@ -363,6 +367,7 @@ def edit_variant(request, variant_id):
             messages.error(request, 'Stock cannot be negative')
             return redirect('variant_management')
 
+        # DUPLICATE CHECK
         if ProductVariant.objects.filter(
             product=variant.product,
             size__iexact=size,
@@ -372,45 +377,52 @@ def edit_variant(request, variant_id):
             messages.error(request, f'Variant {size}/{color} already exists')
             return redirect('variant_management')
 
+        # UPDATE BASIC FIELDS
         variant.size = size
         variant.color = color
         variant.variant_price = price
         variant.variant_stock = stock
         variant.save()
 
-        valid_images = [img for img in cropped_images if img]
+        # IMAGE UPDATE (IMPORTANT FIX)
+        existing_images = {
+                img.position: img
+                for img in variant.images.all().order_by('position')
+            }
 
-        if valid_images:
-            if len(valid_images) < 3:
-                messages.error(request, 'If updating images, upload minimum 3 images')
-                return redirect('variant_management')
+        for index in range(3):
+            img_data = cropped_images[index]
+            if not img_data:
+                continue
 
-            ProductVariantImage.objects.filter(
-                variant=variant
-            ).delete()
+            try:
+                image_file = decode_base64_image(
+                    img_data,
+                    f'variant_{variant.id}_{index + 1}'
+                )
 
-            for index, img_data in enumerate(valid_images):
-                try:
-                    image_file = decode_base64_image(
-                        img_data,
-                        f'variant_{variant.id}_updated_{index + 1}'
-                    )
+                position = index + 1
 
+                if position in existing_images:
+                    old_img = existing_images[position]
+                    old_img.image = image_file
+                    old_img.save()
+                else:
                     ProductVariantImage.objects.create(
                         variant=variant,
                         image=image_file,
+                        position=index + 1,
                         is_primary=True if index == 0 else False
                     )
 
-                except Exception:
-                    messages.error(request, 'Invalid image format')
-                    return redirect('variant_management')
+            except Exception:
+                messages.error(request, 'Invalid image format')
+                return redirect('variant_management')
 
         messages.success(request, 'Variant updated successfully')
         return redirect('variant_management')
 
     return redirect('variant_management')
-
 
 @login_required(login_url='admin_login')
 def delete_variant(request, variant_id):

@@ -69,6 +69,7 @@ class ProductVariant(models.Model):
 
 class ProductVariantImage(models.Model):
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, related_name='images')
+    position = models.IntegerField(default=1)
     image = models.ImageField(upload_to='variant_images/')
     is_primary = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

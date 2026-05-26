@@ -28,6 +28,8 @@ def coupon_listing(request):
         'coupons': coupons_page,
         'search': search,
     }
+
+
     return render(request, 'coupon_listing.html', context)
 
 

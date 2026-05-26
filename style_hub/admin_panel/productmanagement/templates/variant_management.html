@@ -97,15 +97,30 @@
                                     </td>
                                     <td class="py-6 px-8">
                                         <div class="flex -space-x-2">
-                                            {% for img in variant.images.all %}
+                                            {% for img in variant.images.all|dictsort:"position" %}
                                                 <img src="{{ img.image.url }}" class="w-8 h-8 rounded-full border-2 border-white object-cover">
                                             {% endfor %}
                                         </div>
                                     </td>
                                     <td class="py-6 px-8 text-right space-x-4">
-                                        <button
-                                        onclick='openEditVariantModal("{{ variant.id }}","{{ variant.size|escapejs }}", "{{ variant.color|escapejs }}","{{ variant.variant_price }}","{{ variant.variant_stock }}")'class="text-[10px] font-black uppercase text-gray-400 hover:text-black">Edit</button>
-                                        <button onclick="confirmDelete('{% url 'delete_variant' variant.id %}')" class="text-[10px] font-black uppercase text-red-400 hover:text-red-600">Delete</button>
+                                         <button
+                                                data-id="{{ variant.id }}"
+                                                data-size="{{ variant.size|escapejs }}"
+                                                data-color="{{ variant.color|escapejs }}"
+                                                data-price="{{ variant.variant_price }}"
+                                                data-stock="{{ variant.variant_stock }}"
+                                                data-images='[
+                                                    {% for img in variant.images.all|dictsort:"position" %}
+                                                        "{{ img.image.url }}"{% if not forloop.last %},{% endif %}
+                                                    {% endfor %}
+                                                ]'
+                                                onclick="openEditVariantModalFromBtn(this)"
+                                                class="text-[10px] font-black uppercase text-gray-400 hover:text-black">
+
+                                                Edit
+                                            </button>
+
+                                     <button onclick="confirmDelete('{% url 'delete_variant' variant.id %}')" class="text-[10px] font-black uppercase text-red-400 hover:text-red-600">Delete</button>
                                     </td>
                                 </tr>
                                 {% endif %}
@@ -157,7 +172,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-4">Variant Images (Min 3 Required)</label>
+                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-4">Variant Images (Optional)</label>
                         <div class="grid grid-cols-3 gap-4">
                             {% for i in "123" %}
                             <div class="relative group h-32 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer overflow-hidden">
@@ -252,7 +267,7 @@
                 </div>
 
                 <p class="text-[10px] text-gray-400 font-bold uppercase">
-                    Upload 3 images to replace existing ones.
+                    Upload any images to replace existing ones.
                 </p>
 
             </div>
@@ -339,19 +354,58 @@
     // EDIT MODAL
     // =========================
 
-    function openEditVariantModal(id, size, color, price, stock) {
+function openEditVariantModalFromBtn(btn) {
 
-        document.getElementById('edit_size').value = size;
-        document.getElementById('edit_color').value = color;
-        document.getElementById('edit_price').value = price;
-        document.getElementById('edit_stock').value = stock;
+    const id = btn.dataset.id;
+    const size = btn.dataset.size;
+    const color = btn.dataset.color;
+    const price = btn.dataset.price;
+    const stock = btn.dataset.stock;
 
-        const form = document.getElementById('editVariantForm');
+    let images = [];
 
-        form.action = `/product_management/edit_variant/${id}/`;
-
-        editModal.classList.remove('hidden');
+    try {
+        images = JSON.parse(btn.dataset.images || "[]");
+    } catch (e) {
+        images = [];
     }
+
+    document.getElementById('edit_size').value = size;
+    document.getElementById('edit_color').value = color;
+    document.getElementById('edit_price').value = price;
+    document.getElementById('edit_stock').value = stock;
+
+    const form = document.getElementById('editVariantForm');
+    form.action = `/product_management/edit_variant/${id}/`;
+
+    // reset previews
+    for (let i = 1; i <= 3; i++) {
+
+        const preview = document.getElementById(`edit_v_preview${i}`);
+        const content = document.getElementById(`edit_v_content${i}`);
+        const hidden = document.getElementById(`edit_v_croppedImage${i}`);
+
+        preview.src = "";
+        preview.classList.add("hidden");
+        content.classList.remove("hidden");
+        hidden.value = "";
+    }
+
+    // show existing images safely
+    images.forEach((img, index) => {
+
+        const preview = document.getElementById(`edit_v_preview${index + 1}`);
+        const content = document.getElementById(`edit_v_content${index + 1}`);
+
+        if (preview && content) {
+            preview.src = img;
+            preview.classList.remove("hidden");
+            content.classList.add("hidden");
+        }
+    });
+
+    editModal.classList.remove('hidden');
+}
 
     function closeEditModal() {
         editModal.classList.add('hidden');
