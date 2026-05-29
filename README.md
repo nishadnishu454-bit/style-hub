@@ -28,12 +28,7 @@ STYLE-HUB is an e-commerce web application built using Django.
 * JavaScript
 * Razorpay API
 
-## Installation
 
-```bash
-git clone <repository-url>
-cd project-name
-```
 
 Create virtual environment:
 
