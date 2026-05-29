@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
-
+from django.db.models import Sum
 import base64
 
 from .models import Product, ProductVariant, ProductVariantImage, Offer
@@ -157,8 +157,11 @@ def view_product(request, id):
         is_deleted=False
     )
 
+    total_stock = product.variants.filter(is_deleted=False).aggregate(total=Sum('variant_stock'))['total'] or 0 
+
     context = {
-        'product': product
+        'product': product,
+        'total_stock':total_stock
     }
 
     return render(request, 'viewproduct.html', context)
