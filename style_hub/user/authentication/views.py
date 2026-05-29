@@ -397,61 +397,63 @@ def verify_changed_password(request):
 
 
 
-def resend_otp(request):
-    if request.method != "POST":
-        return JsonResponse({"success": False, "message": "Invalid request"}, status=405)
 
-    if request.session.get('verification_user_id'):
-        user_id = request.session.get('verification_user_id')
-        purpose = 'signup_verification'
+def resend_password_change_otp(request):
 
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return JsonResponse({"success": False, "message": "User not found"}, status=404)
+    user = request.user
 
-        email = user.email
+    pending_new_email = request.session.get('pending_new_email')
 
-    
-    elif request.session.get('reset_user_id'):
-        user_id = request.session.get('reset_user_id')
-        purpose = 'password_reset'
+    if not pending_new_email:
+        return JsonResponse({
+            'success': False,
+            'message': 'Session expired'
+        }, status=400)
 
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return JsonResponse({"success": False, "message": "User not found"}, status=404)
+    # delete old otp
+    OTP.objects.filter(
+        user=user,
+        purpose='email_change'
+    ).delete()
 
-        email = user.email
-
-  
-    elif request.user.is_authenticated and request.session.get('new_email'):
-        user = request.user
-        purpose = 'email_change'
-        email = request.session.get('new_email')
-
-    else:
-        return JsonResponse({"success": False, "message": "Session expired"}, status=400)
-
-  
-    OTP.objects.filter(user=user, purpose=purpose).delete()
-
-   
+    # create new otp
     otp = str(random.randint(100000, 999999))
 
     OTP.objects.create(
         user=user,
         code=otp,
-        purpose=purpose
+        purpose='email_change'
     )
 
-    send_branded_otp_email(
-        email=email,
-        otp=otp,
-        purpose_text="OTP Verification"
+    # send mail
+    send_mail(
+        'STYLE-HUB | Secure Email Verification',
+
+        f'''
+
+        STYLE-HUB
+
+
+Your new OTP is:
+
+{otp}
+
+This OTP is valid for 5 minutes.
+
+
+STYLE-HUB Team
+
+        ''',
+
+        settings.EMAIL_HOST_USER,
+        [pending_new_email],
+        fail_silently=False,
     )
 
-    return JsonResponse({"success": True, "message": "New OTP sent"})
+    return JsonResponse({
+        'success': True,
+        'message': 'New OTP sent successfully'
+    })
 
 
 
