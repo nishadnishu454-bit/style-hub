@@ -11,7 +11,7 @@ from django.http import HttpResponse
 from django.db.models import Q
 from user.orders.models import Order, OrderItem, Review, ReviewImage
 from user.wallet.utils import credit_wallet
-
+from decimal import Decimal
 
 @login_required(login_url='login')
 def user_orders_listing(request):
@@ -247,20 +247,57 @@ def order_cancel_success(request):
                 order = item.order
 
                 if order.payment_status == 'Completed':
+
+                    refund_amount = item.total_price
+
+                    if order.discount_amount > 0 and order.subtotal > 0:
+
+                        item_discount = (
+                                item.total_price / order.subtotal
+                            ) * order.discount_amount
+                        
+                        refund_amount = item.total_price - item_discount
+
+                    refund_amount = refund_amount.quantize(Decimal('0.01'))
+                        
                     credit_wallet(
                         user=request.user,
-                        amount=item.total_price,
+                        amount=refund_amount,
                         purpose='Item Cancellation Refund',
                         order=order
                     )
 
-                if not order.items.exclude(item_status='Cancelled').exists():
+                remaining_items = order.items.exclude(item_status='Cancelled')
+
+                if remaining_items.exists():
+
+                    new_subtotal = sum(
+                        order_item.total_price for order_item in remaining_items
+                    )
+
+                    new_discount = Decimal('0.00')
+
+                    if order.discount_amount > 0 and order.subtotal > 0:
+
+                        new_discount = (
+                            new_subtotal / order.subtotal
+                        ) * order.discount_amount
+
+                    new_total = new_subtotal - new_discount + order.delivery_charge
+
+                    if new_total < 0:
+                        new_total = Decimal('0.00')
+
+                    order.total_amount = new_total.quantize(Decimal('0.01'))
+
+                else:
+                    order.total_amount = Decimal('0.00')
                     order.order_status = 'Cancelled'
 
                     if order.payment_status == 'Completed':
                         order.payment_status = 'Refunded'
 
-                    order.save()
+                order.save()
 
             messages.success(request, "Item cancelled successfully. Refund added to wallet.")
             return redirect(f"{reverse('orders_view')}?order_id={item.order.id}")
@@ -325,9 +362,14 @@ def review_writing(request):
 
     product = order_item.variant.product
 
-    if Review.objects.filter(user=request.user, order_item=order_item).exists():
-        messages.error(request, 'You already reviewed this product')
-        return redirect(f'/orders/orders_view/?order_id={order_item.order.id}')
+    if order_item.item_status != 'Delivered':
+        messages.error(request,'Review can only delivered products')
+        return redirect(f"{reverse('orders_view')}?order_id={order_item.order.id}")  
+
+            
+    if Review.objects.filter(user=request.user,order_item=order_item).exists():
+        messages.error(request,'You already reviewed this product')
+        return redirect(f"{reverse('orders_view')}?order_id={order_item.order.id}")         
 
     if request.method == 'POST':
         rating = request.POST.get('rating')

@@ -8,13 +8,15 @@ from django.http import JsonResponse
 from decimal import Decimal
 import uuid
 import razorpay
-
 from user.addresses.models import Address
 from user.cart.models import Cart
 from user.orders.models import Order, OrderItem
 from admin_panel.couponmanagement.models import Coupon
 from user.wallet.models import Wallet, WalletTransaction
 from user.wallet.utils import debit_wallet
+from user.authentication.models import Referral
+from user.wallet.utils import credit_wallet
+from user.orders.models import Order
 
 
 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -523,10 +525,7 @@ def retry_razorpay_payment(request):
 
 
 def process_referral_reward(user, order):
-    from user.authentication.models import Referral
-    from user.wallet.utils import credit_wallet
-    from user.orders.models import Order
-    
+
     referral = Referral.objects.filter(referred_user=user, is_referrer_rewarded=False).first()
     if referral:
         successful_orders = Order.objects.filter(user=user).exclude(order_status='Cancelled').exclude(payment_status='Failed')
@@ -534,4 +533,4 @@ def process_referral_reward(user, order):
             credit_wallet(referral.referrer, referral.benefit_amount_referrer, f"Referral Reward for referring {user.username}", order=order)
             referral.is_referrer_rewarded = True
             referral.save()
-
+
