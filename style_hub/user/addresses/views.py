@@ -27,34 +27,49 @@ def address_page(request):
 @login_required(login_url='login')
 def add_address_page(request):
     next_url = request.GET.get('next') or request.POST.get('next', '')
+
+    
+    context = {
+        "next": next_url,
+        "old": request.POST 
+    }
+
     if request.method == 'POST':
-        full_name = request.POST.get('full_name')
-        phone_number = request.POST.get('phone_number')
-        house_name = request.POST.get('house_name')
-        address = request.POST.get('address')
-        area = request.POST.get('area')
-        country = request.POST.get('country')
-        district = request.POST.get('district')
-        state = request.POST.get('state')
-        pincode = request.POST.get('pincode')
-        address_type = request.POST.get('address_type')
+
+        full_name = request.POST.get('full_name', '').strip()
+        phone_number = request.POST.get('phone_number', '').strip()
+        house_name = request.POST.get('house_name', '').strip()
+        address = request.POST.get('address', '').strip()
+        area = request.POST.get('area', '').strip()
+        country = request.POST.get('country', '').strip()
+        district = request.POST.get('district', '').strip()
+        state = request.POST.get('state', '').strip()
+        pincode = request.POST.get('pincode', '').strip()
+        address_type = request.POST.get('address_type', '').strip()
         is_default = request.POST.get('is_default') == 'on'
 
-        if not full_name or not phone_number or not house_name or not address or not area or not country or not district or not state or not pincode or not address_type:
+    
+        if not all([full_name, phone_number, house_name, address, area,
+                    country, district, state, pincode, address_type]):
             messages.error(request, "All fields are required")
-            return redirect(reverse('add_address') + (f"?next={next_url}" if next_url else ""))
+            return render(request, 'add_address.html', context)
 
         if not phone_number.isdigit() or len(phone_number) != 10:
             messages.error(request, "Invalid phone number")
-            return redirect(reverse('add_address') + (f"?next={next_url}" if next_url else ""))
+            return render(request, 'add_address.html', context)
 
         if not pincode.isdigit() or len(pincode) != 6:
             messages.error(request, "Invalid pincode")
-            return redirect(reverse('add_address') + (f"?next={next_url}" if next_url else ""))
+            return render(request, 'add_address.html', context)
 
+    
         if is_default:
-            Address.objects.filter(user=request.user, is_default=True).update(is_default=False)
+            Address.objects.filter(
+                user=request.user,
+                is_default=True
+            ).update(is_default=False)
 
+    
         Address.objects.create(
             user=request.user,
             full_name=full_name,
@@ -71,12 +86,13 @@ def add_address_page(request):
         )
 
         messages.success(request, "Address added successfully")
+
         if next_url == 'checkout':
             return redirect('checkout')
+
         return redirect('address_page')
 
-    return render(request, 'add_address.html', {'next': next_url})
-
+    return render(request, 'add_address.html', context)
 
 @login_required(login_url='login')
 def set_default_address(request, id):

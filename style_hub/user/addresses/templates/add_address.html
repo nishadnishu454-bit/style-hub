@@ -267,44 +267,44 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div class="space-y-1">
 <label class="text-[10px] font-bold uppercase tracking-widest text-primary">Full Name</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="Julian Vane" type="text" name="full_name"/>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="Julian Vane" type="text" name="full_name" value="{{ old.full_name|default:'' }}"/>
 </div>
 <div class="space-y-1">
 <label class="text-[10px] font-bold uppercase tracking-widest text-primary">Phone Number</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="+1 (555) 000-0000" type="tel" name="phone_number" required pattern="[0-9]{10}"/>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="+1 (555) 000-0000" type="tel" name="phone_number" required pattern="[0-9]{10}" value="{{ old.phone_number|default:'' }}"/>
 </div>
 </div>
 <!-- Full Width Inputs -->
 <div class="space-y-1">
 <label class="text-[10px] font-bold uppercase tracking-widest text-primary">House Name / Building Name</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="e.g. Skyline Residence" type="text" name="house_name"/>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="e.g. Skyline Residence" type="text" name="house_name" value="{{ old.house_name|default:'' }}"/>
 </div>
 <div class="space-y-1">
 <label class="text-[10px] font-bold uppercase tracking-widest text-primary">Address</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="Enter street and house number" type="text" name="address"/>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="Enter street and house number" type="text" name="address" value="{{ old.address|default:'' }}"/>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div class="space-y-1">
 <label class="text-[10px] font-bold uppercase tracking-widest text-primary">Area</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="area"/>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="area" value="{{ old.area|default:'' }}"/>
 </div>
 <div class="space-y-1">
 <label class="text-[10px] font-bold uppercase tracking-widest text-primary">Country</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none" placeholder="Optional" type="text" name="country"/>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface placeholder:text-on-surface-variant/30 rounded-t-lg transition-all outline-none"  type="text" name="country" value="{{ old.country|default:'' }}"/>
 </div>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 <div class="space-y-1">
 <label class="text-[10px] font-bold uppercase tracking-widest text-primary">District</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="district"/>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="district"value="{{ old.district|default:'' }}"/>
 </div>
 <div class="space-y-1">
 <label class="text-[10px] font-bold uppercase tracking-widest text-primary">State</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="state"/>
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="state" value="{{ old.state|default:'' }}"/>
 </div>
 <div class="space-y-1">
 <label class="text-[10px] font-bold uppercase tracking-widest text-primary">Pincode</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="pincode" />
+<input class="w-full bg-surface-container-highest border-b-2 border-outline-variant/20 focus:border-primary px-4 py-3 text-on-surface rounded-t-lg transition-all outline-none" type="text" name="pincode" value="{{ old.pincode|default:'' }}"/>
 </div>
 </div>
 <!-- Address Type Selector -->
