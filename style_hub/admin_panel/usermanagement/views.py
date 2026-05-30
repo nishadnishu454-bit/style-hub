@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db.models import Sum, Count
+from user.orders.models import Order
 
 User = get_user_model()
 
@@ -53,10 +55,25 @@ def user_management(request):
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
 def user_detail(request, user_id):
+
     user_obj = get_object_or_404(User, id=user_id, is_staff=False)
+
+    orders = Order.objects.filter(user=user_obj)
+    orders_count = orders.count()
+
+    total_amount = orders.aggregate(total=Sum("total_amount"))["total"] or 0
+
+
+    stats = {
+        'total_orders': orders_count,
+        'lifetime_value': total_amount
+    }
 
     context = {
         'user_obj': user_obj,
+        'orders': orders,
+        'total_orders': stats['total_orders'],
+        'lifetime_value': stats['lifetime_value'],
     }
 
     return render(request, 'usermanagement/userdetial.html', context)
