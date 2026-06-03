@@ -455,6 +455,47 @@ def verify_razorpay_payment(request):
                 'razorpay_signature': razorpay_signature
             })
 
+            # Check if there is an existing failed/pending order for this razorpay_order_id
+            existing_order = Order.objects.filter(razorpay_order_id=razorpay_order_id, user=request.user).first()
+            if existing_order:
+                with transaction.atomic():
+                    # Stock validation
+                    for item in existing_order.items.all():
+                        variant = item.variant
+                        variant.refresh_from_db()
+                        if variant.variant_stock < item.quantity:
+                            return JsonResponse({
+                                'success': False,
+                                'message': f"{variant.product.product_name} has only {variant.variant_stock} stock left."
+                            })
+
+                    existing_order.payment_status = 'Completed'
+                    existing_order.order_status = 'Confirmed'
+                    existing_order.razorpay_payment_id = razorpay_payment_id
+                    existing_order.razorpay_signature = razorpay_signature
+                    existing_order.save()
+
+                    for item in existing_order.items.all():
+                        variant = item.variant
+                        variant.variant_stock -= item.quantity
+                        variant.save()
+
+                    process_referral_reward(request.user, existing_order)
+
+                    # Clear cart
+                    Cart.objects.filter(user=request.user).delete()
+
+                    request.session.pop('coupon_id', None)
+                    request.session.pop('discount_amount', None)
+                    request.session.pop('checkout_address_id', None)
+
+                    request.session['order_id'] = existing_order.id
+
+                    return JsonResponse({
+                        'success': True,
+                        'redirect_url': '/orders/order_success/'
+                    })
+
             with transaction.atomic():
                 cart_items = Cart.objects.filter(
                     user=request.user,
@@ -920,13 +961,143 @@ def remove_coupon(request):
 @login_required(login_url='login')
 def payment_failure_page(request):
     order_id = request.GET.get('order_id')
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order = None
+    if order_id:
+        try:
+            order = Order.objects.filter(id=order_id, user=request.user).first()
+        except (ValueError, TypeError):
+            pass
     return render(request, 'payment_failure.html', {'order': order})
 
 
 @login_required(login_url='login')
 def retry_razorpay_payment(request):
-    return JsonResponse({'success': False, 'message': 'Not supported.'})
+    order_id = request.GET.get('order_id')
+    if not order_id:
+        return JsonResponse({'success': False, 'message': 'Order ID is required'})
+        
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    if order.payment_status == 'Completed':
+        return JsonResponse({'success': False, 'message': 'This order is already paid.'})
+        
+    # Stock validation for retry
+    for item in order.items.all():
+        if item.variant.variant_stock < item.quantity:
+            return JsonResponse({
+                'success': False,
+                'message': f"{item.variant.product.product_name} is out of stock (only {item.variant.variant_stock} available)."
+            })
+            
+    try:
+        # Create a new Razorpay order
+        razorpay_order = client.order.create({
+            "amount": int(float(order.total_amount) * 100),
+            "currency": "INR",
+            "payment_capture": "1"
+        })
+        
+        # Save the new Razorpay order ID to the order
+        order.razorpay_order_id = razorpay_order['id']
+        order.save()
+        
+        # Store address in session in case verify_razorpay_payment needs it
+        request.session['checkout_address_id'] = order.address.id
+        
+        return JsonResponse({
+            'success': True,
+            'key': settings.RAZORPAY_KEY_ID,
+            'amount': int(order.total_amount * 100),
+            'order_id': razorpay_order['id'],
+            'name': 'STYLE-HUB',
+            'description': 'Retry Order Payment',
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})
+
+
+@login_required(login_url='login')
+def create_failed_order(request):
+    if request.method == 'POST':
+        address_id = request.POST.get('address_id')
+        if not address_id:
+            return JsonResponse({'success': False, 'message': 'Address is required'})
+            
+        address = get_object_or_404(Address, id=address_id, user=request.user)
+        
+        cart_items = Cart.objects.filter(
+            user=request.user,
+            variant__is_deleted=False,
+            variant__is_active=True,
+            variant__product__is_deleted=False,
+            variant__product__is_active=True,
+            variant__product__category__is_deleted=False,
+            variant__product__category__is_active=True
+        ).select_related('variant', 'variant__product')
+        
+        if not cart_items.exists():
+            return JsonResponse({'success': False, 'message': 'Cart is empty'})
+            
+        subtotal = Decimal('0.00')
+        for item in cart_items:
+            price = item.variant.offer_price if item.variant.offer_price else item.variant.variant_price
+            subtotal += Decimal(price) * item.quantity
+            
+        coupon_id = request.session.get('coupon_id')
+        applied_coupon = None
+        discount_amount = Decimal('0.00')
+        if coupon_id:
+            applied_coupon = Coupon.objects.filter(id=coupon_id, is_active=True, is_deleted=False).first()
+            if applied_coupon:
+                if applied_coupon.discount_type == 'PERCENTAGE':
+                    discount_amount = (subtotal * applied_coupon.discount_value) / Decimal('100')
+                else:
+                    discount_amount = applied_coupon.discount_value
+                if applied_coupon.max_discount and discount_amount > applied_coupon.max_discount:
+                    discount_amount = applied_coupon.max_discount
+                if discount_amount > subtotal:
+                    discount_amount = subtotal
+                    
+        delivery_charge = Decimal('0.00') if subtotal >= 500 else Decimal('50.00')
+        total_amount = subtotal - discount_amount + delivery_charge
+        if total_amount < 0: total_amount = Decimal('0.00')
+        
+        razorpay_order_id = request.POST.get('razorpay_order_id', '')
+        
+        with transaction.atomic():
+            order = Order.objects.create(
+                user=request.user,
+                address=address,
+                order_number=f"SH-{uuid.uuid4().hex[:10].upper()}",
+                payment_method='RAZORPAY',
+                payment_status='Failed',
+                order_status='Pending',
+                subtotal=subtotal,
+                discount_amount=discount_amount,
+                delivery_charge=delivery_charge,
+                total_amount=total_amount,
+                coupon=applied_coupon,
+                razorpay_order_id=razorpay_order_id
+            )
+            
+            for item in cart_items:
+                price = item.variant.offer_price if item.variant.offer_price else item.variant.variant_price
+                OrderItem.objects.create(
+                    order=order,
+                    variant=item.variant,
+                    product_name=item.variant.product.product_name,
+                    price=price,
+                    quantity=item.quantity,
+                    total_price=Decimal(price) * item.quantity,
+                    item_status='Pending'
+                )
+            
+            return JsonResponse({
+                'success': True,
+                'order_id': order.id
+            })
+            
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
 
 
 def process_referral_reward(user, order):

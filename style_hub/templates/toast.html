@@ -1,3 +1,6 @@
+<!-- Material Symbols stylesheet loaded directly to ensure icons render correctly -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
 <!-- Toast Notification Container -->
 <div id="toast-container" class="fixed top-24 right-6 z-[9999] flex flex-col gap-4 pointer-events-none">
     {% if messages %}
@@ -52,6 +55,23 @@
 </div>
 
 <style>
+    /* Material Symbols Base Styling */
+    .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined' !important;
+        font-weight: normal !important;
+        font-style: normal !important;
+        font-size: 24px;
+        line-height: 1 !important;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+    }
+
     /* Toast Animation Keyframes */
     @keyframes slideIn {
         from { transform: translateX(120%); opacity: 0; }

@@ -52,6 +52,11 @@ from .models import Coupon
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
 def add_coupon(request):
+    def redirect(to):
+        if to == 'add_coupon':
+            return render(request, 'add_coupon.html', {'old_data': request.POST})
+        from django.shortcuts import redirect as dj_redirect
+        return dj_redirect(to)
 
     if request.method == 'POST':
 
@@ -425,6 +430,36 @@ def edit_coupon(request, id):
         id=id,
         is_deleted=False
     )
+
+    if request.method == 'POST':
+        coupon.code = request.POST.get('code', '').strip().upper()
+        coupon.title = request.POST.get('title', '').strip()
+        coupon.description = request.POST.get('description', '').strip()
+        coupon.discount_type = request.POST.get('discount_type', '').strip()
+        coupon.discount_value = request.POST.get('discount_value', '').strip()
+        coupon.min_purchase = request.POST.get('min_purchase', '').strip()
+        coupon.max_discount = request.POST.get('max_discount', '').strip()
+        coupon.usage_limit_per_user = request.POST.get('usage_limit_per_user', '').strip()
+        
+        start_date = request.POST.get('start_date', '').strip()
+        try:
+            coupon.start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        except:
+            coupon.start_date = start_date
+            
+        end_date = request.POST.get('end_date', '').strip()
+        try:
+            coupon.end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        except:
+            coupon.end_date = end_date
+
+    def redirect(to, id=None):
+        if to == 'edit_coupon':
+            return render(request, 'edit_coupon.html', {'coupon': coupon})
+        from django.shortcuts import redirect as dj_redirect
+        if id is not None:
+            return dj_redirect(to, id=id)
+        return dj_redirect(to)
 
     if request.method == 'POST':
 

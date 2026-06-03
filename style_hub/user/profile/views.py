@@ -380,47 +380,47 @@ def change_password(request):
 
         if not current_password or not new_password or not confirm_password:
             messages.error(request, 'All fields are required')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if not request.user.check_password(current_password):
             messages.error(request, 'Current password is incorrect')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if new_password != confirm_password:
             messages.error(request, 'New passwords do not match')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if len(new_password) < 8:
             messages.error(request, 'Password must be at least 8 characters')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if not re.search(r'[A-Z]', new_password):
             messages.error(request, 'Password must contain at least one uppercase letter')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if not re.search(r'[a-z]', new_password):
             messages.error(request, 'Password must contain at least one lowercase letter')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if not re.search(r'\d', new_password):
             messages.error(request, 'Password must contain at least one number')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', new_password):
             messages.error(request, 'Password must contain at least one special character')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if ' ' in new_password:
             messages.error(request, 'Password cannot contain spaces')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if request.user.username.lower() in new_password.lower():
             messages.error(request, 'Password should not contain your username')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         if current_password == new_password:
             messages.error(request, 'New password must be different from current password')
-            return redirect('changepassword')
+            return render(request, 'changepassword.html', {'old_data': request.POST})
 
         request.user.set_password(new_password)
         request.user.save()

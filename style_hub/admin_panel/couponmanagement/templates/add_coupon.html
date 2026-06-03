@@ -38,18 +38,18 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Coupon Code</label>
-                            <input type="text" name="code" placeholder="STYLEHUB50" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm uppercase" required>
+                            <input type="text" name="code" value="{{ old_data.code|default:'' }}" placeholder="STYLEHUB50" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm uppercase" required>
                         </div>
 
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Coupon Title</label>
-                            <input type="text" name="title" placeholder="Special Festive Offer" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                            <input type="text" name="title" value="{{ old_data.title|default:'' }}" placeholder="Special Festive Offer" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Coupon Description</label>
-                        <textarea rows="4" name="description" placeholder="Enter coupon description details..." class="w-full p-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none resize-none focus:border-black transition-all shadow-sm"></textarea>
+                        <textarea rows="4" name="description" placeholder="Enter coupon description details..." class="w-full p-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none resize-none focus:border-black transition-all shadow-sm">{{ old_data.description|default:'' }}</textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -57,8 +57,8 @@
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Discount Type</label>
                             <div class="relative">
                                 <select name="discount_type" id="discountType" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none appearance-none focus:border-black transition-all shadow-sm" required onchange="toggleMaxDiscountField()">
-                                    <option value="PERCENTAGE">Percentage (%)</option>
-                                    <option value="FIXED">Fixed Amount (₹)</option>
+                                    <option value="PERCENTAGE" {% if old_data.discount_type == 'PERCENTAGE' %}selected{% endif %}>Percentage (%)</option>
+                                    <option value="FIXED" {% if old_data.discount_type == 'FIXED' %}selected{% endif %}>Fixed Amount (₹)</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-6 flex items-center text-gray-400">
                                     <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -68,36 +68,36 @@
 
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Discount Value</label>
-                            <input type="number" step="0.01" min="0.01" name="discount_value" placeholder="10.00" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                            <input type="number" step="0.01" min="0.01" name="discount_value" value="{{ old_data.discount_value|default:'' }}" placeholder="10.00" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Minimum Purchase (₹)</label>
-                            <input type="number" step="0.01" min="0" name="min_purchase" placeholder="499.00" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm">
+                            <input type="number" step="0.01" min="0" name="min_purchase" value="{{ old_data.min_purchase|default:'' }}" placeholder="499.00" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm">
                         </div>
 
                         <div id="maxDiscountDiv">
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Maximum Discount (₹)</label>
-                            <input type="number" step="0.01" min="0" name="max_discount" id="maxDiscount" placeholder="100.00" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm">
+                            <input type="number" step="0.01" min="0" name="max_discount" id="maxDiscount" value="{{ old_data.max_discount|default:'' }}" placeholder="100.00" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm">
                         </div>
 
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Usage Limit per User</label>
-                            <input type="number" min="1" name="usage_limit_per_user" value="1" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                            <input type="number" min="1" name="usage_limit_per_user" value="{{ old_data.usage_limit_per_user|default:'1' }}" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Start Date</label>
-                            <input type="date" name="start_date" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                            <input type="date" name="start_date" value="{{ old_data.start_date|default:'' }}" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                         </div>
 
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">End Date</label>
-                            <input type="date" name="end_date" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                            <input type="date" name="end_date" value="{{ old_data.end_date|default:'' }}" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                         </div>
                     </div>
                 </div>

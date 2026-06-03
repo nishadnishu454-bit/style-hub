@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from admin_panel.categorymanagement.models import Category
 
+
 # Create your views here.
 def home_page(request):
     categories = Category.objects.filter(is_active=True, is_deleted=False)
@@ -21,6 +22,10 @@ def home_page(request):
         elif 'hoodie' in name:
             category_map['hoodies'] = cat.id
     return render(request, 'home.html', {'category_map': category_map})
+
+
+
+
 
 def about_page(request):
     return render(request,'about.html')

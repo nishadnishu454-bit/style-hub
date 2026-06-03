@@ -554,11 +554,10 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 
         const data = await response.json();
 
-      if (!data.success) {
-
-    alert(data.message || 'Something went wrong');
-    return;
-}
+        if (!data.success) {
+            alert(data.message || 'Something went wrong');
+            return;
+        }
 
         const options = {
 
@@ -603,7 +602,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 
                 } else {
 
-                    alert("Payment verification failed. Please try again.");
+                    window.location.href = "{% url 'payment_failure' %}";
                 }
             },
 
@@ -611,7 +610,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 
                 ondismiss: function () {
 
-                    alert("Payment cancelled. You can try again.");
+                    window.location.href = "{% url 'payment_failure' %}";
                 }
             },
 
