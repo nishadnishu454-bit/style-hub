@@ -1,235 +1,517 @@
 <!DOCTYPE html>
+<html class="dark" lang="en">
 
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "on-background": "#d8e2ff",
-              "primary-fixed": "#e2e2e2",
-              "secondary-fixed-dim": "#b4c7ee",
-              "tertiary-container": "#470009",
-              "on-tertiary-container": "#d36565",
-              "on-tertiary": "#620f17",
-              "on-primary": "#2f3131",
-              "inverse-surface": "#d8e2ff",
-              "on-tertiary-fixed": "#410007",
-              "secondary-fixed": "#d7e3ff",
-              "on-error": "#690005",
-              "primary-container": "#1d1f20",
-              "on-surface-variant": "#c5c6cf",
-              "on-primary-container": "#858787",
-              "background": "#001232",
-              "on-secondary-container": "#a3b5dc",
-              "secondary-container": "#344768",
-              "surface-container-lowest": "#000d28",
-              "on-secondary-fixed": "#051b3a",
-              "on-primary-fixed": "#1a1c1c",
-              "inverse-primary": "#5d5f5f",
-              "secondary": "#b4c7ee",
-              "surface-container-low": "#071b3b",
-              "surface-variant": "#233456",
-              "surface-tint": "#c6c6c7",
-              "surface-dim": "#001232",
-              "surface-container-high": "#18294b",
-              "primary-fixed-dim": "#c6c6c7",
-              "outline-variant": "#44474e",
-              "on-secondary": "#1d3050",
-              "tertiary": "#ffb3b1",
-              "on-primary-fixed-variant": "#454747",
-              "tertiary-fixed": "#ffdad8",
-              "inverse-on-surface": "#1f3052",
-              "outline": "#8f9099",
-              "on-secondary-fixed-variant": "#344768",
-              "surface": "#001232",
-              "primary": "#c6c6c7",
-              "on-error-container": "#ffdad6",
-              "tertiary-fixed-dim": "#ffb3b1",
-              "on-tertiary-fixed-variant": "#80272b",
-              "on-surface": "#d8e2ff",
-              "surface-container": "#0c1f40",
-              "surface-container-highest": "#233456",
-              "surface-bright": "#28395b",
-              "error": "#ffb4ab",
-              "error-container": "#93000a"
-            },
-            fontFamily: {
-              "headline": ["Manrope"],
-              "body": ["Manrope"],
-              "label": ["Manrope"]
-            },
-            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-          },
-        },
-      }
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>Cancellation Success | STYLE-HUB</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        background: "#001232",
+                        surface: "#071b3b",
+                        card: "#0c1f40",
+                        border: "#233456",
+                        text: "#d8e2ff",
+                        muted: "#9caecc",
+                        primary: "#c6c6c7",
+                        accent: "#b4c7ee",
+                        success: "#22c55e",
+                        danger: "#ffb4ab"
+                    },
+                    fontFamily: {
+                        sans: ["Manrope"]
+                    }
+                }
+            }
+        }
     </script>
-<style>
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        display: inline-block;
-        line-height: 1;
-        text-transform: none;
-        letter-spacing: normal;
-        word-wrap: normal;
-        white-space: nowrap;
-        direction: ltr;
-      }
-      .glass-card {
-        background: rgba(40, 57, 91, 0.6);
-        backdrop-filter: blur(20px);
-      }
+
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .glass {
+            background: rgba(12, 31, 64, 0.75);
+            backdrop-filter: blur(18px);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
+        }
+
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
-<body class="bg-background font-body text-on-surface min-h-screen">
-<!-- Top Navigation -->
-<nav class="fixed top-0 w-full z-50 bg-[#001232]/80 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,13,40,0.4)]">
-<div class="flex justify-between items-center px-8 h-20 w-full max-w-screen-2xl mx-auto">
-<div class="text-2xl font-black tracking-tighter text-white uppercase font-headline">STYLE-HUB</div>
-<div class="hidden md:flex items-center space-x-10 font-manrope tracking-tight text-sm">
-<a class="text-slate-400 font-medium hover:text-white transition-colors duration-300" href="#">Collections</a>
-<a class="text-slate-400 font-medium hover:text-white transition-colors duration-300" href="#">New Drops</a>
-<a class="text-slate-400 font-medium hover:text-white transition-colors duration-300" href="#">Editorial</a>
-<a class="text-slate-400 font-medium hover:text-white transition-colors duration-300" href="#">Archives</a>
-</div>
-<div class="flex items-center space-x-6 text-slate-200">
-<button class="scale-95 active:opacity-80 transition-transform">
-<span class="material-symbols-outlined">shopping_bag</span>
-</button>
-<button class="scale-95 active:opacity-80 transition-transform">
-<span class="material-symbols-outlined">person</span>
-</button>
-</div>
-</div>
-<div class="bg-[#0c1f40] h-[1px] w-full opacity-20"></div>
-</nav>
-<main class="pt-32 pb-24 px-6 md:px-12 max-w-screen-2xl mx-auto">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-<!-- Left Sidebar Navigation -->
-<aside class="lg:col-span-3">
-<div class="bg-surface-container rounded-xl p-8 space-y-2 sticky top-32">
-<div class="mb-8 px-2">
-<div class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Account</div>
-<div class="text-lg font-headline font-bold text-white">Alexander West</div>
-</div>
-<nav class="space-y-1">
-<a class="flex items-center space-x-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-surface-variant transition-all duration-300" href="#">
-<span class="material-symbols-outlined">person</span>
-<span class="font-medium">Profile</span>
-</a>
-<a class="flex items-center space-x-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-surface-variant transition-all duration-300" href="#">
-<span class="material-symbols-outlined">location_on</span>
-<span class="font-medium">Address</span>
-</a>
-<!-- Active State -->
-<a class="flex items-center space-x-4 px-4 py-3 rounded-lg bg-surface-variant text-white transition-all duration-300" href="#">
-<span class="material-symbols-outlined">shopping_cart</span>
-<span class="font-medium">My Orders</span>
-</a>
-<a class="flex items-center space-x-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-surface-variant transition-all duration-300" href="#">
-<span class="material-symbols-outlined">favorite</span>
-<span class="font-medium">Wishlist</span>
-</a>
-<a class="flex items-center space-x-4 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-surface-variant transition-all duration-300" href="#">
-<span class="material-symbols-outlined">account_balance_wallet</span>
-<span class="font-medium">Wallet</span>
-</a>
-</nav>
-</div>
-</aside>
-<!-- Right Content Area -->
-<div class="lg:col-span-9 space-y-12">
-<!-- Success Success Card -->
-<div class="glass-card rounded-xl p-10 text-center border border-white/5 shadow-[0_20px_40px_rgba(0,13,40,0.4)]">
-<div class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 bg-emerald-500/20 text-emerald-400"><span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">check_circle</span></div>
-<h1 class="text-3xl md:text-4xl font-headline font-extrabold text-white mb-4 tracking-tight">Order Cancelled Successfully</h1>
-<p class="text-on-surface-variant text-lg max-w-2xl mx-auto leading-relaxed">
-                        Your order has been cancelled and updated in your order history.
-                    </p>
-<div class="mt-8 inline-flex items-center space-x-3 bg-surface-container-highest/40 px-6 py-3 rounded-full border border-white/10">
-<span class="material-symbols-outlined text-secondary">info</span>
-<p class="text-sm text-secondary font-medium">Refund Note: If payment was already completed, the refund will be processed based on your payment method.</p>
-</div>
-</div>
-<!-- Order Summary Bento Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-<!-- Product Details -->
-<div class="bg-surface-container rounded-xl overflow-hidden flex flex-col md:flex-row shadow-sm">
-<div class="w-full md:w-40 h-48 md:h-auto overflow-hidden">
-<img alt="Atelier Midnight Coat" class="w-full h-full object-cover grayscale opacity-70" data-alt="high-end minimalist fashion coat on a mannequin, dark studio lighting, charcoal grey textured wool, cinematic atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIyKFmkAvHUObJRRzlo3w0oNewNhgPv0imKwcsOERW4PcKlGWBXFNaWuY1Rm15IeEfxKOxlAa71K7TZrBT9RQWXNzzq6LtaE8Lf3CaZxF1luq1JVHLvdS1Yw2sruGxXKtzP7s-AHjzVRri0urnA01seau_8iNS-KZ8sZzc9gMFAa2L-arBsc1f1uwq-3XBjjegj3i5p1i17o-k3xW0Xb1NxFUpv16BEoBXqG6Yw6aVg7OeVyGujecjyU4syaxIiH1ram9ZPJVESeyh"/>
-</div>
-<div class="p-6 flex flex-col justify-center">
-<div class="text-xs uppercase tracking-[0.2em] text-primary mb-1">Cancelled Item</div>
-<h3 class="text-xl font-headline font-bold text-white mb-2">Atelier Midnight Coat</h3>
-<div class="flex items-center text-on-surface-variant text-sm">
-<span class="material-symbols-outlined text-xs mr-2">tag</span>
-<span>#SH-882910</span>
-</div>
-</div>
-</div>
-<!-- Meta Info Details -->
-<div class="bg-surface-container rounded-xl p-8 grid grid-cols-2 gap-6">
-<div>
-<p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Date</p>
-<p class="text-white font-medium">October 24, 2024</p>
-</div>
-<div>
-<p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Payment</p>
-<div class="flex items-center space-x-2">
-<span class="material-symbols-outlined text-xs text-on-surface-variant">credit_card</span>
-<p class="text-white font-medium">Credit Card</p>
-</div>
-</div>
-<div>
-<p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Refund Status</p>
-<p class="text-tertiary-fixed-dim font-bold flex items-center">
-<span class="w-1.5 h-1.5 rounded-full bg-tertiary mr-2"></span>
-                                Processing
-                            </p>
-</div>
-<div>
-<p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Total Refund</p>
-<p class="text-white font-bold text-lg">$1,240.00</p>
-</div>
-</div>
-</div>
-<!-- Action Buttons -->
-<div class="flex flex-col md:flex-row items-center justify-center gap-6 pt-8">
-<button class="w-full md:w-auto px-10 py-4 bg-primary-fixed text-on-primary-fixed rounded-full font-bold uppercase tracking-widest text-xs transition-all hover:bg-primary-fixed-dim hover:scale-105 active:scale-95">
-                        Back to My Orders
-                    </button>
-<button class="w-full md:w-auto px-10 py-4 border border-outline-variant/30 text-white rounded-full font-bold uppercase tracking-widest text-xs transition-all hover:bg-white/5 hover:border-white/20 active:scale-95">
-                        Continue Shopping
-                    </button>
-<button class="w-full md:w-auto flex items-center justify-center space-x-2 text-on-surface-variant hover:text-white transition-colors px-6">
-<span class="text-xs uppercase tracking-widest font-bold">View Order Details</span>
-<span class="material-symbols-outlined text-lg">arrow_forward</span>
-</button>
-</div>
-</div>
-</div>
-</main>
-<!-- Footer -->
-<footer class="bg-[#001232] w-full py-12 px-8">
-<div class="max-w-screen-2xl mx-auto">
-<div class="bg-[#0c1f40] h-[1px] w-full mb-8"></div>
-<div class="flex flex-col md:flex-row justify-between items-center w-full">
-<div class="font-manrope text-[10px] uppercase tracking-widest text-slate-500 mb-6 md:mb-0">
-                    © 2024 STYLE-HUB DIGITAL FLAGSHIP. ALL RIGHTS RESERVED.
+
+<body class="bg-background text-text min-h-screen">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#001232]/90 backdrop-blur-xl border-b border-white/5">
+
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
+
+            <a href="{% url 'home' %}"
+                class="text-2xl font-black tracking-tight text-white uppercase">
+                STYLE-HUB
+            </a>
+
+            <div class="hidden md:flex items-center gap-10 text-sm">
+
+                <a href="{% url 'home' %}"
+                    class="text-slate-400 hover:text-white transition">
+                    Home
+                </a>
+
+                <a href="#"
+                    class="text-slate-400 hover:text-white transition">
+                    Collections
+                </a>
+
+                <a href="#"
+                    class="text-slate-400 hover:text-white transition">
+                    New Drops
+                </a>
+
+            </div>
+
+            <div class="flex items-center gap-5">
+
+                <a href="{% url 'cart_page' %}" class="text-slate-300 hover:text-white transition">
+                    <span class="material-symbols-outlined">
+                        shopping_bag
+                    </span>
+                </a>
+
+                <a href="{% url 'profile' %}" class="text-slate-300 hover:text-white transition">
+                    <span class="material-symbols-outlined">
+                        person
+                    </span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- MAIN -->
+    <main class="pt-32 pb-24 px-5 md:px-8">
+
+        <div class="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+            <!-- SIDEBAR -->
+            <aside class="lg:col-span-3">
+
+                <div class="glass rounded-2xl p-7 sticky top-28 border border-white/5">
+
+                    <div class="mb-8">
+
+                        <p class="text-xs uppercase tracking-[0.25em] text-muted mb-2">
+                            Account
+                        </p>
+
+                        <h2 class="text-xl font-bold text-white">
+                            {{ request.user.username }}
+                        </h2>
+
+                    </div>
+
+                    <nav class="space-y-2">
+
+                        <a href="{% url 'profile' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+
+                            <span class="material-symbols-outlined">
+                                person
+                            </span>
+
+                            <span>Profile</span>
+
+                        </a>
+
+                        <a href="{% url 'address_page' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+
+                            <span class="material-symbols-outlined">
+                                location_on
+                            </span>
+
+                            <span>Address</span>
+
+                        </a>
+
+                        <a href="{% url 'user_orders_listing' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl bg-[#233456] text-white">
+
+                            <span class="material-symbols-outlined">
+                                shopping_cart
+                            </span>
+
+                            <span>My Orders</span>
+
+                        </a>
+
+                        <a href="{% url 'wishlist_page' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+
+                            <span class="material-symbols-outlined">
+                                favorite
+                            </span>
+
+                            <span>Wishlist</span>
+
+                        </a>
+
+                        <a href="{% url 'wallet_page' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+
+                            <span class="material-symbols-outlined">
+                                account_balance_wallet
+                            </span>
+
+                            <span>Wallet</span>
+
+                        </a>
+
+                    </nav>
+
                 </div>
-<div class="flex space-x-10 font-manrope text-[10px] uppercase tracking-widest">
-<a class="text-slate-500 hover:text-slate-200 transition-colors" href="#">Privacy Policy</a>
-<a class="text-slate-500 hover:text-slate-200 transition-colors" href="#">Terms of Service</a>
-<a class="text-slate-500 hover:text-slate-200 transition-colors" href="#">Shipping &amp; Returns</a>
+
+            </aside>
+
+            <!-- CONTENT -->
+            <section class="lg:col-span-9 space-y-10">
+
+                <!-- SUCCESS -->
+                <div class="glass rounded-3xl border border-white/5 p-10 text-center">
+
+                    <div
+                        class="w-24 h-24 mx-auto rounded-full bg-emerald-500/15 flex items-center justify-center mb-6">
+
+                        <span class="material-symbols-outlined text-5xl text-emerald-400"
+                            style="font-variation-settings:'FILL' 1;">
+                            check_circle
+                        </span>
+
+                    </div>
+
+                    <h1 class="text-4xl font-black text-white tracking-tight mb-4">
+
+                        {% if cancel_type == 'item' %}
+                        Item Cancelled Successfully
+                        {% else %}
+                        Order Cancelled Successfully
+                        {% endif %}
+
+                    </h1>
+
+                    <p class="max-w-2xl mx-auto text-muted text-lg leading-relaxed">
+                        Your cancellation request has been processed successfully and updated in your account.
+                    </p>
+
+                    {% if refund_amount > 0 %}
+                    <div
+                        class="inline-flex items-center gap-3 mt-8 bg-white/5 border border-white/10 rounded-full px-6 py-3">
+
+                        <span class="material-symbols-outlined text-accent">
+                            account_balance_wallet
+                        </span>
+
+                        <span class="text-sm text-accent font-semibold">
+                            ₹{{ refund_amount }} refund will be credited to your wallet shortly.
+                        </span>
+
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <!-- CANCELLED ITEMS -->
+                <div class="space-y-6">
+
+                    <div class="flex items-center justify-between">
+
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">
+                                Cancelled Items
+                            </h2>
+
+                            <p class="text-muted text-sm mt-1">
+                                Order #{{ cancelled_order.order_number }}
+                            </p>
+                        </div>
+
+                        <div class="hidden md:flex items-center gap-2 text-sm text-muted">
+
+                            <span class="material-symbols-outlined text-base">
+                                calendar_today
+                            </span>
+
+                            {{ cancelled_order.updated_at|date:"F d, Y" }}
+
+                        </div>
+
+                    </div>
+
+                    <!-- ITEMS LOOP -->
+                    <div class="space-y-5">
+
+                        {% for item in cancelled_order.items.all %}
+
+                        {% if item.item_status == 'Cancelled' %}
+
+                        <div
+                            class="glass rounded-2xl border border-white/5 overflow-hidden flex flex-col md:flex-row">
+
+                            <!-- IMAGE -->
+                       <!-- IMAGE -->
+<div class="w-full md:w-56 h-60 md:h-auto bg-[#09162d] overflow-hidden">
+
+    {% if item.variant and item.variant.images.first %}
+
+    <img src="{{ item.variant.images.first.image.url }}"
+        alt="{{ item.product_name }}"
+        class="w-full h-full object-cover">
+
+    {% elif item.variant and item.variant.product.images.first %}
+
+    <img src="{{ item.variant.product.images.first.image.url }}"
+        alt="{{ item.product_name }}"
+        class="w-full h-full object-cover">
+
+    {% else %}
+
+    <div class="w-full h-full flex items-center justify-center text-muted">
+        No Image
+    </div>
+
+    {% endif %}
+
 </div>
-</div>
-</div>
-</footer>
-</body></html>
+
+                            <!-- DETAILS -->
+                            <div class="flex-1 p-7">
+
+                                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+                                    <div>
+
+                                        <div
+                                            class="inline-flex items-center gap-2 bg-red-500/10 text-red-300 border border-red-400/10 rounded-full px-4 py-1.5 text-xs uppercase tracking-widest font-bold mb-4">
+
+                                            <span class="w-2 h-2 rounded-full bg-red-400"></span>
+
+                                            Cancelled
+
+                                        </div>
+
+                                        <h3 class="text-2xl font-bold text-white mb-3">
+                                            {{ item.product_name }}
+                                        </h3>
+
+                                        <div class="flex flex-wrap gap-5 text-sm text-muted">
+
+                                            {% if item.variant.size %}
+                                            <div class="flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-base">
+                                                    straighten
+                                                </span>
+                                                Size: {{ item.variant.size }}
+                                            </div>
+                                            {% endif %}
+
+                                            <div class="flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-base">
+                                                    inventory_2
+                                                </span>
+                                                Qty: {{ item.quantity }}
+                                            </div>
+
+                                            <div class="flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-base">
+                                                    payments
+                                                </span>
+                                                ₹{{ item.total_price }}
+                                            </div>
+
+                                        </div>
+
+                                        {% if item.reason %}
+                                        <div
+                                            class="mt-5 bg-white/5 border border-white/5 rounded-xl p-4">
+
+                                            <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                                Cancellation Reason
+                                            </p>
+
+                                            <p class="text-sm text-text leading-relaxed">
+                                                {{ item.reason }}
+                                            </p>
+
+                                        </div>
+                                        {% endif %}
+
+                                    </div>
+
+                                    <!-- STATUS -->
+                                    <div class="min-w-[220px]">
+
+                                        <div
+                                            class="bg-[#101f3b] border border-white/5 rounded-2xl p-5 space-y-5">
+
+                                            <div>
+
+                                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                                    Refund Status
+                                                </p>
+
+                                                {% if refund_amount > 0 %}
+                                                <div
+                                                    class="inline-flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+
+                                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+
+                                                    Processing
+
+                                                </div>
+                                                {% else %}
+                                                <div
+                                                    class="inline-flex items-center gap-2 text-muted font-semibold text-sm">
+
+                                                    <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+
+                                                    Not Applicable
+
+                                                </div>
+                                                {% endif %}
+
+                                            </div>
+
+                                            <div>
+
+                                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                                    Payment Method
+                                                </p>
+
+                                                <p class="text-white font-semibold">
+                                                    {{ cancelled_order.payment_method }}
+                                                </p>
+
+                                            </div>
+
+                                            <div>
+
+                                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                                    Order Number
+                                                </p>
+
+                                                <p class="text-accent font-semibold">
+                                                    #{{ cancelled_order.order_number }}
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {% endif %}
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="flex flex-col md:flex-row items-center justify-center gap-5 pt-5">
+
+                    <a href="{% url 'user_orders_listing' %}"
+                        class="w-full md:w-auto px-10 py-4 rounded-full bg-primary text-black text-center font-bold uppercase tracking-widest text-xs hover:scale-105 transition">
+
+                        Back To My Orders
+
+                    </a>
+
+                    <a href="{% url 'home' %}"
+                        class="w-full md:w-auto px-10 py-4 rounded-full border border-white/10 text-white text-center font-bold uppercase tracking-widest text-xs hover:bg-white/5 transition">
+
+                        Continue Shopping
+
+                    </a>
+
+                    <a href="{% url 'orders_view' %}?order_id={{ cancelled_order.id }}"
+                        class="w-full md:w-auto px-10 py-4 rounded-full bg-[#233456] text-white text-center font-bold uppercase tracking-widest text-xs hover:bg-[#2f4673] transition">
+
+                        View Order Details
+
+                    </a>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/5 py-10 px-6">
+
+        <div
+            class="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+
+            <p class="text-[11px] uppercase tracking-[0.25em] text-slate-500 text-center md:text-left">
+                © 2026 STYLE-HUB DIGITAL FLAGSHIP. ALL RIGHTS RESERVED.
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-8 text-[11px] uppercase tracking-[0.2em]">
+
+                <a href="#" class="text-slate-500 hover:text-white transition">
+                    Privacy Policy
+                </a>
+
+                <a href="#" class="text-slate-500 hover:text-white transition">
+                    Terms Of Service
+                </a>
+
+                <a href="#" class="text-slate-500 hover:text-white transition">
+                    Shipping & Returns
+                </a>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

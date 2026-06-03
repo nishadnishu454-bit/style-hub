@@ -193,18 +193,7 @@
                     </div>
                 </div>
 
-                {% if messages %}
-                    <div class="mt-8 space-y-3">
-                        {% for message in messages %}
-                            <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-emerald-400">check_circle</span>
-                                    <p class="text-emerald-400 text-sm font-medium">{{ message }}</p>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                {% include 'toast.html' %}
             </div>
         </section>
     </main>
@@ -226,20 +215,7 @@
                     </div>
 
                     <!-- Messages Section -->
-                    {% if messages %}
-                        <div class="mt-4 space-y-2">
-                            {% for message in messages %}
-                                <div class="p-3 rounded-lg text-xs font-bold flex items-center gap-3
-                                    {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400
-                                    {% else %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% endif %}">
-                                    <span class="material-symbols-outlined text-sm">
-                                        {% if message.tags == 'error' %}error{% else %}check_circle{% endif %}
-                                    </span>
-                                    {{ message }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                    {% include 'toast.html' %}
 
                     <a href="{% url 'profile' %}" class="w-10 h-10 rounded-full hover:bg-surface-variant flex items-center justify-center transition-colors">
                         <span class="material-symbols-outlined text-on-surface-variant">close</span>
@@ -285,7 +261,7 @@
                             <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Username</label>
                             <input class="bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-transparent outline-none transition-all"
                                    type="text"
-                                   value="{{ request.user.username }}"
+                                   value="{{ old_data.username|default:request.user.username }}"
                                    name="username">
                         </div>
 
@@ -293,7 +269,7 @@
                             <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Email Address</label>
                             <input class="bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-transparent outline-none transition-all"
                                    type="email"
-                                   value="{{ request.user.email }}"
+                                   value="{{ old_data.email|default:request.user.email }}"
                                    name="email">
                         </div>
 
@@ -301,7 +277,7 @@
                             <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Phone Number</label>
                             <input class="bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-transparent outline-none transition-all"
                                    type="tel"
-                                   value="{{ request.user.phone_number }}"
+                                   value="{{ old_data.phone_number|default:request.user.phone_number }}"
                                    name="phone_number">
                         </div>
                     </div>

@@ -34,19 +34,7 @@ body { font-family: 'Manrope', sans-serif; }
 
 <main class="pt-32 pb-20 max-w-7xl mx-auto px-6 lg:px-8">
 
-    {% if messages %}
-        <div class="mb-12 space-y-3">
-            {% for message in messages %}
-                <div class="p-4 rounded-xl glass-card border border-white/10 shadow-lg flex items-center gap-3
-                    {% if message.tags == 'error' %}text-red-400{% else %}text-emerald-400{% endif %}">
-                    <span class="material-symbols-outlined">
-                        {% if message.tags == 'error' %}error{% else %}check_circle{% endif %}
-                    </span>
-                    <p class="text-sm font-bold tracking-tight">{{ message }}</p>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    {% include 'toast.html' %}
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
 

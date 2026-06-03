@@ -12,6 +12,8 @@ from django.db.models import Q
 from user.orders.models import Order, OrderItem, Review, ReviewImage
 from user.wallet.utils import credit_wallet
 from decimal import Decimal
+import re
+
 
 @login_required(login_url='login')
 def user_orders_listing(request):
@@ -43,7 +45,7 @@ def user_orders_listing(request):
         'search_query': search_query,
         'status_filter': status_filter,
     }
-    return render(request, 'orderslisting.html', context)
+    return render(request,'orderslisting.html', context)
 
 
 @login_required(login_url='login')
@@ -228,11 +230,14 @@ def order_cancel_success(request):
                 return redirect(f"{reverse('orders_view')}?order_id={order_id}")
             return redirect('user_orders_listing')
 
+        cancelled_item = None
+        cancelled_order = None
+
         if item_id:
             item = get_object_or_404(OrderItem, id=item_id, order__user=request.user)
 
             if item.item_status not in ['Pending', 'Confirmed', 'Shipped']:
-                messages.error(request, f"Item cannot be cancelled in its current status: {item.item_status}")
+                messages.error(request, f"Item cannot be cancelled: {item.item_status}")
                 return redirect(f"{reverse('orders_view')}?order_id={item.order.id}")
 
             with transaction.atomic():
@@ -245,21 +250,14 @@ def order_cancel_success(request):
                     item.variant.save()
 
                 order = item.order
+                refund_amount = Decimal('0.00')
 
                 if order.payment_status == 'Completed':
-
                     refund_amount = item.total_price
-
                     if order.discount_amount > 0 and order.subtotal > 0:
-
-                        item_discount = (
-                                item.total_price / order.subtotal
-                            ) * order.discount_amount
-                        
+                        item_discount = (item.total_price / order.subtotal) * order.discount_amount
                         refund_amount = item.total_price - item_discount
-
                     refund_amount = refund_amount.quantize(Decimal('0.01'))
-                        
                     credit_wallet(
                         user=request.user,
                         amount=refund_amount,
@@ -268,46 +266,44 @@ def order_cancel_success(request):
                     )
 
                 remaining_items = order.items.exclude(item_status='Cancelled')
-
                 if remaining_items.exists():
-
-                    new_subtotal = sum(
-                        order_item.total_price for order_item in remaining_items
-                    )
-
+                    new_subtotal = sum(i.total_price for i in remaining_items)
                     new_discount = Decimal('0.00')
-
                     if order.discount_amount > 0 and order.subtotal > 0:
-
-                        new_discount = (
-                            new_subtotal / order.subtotal
-                        ) * order.discount_amount
-
+                        new_discount = (new_subtotal / order.subtotal) * order.discount_amount
                     new_total = new_subtotal - new_discount + order.delivery_charge
-
-                    if new_total < 0:
-                        new_total = Decimal('0.00')
-
-                    order.total_amount = new_total.quantize(Decimal('0.01'))
-
+                    order.subtotal = new_subtotal
+                    order.discount_amount = new_discount
+                    order.total_amount = max(new_total, Decimal('0.00')).quantize(Decimal('0.01'))
                 else:
+                    order.subtotal = Decimal('0.00')
+                    order.discount_amount = Decimal('0.00')
                     order.total_amount = Decimal('0.00')
                     order.order_status = 'Cancelled'
-
                     if order.payment_status == 'Completed':
                         order.payment_status = 'Refunded'
-
                 order.save()
 
-            messages.success(request, "Item cancelled successfully. Refund added to wallet.")
-            return redirect(f"{reverse('orders_view')}?order_id={item.order.id}")
+            cancelled_item = item
+            cancelled_order = item.order
+
+            # ← context pass ചെയ്യുന്നു
+            context = {
+                'cancelled_item': [cancelled_item],
+                'cancelled_order': cancelled_order,
+                'refund_amount': refund_amount,
+                'cancel_type': 'item',
+            }
+            return render(request, 'order_cancel_success.html', context)
 
         elif order_id:
             order = get_object_or_404(Order, id=order_id, user=request.user)
 
             if order.order_status not in ['Pending', 'Confirmed', 'Shipped']:
-                messages.error(request, f"Order cannot be cancelled in its current status: {order.order_status}")
+                messages.error(request, f"Order cannot be cancelled: {order.order_status}")
                 return redirect(f"{reverse('orders_view')}?order_id={order.id}")
+
+            refund_amount = Decimal('0.00')
 
             with transaction.atomic():
                 order.order_status = 'Cancelled'
@@ -319,34 +315,47 @@ def order_cancel_success(request):
                         item.item_status = 'Cancelled'
                         item.reason = reason
                         item.save()
-
                         if item.variant:
                             item.variant.variant_stock += item.quantity
                             item.variant.save()
 
                 if order.payment_status == 'Completed':
+                    refund_amount = order.total_amount
                     credit_wallet(
                         user=request.user,
-                        amount=order.total_amount,
+                        amount=refund_amount,
                         purpose='Order Cancellation Refund',
                         order=order
                     )
-
                     order.payment_status = 'Refunded'
                     order.save()
 
-            messages.success(request, "Order cancelled successfully. Refund added to wallet.")
-            return redirect(f"{reverse('orders_view')}?order_id={order.id}")
+            cancelled_order = order
+            first_item = order.items.all()
 
-    return render(request, 'order_cancel_success.html')
+            context = {
+                'cancelled_item': cancelled_item,
+                'cancelled_order': cancelled_order,
+                'refund_amount': refund_amount,
+                'cancel_type': 'order',
+            }
+            return render(request, 'order_cancel_success.html', context)
 
+    # GET request
+    return redirect('user_orders_listing')
 
 @login_required(login_url='login')
 def review_writing(request):
+
     item_id = request.GET.get('item_id')
 
     if not item_id:
         messages.error(request, 'Invalid review request')
+        return redirect('user_orders_listing')
+
+    # ITEM VALIDATION
+    if not str(item_id).isdigit():
+        messages.error(request, 'Invalid order item')
         return redirect('user_orders_listing')
 
     order_item = get_object_or_404(
@@ -362,45 +371,162 @@ def review_writing(request):
 
     product = order_item.variant.product
 
-    if order_item.item_status != 'Delivered':
-        messages.error(request,'Review can only delivered products')
-        return redirect(f"{reverse('orders_view')}?order_id={order_item.order.id}")  
+    # PRODUCT STATUS VALIDATION
+    if (
+        product.is_deleted or
+        not product.is_active or
+        order_item.variant.is_deleted or
+        not order_item.variant.is_active
+    ):
+        messages.error(request, 'This product is unavailable for review')
+        return redirect(
+            f"{reverse('orders_view')}?order_id={order_item.order.id}"
+        )
 
-            
-    if Review.objects.filter(user=request.user,order_item=order_item).exists():
-        messages.error(request,'You already reviewed this product')
-        return redirect(f"{reverse('orders_view')}?order_id={order_item.order.id}")         
+    # ONLY DELIVERED PRODUCTS
+    if order_item.item_status != 'Delivered':
+        messages.error(request, 'Review can only be added for delivered products')
+        return redirect(
+            f"{reverse('orders_view')}?order_id={order_item.order.id}"
+        )
+
+    # PREVENT DUPLICATE REVIEW
+    if Review.objects.filter(
+        user=request.user,
+        order_item=order_item
+    ).exists():
+
+        messages.error(request, 'You already reviewed this product')
+
+        return redirect(
+            f"{reverse('orders_view')}?order_id={order_item.order.id}"
+        )
 
     if request.method == 'POST':
-        rating = request.POST.get('rating')
+
+        rating = request.POST.get('rating', '').strip()
         title = request.POST.get('title', '').strip()
         content = request.POST.get('content', '').strip()
 
-        if not rating:
-            messages.error(request, 'Please select rating')
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+        images = request.FILES.getlist('images')
 
-        if not title or not content:
+        # REQUIRED FIELD VALIDATION
+        if not rating or not title or not content:
             messages.error(request, 'Please fill all fields')
             return redirect(f'/orders/review_writing/?item_id={item_id}')
 
+        # RATING VALIDATION
+        try:
+            rating = int(rating)
+
+            if rating < 1 or rating > 5:
+                messages.error(request, 'Rating must be between 1 and 5')
+                return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        except ValueError:
+            messages.error(request, 'Invalid rating')
+            return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        # TITLE LENGTH VALIDATION
+        if len(title) < 3:
+            messages.error(
+                request,
+                'Review title must contain at least 3 characters'
+            )
+            return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        if len(title) > 100:
+            messages.error(
+                request,
+                'Review title cannot exceed 100 characters'
+            )
+            return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        # CONTENT LENGTH VALIDATION
+        if len(content) < 10:
+            messages.error(
+                request,
+                'Review content must contain at least 10 characters'
+            )
+            return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        if len(content) > 1000:
+            messages.error(
+                request,
+                'Review content cannot exceed 1000 characters'
+            )
+            return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        # INVALID SPACES
+        if "  " in title:
+            messages.error(
+                request,
+                'Review title contains invalid spaces'
+            )
+            return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        # TITLE CHARACTER VALIDATION
+        if not re.match(r'^[A-Za-z0-9\s.,!?&()\'"-]+$', title):
+            messages.error(
+                request,
+                'Review title contains invalid characters'
+            )
+            return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        # IMAGE LIMIT VALIDATION
+        if len(images) > 5:
+            messages.error(
+                request,
+                'Maximum 5 review images are allowed'
+            )
+            return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        # IMAGE VALIDATION
+        allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
+
+        for image in images:
+
+            # FILE SIZE VALIDATION
+            if image.size > 5 * 1024 * 1024:
+                messages.error(
+                    request,
+                    'Each image must be less than 5MB'
+                )
+                return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+            # EXTENSION VALIDATION
+            extension = image.name.split('.')[-1].lower()
+
+            if extension not in allowed_extensions:
+                messages.error(
+                    request,
+                    'Only JPG, JPEG, PNG and WEBP images are allowed'
+                )
+                return redirect(f'/orders/review_writing/?item_id={item_id}')
+
+        # CREATE REVIEW
         review = Review.objects.create(
             user=request.user,
             product=product,
             order_item=order_item,
-            rating=int(rating),
+            rating=rating,
             title=title,
             content=content,
         )
 
-        for image in request.FILES.getlist('images'):
+        # SAVE REVIEW IMAGES
+        for image in images:
+
             ReviewImage.objects.create(
                 review=review,
                 image=image
             )
 
         messages.success(request, 'Review submitted successfully')
-        return redirect(f'/orders/orders_view/?order_id={order_item.order.id}')
+
+        return redirect(
+            f'/orders/orders_view/?order_id={order_item.order.id}'
+        )
 
     context = {
         'product': product,
@@ -408,7 +534,6 @@ def review_writing(request):
     }
 
     return render(request, 'review_writing.html', context)
-
 
 @login_required(login_url='login')
 def return_order(request):

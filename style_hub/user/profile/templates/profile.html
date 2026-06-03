@@ -137,22 +137,7 @@
         <section class="flex-grow flex flex-col gap-8">
 
             <!-- Messages -->
-            {% if messages %}
-                <div class="mb-6 space-y-3">
-                    {% for message in messages %}
-                        <div class="p-4 rounded-xl text-sm font-bold flex items-center gap-3
-                            {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400
-                            {% else %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% endif %}">
-                            {% if message.tags == 'error' %}
-                                <span class="material-symbols-outlined text-red-400">error</span>
-                            {% else %}
-                                <span class="material-symbols-outlined text-emerald-400">check_circle</span>
-                            {% endif %}
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+            {% include 'toast.html' %}
 
             <!-- Profile Card -->
            <div class="relative overflow-hidden rounded-[2rem] p-8 md:p-12 glass-card shadow-2xl border border-white/5">

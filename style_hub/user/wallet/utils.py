@@ -1,5 +1,6 @@
 from decimal import Decimal
 from .models import Wallet, WalletTransaction
+from django.db.models import F
 
 
 def credit_wallet(user, amount, purpose, order=None):
@@ -8,11 +9,15 @@ def credit_wallet(user, amount, purpose, order=None):
 
     wallet, created = Wallet.objects.get_or_create(
         user=user,
-        defaults={'balance': 0}
+        defaults={'balance': Decimal('0.00')}
     )
 
-    wallet.balance += amount
-    wallet.save()
+    if not created:
+        Wallet.objects.filter(id=wallet.id).update(balance=F('balance') + amount)
+        wallet.refresh_from_db()
+    else:
+        wallet.balance = amount
+        wallet.save()
 
     WalletTransaction.objects.create(
         wallet=wallet,
@@ -30,14 +35,14 @@ def debit_wallet(user, amount, purpose, order=None):
 
     wallet, created = Wallet.objects.get_or_create(
         user=user,
-        defaults={'balance': 0}
+        defaults={'balance': Decimal('0.00')}
     )
 
     if wallet.balance < amount:
         return False
 
-    wallet.balance -= amount
-    wallet.save()
+    Wallet.objects.filter(id=wallet.id).update(balance=F('balance') - amount)
+    wallet.refresh_from_db()
 
     WalletTransaction.objects.create(
         wallet=wallet,

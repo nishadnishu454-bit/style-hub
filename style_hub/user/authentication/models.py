@@ -37,23 +37,13 @@ class Referral(models.Model):
     
 
 class OTP(models.Model):
-    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     code = models.CharField(max_length=6)
     purpose = models.CharField(max_length=20)
-    is_used = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    expired_at = models.TimeField()
-
-
-    
-    def save(self, *args, **kwargs):
-        if not self.expired_at:
-            self.expired_at = timezone.now() + timedelta(seconds=30)
-        super().save(*args, **kwargs)
 
     def is_expired(self):
-        return timezone.now() > self.expired_at 
-
+        return timezone.now() > self.created_at + timedelta(minutes=5)
 
     def __str__(self):
         return f"{self.user.username} - {self.code}"

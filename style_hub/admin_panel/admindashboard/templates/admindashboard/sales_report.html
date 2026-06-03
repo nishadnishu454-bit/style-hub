@@ -88,28 +88,51 @@
         </form>
 
         <!-- Stats Overview -->
-        <div class="grid grid-cols-5 gap-4 border-t border-b border-gray-100 py-8 mb-10 text-center md:text-left">
-            <div>
-                <p class="stat-label mb-2">Total Orders</p>
-                <h3 class="text-3xl font-light text-gray-800">{{ total_orders_count }}</h3>
-            </div>
-            <div>
-                <p class="stat-label mb-2">Subtotal</p>
-                <h3 class="text-3xl font-light text-gray-800">₹{{ total_subtotal }}</h3>
-            </div>
-            <div>
-                <p class="stat-label mb-2">Total Coupon Discount</p>
-                <h3 class="text-3xl font-light text-gray-800">₹{{ total_discount }}</h3>
-            </div>
-            <div>
-                <p class="stat-label mb-2">Delivery Charges</p>
-                <h3 class="text-3xl font-light text-gray-800">₹{{ total_delivery }}</h3>
-            </div>
-            <div>
-                <p class="stat-label mb-2">Net Revenue</p>
-                <h3 class="text-3xl font-semibold text-black">₹{{ net_revenue }}</h3>
-            </div>
-        </div>
+<div class="grid grid-cols-1 md:grid-cols-6 gap-4 border-t border-b border-gray-100 py-8 mb-10 text-center md:text-left">
+
+    <div>
+        <p class="stat-label mb-2">Total Orders</p>
+        <h3 class="text-3xl font-light text-gray-800">
+            {{ total_orders_count }}
+        </h3>
+    </div>
+
+    <div>
+        <p class="stat-label mb-2">Subtotal</p>
+        <h3 class="text-3xl font-light text-gray-800">
+            ₹{{ total_subtotal }}
+        </h3>
+    </div>
+
+    <div>
+        <p class="stat-label mb-2">Coupon Discount</p>
+        <h3 class="text-3xl font-light text-red-500">
+            ₹{{ total_discount }}
+        </h3>
+    </div>
+
+    <div>
+        <p class="stat-label mb-2">Delivery Charges</p>
+        <h3 class="text-3xl font-light text-gray-800">
+            ₹{{ total_delivery }}
+        </h3>
+    </div>
+
+    <div>
+        <p class="stat-label mb-2">Refund Amount</p>
+        <h3 class="text-3xl font-light text-red-600">
+            ₹{{ refund_amount }}
+        </h3>
+    </div>
+
+    <div>
+        <p class="stat-label mb-2">Net Revenue</p>
+        <h3 class="text-3xl font-semibold text-green-700">
+            ₹{{ net_revenue }}
+        </h3>
+    </div>
+
+</div>
 
         <!-- Orders Table -->
         <div class="overflow-x-auto">
@@ -122,6 +145,7 @@
                         <th class="py-4 px-6 border-b border-gray-100 text-right">Subtotal</th>
                         <th class="py-4 px-6 border-b border-gray-100 text-right">Discount</th>
                         <th class="py-4 px-6 border-b border-gray-100 text-right">Delivery</th>
+                        <th class="py-4 px-6 border-b border-gray-100 text-right">Refund</th>
                         <th class="py-4 px-6 border-b border-gray-100 text-right">Net Price</th>
                         <th class="py-4 px-6 border-b border-gray-100 text-center">Payment</th>
                         <th class="py-4 px-6 border-b border-gray-100 text-center">Status</th>
@@ -147,6 +171,13 @@
                         </td>
                         <td class="py-5 px-6 text-right font-medium text-gray-600">
                             ₹{{ order.delivery_charge }}
+                        </td>
+                        <td class="py-5 px-6 text-right font-medium text-red-500">
+                            {% if order.payment_status|lower == 'refunded' %}
+                                ₹{{ order.total_amount }}
+                            {% else %}
+                                ₹0.00
+                            {% endif %}
                         </td>
                         <td class="py-5 px-6 text-right font-extrabold text-sm text-black">
                             ₹{{ order.total_amount }}

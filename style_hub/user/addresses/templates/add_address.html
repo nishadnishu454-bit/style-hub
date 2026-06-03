@@ -246,20 +246,7 @@
 </div>
 
 <!-- Messages -->
-{% if messages %}
-    <div class="px-8 mb-4 space-y-2">
-        {% for message in messages %}
-            <div class="p-3 rounded-lg text-xs font-bold flex items-center gap-3
-                {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400
-                {% else %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% endif %}">
-                <span class="material-symbols-outlined text-sm">
-                    {% if message.tags == 'error' %}error{% else %}check_circle{% endif %}
-                </span>
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
+{% include 'toast.html' %}
 <!-- Modal Form -->
 <form method="POST" action="{% url 'add_address' %}" class="px-8 pb-2 space-y-1">
     {% csrf_token %}

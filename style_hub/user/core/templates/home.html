@@ -85,33 +85,7 @@
 {% include 'user_navbar.html' %}
 <main>
     <!-- Messages Section -->
-    {% if messages %}
-        <div class="fixed top-24 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
-            <div class="space-y-3">
-                {% for message in messages %}
-                    <div class="p-4 rounded-xl glass-card border border-white/10 shadow-2xl flex items-center gap-3 animate-bounce-in
-                        {% if message.tags == 'error' %}text-red-400{% else %}text-emerald-400{% endif %}">
-                        {% if message.tags == 'error' %}
-                            <span class="material-symbols-outlined">error</span>
-                        {% else %}
-                            <span class="material-symbols-outlined">check_circle</span>
-                        {% endif %}
-                        <p class="text-sm font-bold tracking-tight">{{ message }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        <script>
-            setTimeout(() => {
-                const msgs = document.querySelector('.fixed.top-24');
-                if (msgs) {
-                    msgs.style.transition = 'opacity 0.5s ease';
-                    msgs.style.opacity = '0';
-                    setTimeout(() => msgs.remove(), 500);
-                }
-            }, 5000);
-        </script>
-    {% endif %}
+    {% include 'toast.html' %}
 <!-- Hero Section -->
 <section class="relative min-h-[870px] flex items-center overflow-hidden">
 <div class="absolute inset-0 z-0">
@@ -202,90 +176,10 @@
 </div>
 </div>
 </section>
-<!-- Trending Products -->
-<section class="py-24 px-8 bg-surface-container-low">
-<div class="max-w-7xl mx-auto">
-<h2 class="text-4xl font-bold text-white mb-12 text-center tracking-tight">Trending Products</h2>
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-<!-- Product Card 1 -->
-<div class="group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[3/4] mb-6">
-<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="man wearing a tailored black suit jacket over a turtleneck with elegant minimalist composition" src="https://evalaxy.com/cdn/shop/files/685.jpg?v=1740059424"/>
-<button class="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:text-error transition-colors">
-<span class="material-symbols-outlined">favorite</span>
-</button>
-<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-<button class="w-full py-3 bg-white text-black font-bold rounded-lg shadow-xl">Quick Add</button>
-</div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<h3 class="text-white font-medium text-lg">Midnight Blazer</h3>
-<p class="text-on-surface-variant text-sm">Wool Blend</p>
-</div>
-<p class="text-primary font-bold">$249.00</p>
-</div>
-</div>
-<!-- Product Card 2 -->
-<div class="group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[3/4] mb-6">
-<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="casual puffer jacket in olive green worn by a male model in a minimal studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGlTaPOXMpT-UX6a0ODt9TBAkBiHNC-kg-psl2SzsmZlpyqbPwjgRT6YljQDsbsCYORd0HrUZ9m6CLU1OAMSdkTOorVzkfEt0gwicv5imPW3xT6FHebjQGSIFSJ6g7uR3R5Vl-rEpx_0i-X4uFsBlZb_lsArmSFufUiQgWPNWGzclzaXLcvglJmABNN5WBILz13B9D6AZt7Pu2m00jwW-bjuFYDi8BMGDBWUdnJ5i0Wp2t80nGr7ATCwXrGb3sX8AiJfEDU8TwiFe9"/>
-<button class="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:text-error transition-colors">
-<span class="material-symbols-outlined">favorite</span>
-</button>
-<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-<button class="w-full py-3 bg-white text-black font-bold rounded-lg shadow-xl">Quick Add</button>
-</div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<h3 class="text-white font-medium text-lg">Alpine Puffer</h3>
-<p class="text-on-surface-variant text-sm">Thermal Tech</p>
-</div>
-<p class="text-primary font-bold">$189.00</p>
-</div>
-</div>
-<!-- Product Card 3 -->
-<div class="group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[3/4] mb-6">
-<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="close up of premium black leather boots with intricate stitching on a polished wood floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV7q6uM7O-61pKgBnzNAmvBy1xAA4B_z4hIKphzgQVmzM6UGuyAd-aAqYK7eLP7auAHJug4HyBh_J1W3189c7mdPkiQIK9px-XK2rRfXif3Yw1376ZWrJMiTpPjpbhrYbPsttmYb0zt4woGKpSBDqqqPHMg419-nsynRj5t9SYPs_6JUZORjsoJgE-rTCuw17VOKSnoD0lcdov7TGNgbPZwVPuSeGnDfYNCYjerEvO6R6vT4gdTfNwYkCBg9EZWyHDbu6gJ5Rb6aQv"/>
-<button class="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:text-error transition-colors">
-<span class="material-symbols-outlined">favorite</span>
-</button>
-<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-<button class="w-full py-3 bg-white text-black font-bold rounded-lg shadow-xl">Quick Add</button>
-</div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<h3 class="text-white font-medium text-lg">Oxford Chelsea</h3>
-<p class="text-on-surface-variant text-sm">Full-Grain Leather</p>
-</div>
-<p class="text-primary font-bold">$310.00</p>
-</div>
-</div>
-<!-- Product Card 4 -->
-<div class="group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[3/4] mb-6">
-<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="folded premium dark grey sweatshirt with subtle logo detail and high-end texture visible" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZq0mze9kzUN0KH2O5Ie8KrKagWL6YKQfD4CqHt8axi9O1N23OPReDOa8jvDwlJlJ3XrzA2WwXoXYOdWPNO1ge5AKw9jjOSiXtkSHxFXe7SJGkIIWBk8WAFx5shHKir0QPcTGNinNkkper6UkbLGr57UI4pwRBxJqOGuOX8WDj_8SrG8xJRWPSNBwT3vGnL0l93zmFU9BceGsYbn8Zd3PImquPFhB3gTsriopnPFlRF95r71kKLG495NZwkWgbcHXTlCconcVpy1hN"/>
-<button class="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:text-error transition-colors">
-<span class="material-symbols-outlined">favorite</span>
-</button>
-<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-<button class="w-full py-3 bg-white text-black font-bold rounded-lg shadow-xl">Quick Add</button>
-</div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<h3 class="text-white font-medium text-lg">Studio Hoodie</h3>
-<p class="text-on-surface-variant text-sm">Organic Heavyweight</p>
-</div>
-<p class="text-primary font-bold">$120.00</p>
-</div>
-</div>
-</div>
-</div>
-</section>
+
+
+
+
 
 <!-- Featured Split Layout -->
 <section class="py-24 px-8 bg-surface">
@@ -324,21 +218,7 @@
 </div>
 </section>
 <!-- Community Newsletter -->
-<section class="py-24 px-8 bg-surface-container-high relative overflow-hidden">
-<div class="absolute top-0 left-0 w-96 h-96 bg-primary/5 blur-[120px] -z-10"></div>
-<div class="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 blur-[120px] -z-10"></div>
-<div class="max-w-4xl mx-auto text-center">
-<h2 class="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">Join Our Community</h2>
-<p class="text-on-surface-variant text-xl mb-12 font-light">Get updates on new arrivals, editorial stories, and exclusive offers delivered to your inbox.</p>
-<form class="flex flex-col sm:flex-row gap-4 glass-card p-2 rounded-full border border-white/10">
-<input class="flex-grow bg-transparent border-none focus:ring-0 px-6 py-4 text-white placeholder:text-slate-500 rounded-full" placeholder="Enter your email address" type="email"/>
-<button class="bg-primary-fixed text-on-primary-fixed px-10 py-4 rounded-full font-bold hover:bg-primary transition-all duration-300">
-                        Subscribe
-                    </button>
-</form>
-<p class="mt-6 text-xs text-on-surface-variant opacity-60">By subscribing, you agree to our Privacy Policy and Terms of Service.</p>
-</div>
-</section>
+
 </main>
 <!-- Footer -->
 <footer class="bg-[#0c1f40] w-full py-16 px-8 tonal-shift-bg font-manrope text-sm">

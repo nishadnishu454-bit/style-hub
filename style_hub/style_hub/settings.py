@@ -122,6 +122,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'user.cart.context_processors.cart_count',
+                'user.whishlist.context_processors.wishlist_count',
             ],
         },
     },

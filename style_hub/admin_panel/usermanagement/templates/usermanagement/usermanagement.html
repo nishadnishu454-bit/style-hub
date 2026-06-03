@@ -72,13 +72,7 @@
         <div class="p-10 max-w-7xl mx-auto">
 
             <!-- Messages -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="mb-4 bg-gray-100 text-black px-5 py-3 text-xs font-bold uppercase">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+            {% include 'toast.html' %}
 
             <!-- Page title -->
             <div class="mb-12">

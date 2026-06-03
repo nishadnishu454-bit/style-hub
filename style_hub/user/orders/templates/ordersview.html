@@ -86,56 +86,30 @@
 {% include 'user_navbar.html' %}
 
 <!-- Messages Section -->
-{% if messages %}
-    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4">
-        <div class="space-y-3">
-            {% for message in messages %}
-                <div class="p-4 rounded-xl glass-card border border-white/10 shadow-2xl flex items-center gap-3 animate-bounce-in
-                    {% if message.tags == 'error' %}text-red-400{% else %}text-emerald-400{% endif %}">
-                    {% if message.tags == 'error' %}
-                        <span class="material-symbols-outlined">error</span>
-                    {% else %}
-                        <span class="material-symbols-outlined">check_circle</span>
-                    {% endif %}
-                    <p class="text-sm font-bold tracking-tight">{{ message }}</p>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    <script>
-        setTimeout(() => {
-            const msgs = document.querySelector('.fixed.top-24');
-            if (msgs) {
-                msgs.style.transition = 'opacity 0.5s ease';
-                msgs.style.opacity = '0';
-                setTimeout(() => msgs.remove(), 500);
-            }
-        }, 5000);
-    </script>
-{% endif %}
+{% include 'toast.html' %}
 
 <main class="max-w-[1440px] mx-auto px-12 py-12">
 <div class="flex flex-col lg:flex-row gap-12">
 <!-- Left Sidebar: Dashboard Menu -->
 <aside class="w-full lg:w-72 shrink-0">
 <div class="glass-card rounded-xl p-6 space-y-2">
-<a class="flex items-center gap-4 px-4 py-3 text-[#c5c6cf] hover:bg-[#28395b]/40 rounded-lg transition-all group" href="#">
+<a class="flex items-center gap-4 px-4 py-3 text-[#c5c6cf] hover:bg-[#28395b]/40 rounded-lg transition-all group" href="{% url "profile" %}">
 <span class="material-symbols-outlined">person</span>
 <span class="font-medium">Profile</span>
 </a>
-<a class="flex items-center gap-4 px-4 py-3 text-[#c5c6cf] hover:bg-[#28395b]/40 rounded-lg transition-all group" href="#">
+<a class="flex items-center gap-4 px-4 py-3 text-[#c5c6cf] hover:bg-[#28395b]/40 rounded-lg transition-all group" href="{% url "address_page" %}">
 <span class="material-symbols-outlined">location_on</span>
 <span class="font-medium">Address</span>
 </a>
-<a class="flex items-center gap-4 px-4 py-3 bg-secondary-container text-[#e2e2e2] border-l-4 border-primary rounded-lg transition-all group" href="#">
+<a class="flex items-center gap-4 px-4 py-3 bg-secondary-container text-[#e2e2e2] border-l-4 border-primary rounded-lg transition-all group" href="{% url "user_orders_listing" %}">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">package_2</span>
 <span class="font-bold">My Orders</span>
 </a>
-<a class="flex items-center gap-4 px-4 py-3 text-[#c5c6cf] hover:bg-[#28395b]/40 rounded-lg transition-all group" href="#">
+<a class="flex items-center gap-4 px-4 py-3 text-[#c5c6cf] hover:bg-[#28395b]/40 rounded-lg transition-all group" href="{% url "wishlist_page" %}">
 <span class="material-symbols-outlined">favorite</span>
 <span class="font-medium">Wishlist</span>
 </a>
-<a class="flex items-center gap-4 px-4 py-3 text-[#c5c6cf] hover:bg-[#28395b]/40 rounded-lg transition-all group" href="#">
+<a class="flex items-center gap-4 px-4 py-3 text-[#c5c6cf] hover:bg-[#28395b]/40 rounded-lg transition-all group" href="{% url "wallet_page" %}">
 <span class="material-symbols-outlined">account_balance_wallet</span>
 <span class="font-medium">Wallet</span>
 </a>
@@ -248,7 +222,7 @@
   <div class="xl:col-span-2 space-y-6">
   <h3 class="text-xl font-bold tracking-tight px-2">Ordered Items</h3>
   <div class="glass-card rounded-xl overflow-hidden divide-y divide-outline-variant/10">
-  {% for item in order.items.all %}
+{% for item in order.items.all %}
   <div class="p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
   <div class="w-32 h-40 rounded-lg overflow-hidden bg-surface-container shrink-0">
   {% with primary_image=item.variant.images.all.0 %}
@@ -349,7 +323,7 @@
   </div>
   <!-- Sticky Footer Actions -->
   <div class="flex flex-wrap items-center justify-between gap-6 pt-12">
-  <a href="{% url 'orders_listing' %}" class="text-on-surface-variant hover:text-primary flex items-center gap-2 font-bold transition-all group">
+  <a href="{% url 'user_orders_listing' %}" class="text-on-surface-variant hover:text-primary flex items-center gap-2 font-bold transition-all group">
   <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
               Back to Orders
             </a>

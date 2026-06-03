@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q,F
 from django.core.paginator import Paginator
 from decimal import Decimal
 from .models import Wallet, WalletTransaction
@@ -29,12 +29,21 @@ def wallet_page(request):
         ).order_by('-id')
 
     if search:
-        transactions = transactions.filter(
-            Q(purpose__icontains=search) |
-            Q(status__icontains=search) |
-            Q(id__icontains=search)
-              )
-        
+
+        try:
+            search_id = int(search)
+            transactions = transactions.filter(
+                Q(purpose__icontains=search) |
+                Q(status__icontains=search) |
+                Q(id = search_id)
+            )
+                
+        except ValueError:
+                transactions = transactions.filter(
+                    Q(purpose__icontains=search) |
+                    Q(status__icontains=search)
+                )
+                
     if transaction_type:
         transactions=transactions.filter(type=transaction_type)
 
@@ -122,32 +131,37 @@ def verify_wallet_payment(request):
         razorpay_order_id = request.POST.get('razorpay_order_id')
         razorpay_payment_id = request.POST.get('razorpay_payment_id')
         razorpay_signature = request.POST.get('razorpay_signature')
-        amount = request.session.get('wallet_topup_amount')
 
-        if not amount:
+      
+        try:
+            razorpay_order = client.order.fetch(razorpay_order_id)
+            amount = Decimal(razorpay_order['amount']) / 100
+        except Exception:
             return JsonResponse({
                 'success': False,
-                'message': 'Amount not found'
+                'message': 'Could not verify order amount'
             })
 
         try:
-
+            
             client.utility.verify_payment_signature({
                 'razorpay_order_id': razorpay_order_id,
                 'razorpay_payment_id': razorpay_payment_id,
                 'razorpay_signature': razorpay_signature
             })
 
-            amount = Decimal(amount)
-
+       
             wallet, created = Wallet.objects.get_or_create(
                 user=request.user,
                 defaults={'balance': 0}
             )
 
-            wallet.balance += amount
-            wallet.save()
+            
+            Wallet.objects.filter(id=wallet.id).update(
+                balance=F('balance') + amount
+            )
 
+         
             WalletTransaction.objects.create(
                 wallet=wallet,
                 type='credit',
@@ -157,18 +171,15 @@ def verify_wallet_payment(request):
                 payment_method='razorpay'
             )
 
-            request.session.pop('wallet_topup_amount', None)
-
             return JsonResponse({
                 'success': True,
                 'message': 'Money added successfully'
             })
 
-        except Exception as eror:
-
+        except Exception as error:
             return JsonResponse({
                 'success': False,
-                'message': str(eror)
+                'message': str(error)
             })
 
     return JsonResponse({

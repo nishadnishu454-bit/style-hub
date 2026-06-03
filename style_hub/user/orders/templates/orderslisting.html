@@ -91,33 +91,7 @@
 {% include 'user_navbar.html' %}
 
 <!-- Messages Section -->
-{% if messages %}
-    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4">
-        <div class="space-y-3">
-            {% for message in messages %}
-                <div class="p-4 rounded-xl glass-card border border-white/10 shadow-2xl flex items-center gap-3 animate-bounce-in
-                    {% if message.tags == 'error' %}text-red-400{% else %}text-emerald-400{% endif %}">
-                    {% if message.tags == 'error' %}
-                        <span class="material-symbols-outlined">error</span>
-                    {% else %}
-                        <span class="material-symbols-outlined">check_circle</span>
-                    {% endif %}
-                    <p class="text-sm font-bold tracking-tight">{{ message }}</p>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    <script>
-        setTimeout(() => {
-            const msgs = document.querySelector('.fixed.top-24');
-            if (msgs) {
-                msgs.style.transition = 'opacity 0.5s ease';
-                msgs.style.opacity = '0';
-                setTimeout(() => msgs.remove(), 500);
-            }
-        }, 5000);
-    </script>
-{% endif %}
+{% include 'toast.html' %}
 
 <main class="max-w-7xl mx-auto px-6 py-12 lg:py-20">
 <div class="flex flex-col lg:flex-row gap-10 items-start">
@@ -129,33 +103,29 @@
 <span class="text-sm font-medium">Go Back</span>
 </a>
 <nav class="space-y-2">
-<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="#">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="{% url "profile" %}">
 <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
 <span class="font-medium">Profile</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="#">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="{% url "address_page" %}">
 <span class="material-symbols-outlined" data-icon="location_on">location_on</span>
 <span class="font-medium">Address</span>
 </a>
 <!-- Active State -->
-<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-secondary-container text-on-surface border border-primary/20 shadow-[0_0_15px_rgba(198,198,199,0.15)] transition-all duration-300" href="#">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-secondary-container text-on-surface border border-primary/20 shadow-[0_0_15px_rgba(198,198,199,0.15)] transition-all duration-300" href="{% url "user_orders_listing" %}">
 <span class="material-symbols-outlined" data-icon="shopping_cart" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
 <span class="font-bold">My Orders</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="#">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="{% url "wishlist_page" %}">
 <span class="material-symbols-outlined" data-icon="favorite">favorite</span>
 <span class="font-medium">Wishlist</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="#">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="{% url "wallet_page" %}">
 <span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
 <span class="font-medium">Wallet</span>
 </a>
 </nav>
 <div class="mt-12 pt-6 border-t border-outline-variant/20">
-<button class="flex items-center gap-3 px-4 py-3 rounded-full text-error hover:bg-error/10 transition-all duration-300 w-full">
-<span class="material-symbols-outlined" data-icon="logout">logout</span>
-<span class="font-medium">Sign Out</span>
-</button>
 </div>
 </div>
 </aside>
@@ -196,11 +166,25 @@
 <td class="px-8 py-6">
     {% with first_item=order.items.all.0 %}
     <div class="flex items-center gap-4">
-        <div class="h-16 w-16 rounded-lg overflow-hidden bg-surface-container shrink-0 border border-outline-variant/10">
-            {% with primary_image=first_item.variant.images.all.0 %}
-            <img alt="{{ first_item.product_name }}" class="h-full w-full object-cover" src="{% if primary_image %}{{ primary_image.image.url }}{% endif %}"/>
-            {% endwith %}
-        </div>
+      <div class="h-16 w-16 rounded-lg overflow-hidden bg-surface-container shrink-0 border border-outline-variant/10">
+
+    {% with primary_image=first_item.variant.images.first %}
+
+        {% if primary_image %}
+            <img 
+                src="{{ primary_image.image.url }}"
+                alt="{{ first_item.product_name }}"
+                class="h-full w-full object-cover"
+            >
+        {% else %}
+            <div class="h-full w-full flex items-center justify-center text-xs text-gray-400">
+                No Image
+            </div>
+        {% endif %}
+
+    {% endwith %}
+
+</div>
         <div>
             <h4 class="font-bold text-on-surface">{{ first_item.product_name }}</h4>
             <p class="text-xs text-on-surface-variant">

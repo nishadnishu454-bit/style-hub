@@ -248,20 +248,7 @@
 </div>
 
 <!-- Messages -->
-{% if messages %}
-    <div class="mb-6 space-y-2">
-        {% for message in messages %}
-            <div class="p-3 rounded-lg text-xs font-bold flex items-center gap-3
-                {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400
-                {% else %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% endif %}">
-                <span class="material-symbols-outlined text-sm">
-                    {% if message.tags == 'error' %}error{% else %}check_circle{% endif %}
-                </span>
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
+{% include 'toast.html' %}
 <form method="POST" action="{% url 'edit_address' address.id %}" class="px-8 pb-2 space-y-1">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}">

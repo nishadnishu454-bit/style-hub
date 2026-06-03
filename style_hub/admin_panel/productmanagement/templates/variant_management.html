@@ -24,17 +24,7 @@
     <!-- SIDEBAR (Reusing existing sidebar structure) -->
     {% include 'admin_sidebar.html' %}
     <main class="flex-1 p-8">
-        {% if messages %}
-            <div class="mb-8 space-y-3">
-                {% for message in messages %}
-                    <div class="p-4 rounded-sm text-[11px] font-bold uppercase tracking-widest flex items-center gap-3
-                        {% if message.tags == 'error' %}bg-red-50 border border-red-100 text-red-600
-                        {% else %}bg-green-50 border border-green-100 text-green-600{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'toast.html' %}
 
         <div class="flex justify-between items-end mb-8">
             <div>
@@ -135,9 +125,46 @@
         </div>
 
         <!-- Pagination -->
-        <div class="mt-12 flex justify-center">
-            <!-- Reuse existing pagination logic -->
-        </div>
+        {% if products.has_other_pages %}
+        <footer class="flex justify-between items-center mt-12 border-t border-gray-100 pt-8 pb-20">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Showing page {{ products.number }} of {{ products.paginator.num_pages }}
+            </p>
+
+            <div class="flex items-center space-x-3">
+
+                {% if products.has_previous %}
+                    <a href="?page={{ products.previous_page_number }}&search={{ search }}"
+                       class="text-gray-300 hover:text-black transition-all">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </a>
+                {% endif %}
+
+                <div class="flex items-center space-x-1">
+                    {% for num in products.paginator.page_range %}
+                        {% if products.number == num %}
+                            <div class="w-9 h-9 bg-black flex items-center justify-center rounded-sm shadow-sm">
+                                <span class="text-white font-bold text-xs">{{ num }}</span>
+                            </div>
+                        {% else %}
+                            <a href="?page={{ num }}&search={{ search }}"
+                               class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-black font-bold text-xs transition-all">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}&search={{ search }}"
+                       class="text-gray-400 hover:text-black transition-all">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </a>
+                {% endif %}
+
+            </div>
+        </footer>
+        {% endif %}
     </main>
 
     <!-- Add Variant Modal -->
@@ -172,7 +199,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-4">Variant Images (Optional)</label>
+                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-4">Variant Images</label>
                         <div class="grid grid-cols-3 gap-4">
                             {% for i in "123" %}
                             <div class="relative group h-32 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer overflow-hidden">

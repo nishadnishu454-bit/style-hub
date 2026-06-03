@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from admin_panel.productmanagement.models import Product, ProductVariant
 from admin_panel.categorymanagement.models import Category
 from user.cart.models import Cart
+from user.whishlist.models import Wishlist
 from django.db.models import Q,Min
 from django.contrib import messages
 from decimal import Decimal
@@ -83,6 +84,10 @@ def product_page(request):
             product.display_image = None
             product.display_price = Decimal('0.00')
 
+    wishlist_variant_ids = []
+    if request.user.is_authenticated:
+        wishlist_variant_ids = list(Wishlist.objects.filter(user=request.user).values_list('variant_id', flat=True))
+
     paginator = Paginator(products, 6)
     page_number = request.GET.get('page')
     products_page = paginator.get_page(page_number)
@@ -95,6 +100,7 @@ def product_page(request):
         'search': search,
         'min_price': min_price,
         'max_price': max_price,
+        'wishlist_variant_ids': wishlist_variant_ids,
     }
 
     return render(request, 'product_page.html', context)

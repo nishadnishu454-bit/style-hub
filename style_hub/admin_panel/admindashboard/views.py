@@ -27,7 +27,7 @@ def is_admin(user):
 
 
 def get_filtered_orders(filter_type, start_date_str=None, end_date_str=None):
-    orders = Order.objects.exclude(order_status__in=['Cancelled', 'Returned'])
+    orders = Order.objects.all()    
     today = timezone.now().date()
     
     if filter_type == 'daily':
@@ -159,13 +159,30 @@ def admin_dashboard(request):
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
 def sales_report_page(request):
+
     filter_type = request.GET.get('filter_type', 'daily')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
-    
-    orders = get_filtered_orders(filter_type, start_date, end_date)
-    
-    # Calculate stats
+
+    # ALL ORDERS
+    all_orders = get_filtered_orders(filter_type, start_date, end_date)
+
+    # SALES ORDERS ONLY
+    orders = all_orders.exclude(
+        order_status__in=['Cancelled', 'Returned']
+    )
+
+    # REFUNDED ORDERS
+    refunded_orders = all_orders.filter(
+        payment_status='Refunded'
+    )
+
+    # REFUND AMOUNT
+    refund_amount = refunded_orders.aggregate(
+        total=Sum('total_amount')
+    )['total'] or Decimal('0.00')
+
+    # MAIN STATS
     stats = orders.aggregate(
         total_orders_count=Count('id'),
         total_subtotal_sum=Sum('subtotal'),
@@ -173,30 +190,42 @@ def sales_report_page(request):
         total_delivery_sum=Sum('delivery_charge'),
         total_amount_sum=Sum('total_amount')
     )
-    
+
     total_orders_count = stats['total_orders_count'] or 0
     total_subtotal = stats['total_subtotal_sum'] or Decimal('0.00')
     total_discount = stats['total_discount_sum'] or Decimal('0.00')
     total_delivery = stats['total_delivery_sum'] or Decimal('0.00')
-    net_revenue = stats['total_amount_sum'] or Decimal('0.00')
-    
-    # Pagination
-    paginator = Paginator(orders.order_by('-ordered_at'), 15)
+
+    gross_revenue = stats['total_amount_sum'] or Decimal('0.00')
+
+    # NET REVENUE AFTER REFUND
+    net_revenue = gross_revenue - refund_amount
+
+    # PAGINATION
+    paginator = Paginator(all_orders.order_by('-ordered_at'), 15)
     page_number = request.GET.get('page')
     orders_page = paginator.get_page(page_number)
-    
+
     context = {
         'orders': orders_page,
         'filter_type': filter_type,
         'start_date': start_date,
         'end_date': end_date,
+
         'total_orders_count': total_orders_count,
         'total_subtotal': total_subtotal,
         'total_discount': total_discount,
         'total_delivery': total_delivery,
+
+        'refund_amount': refund_amount,
         'net_revenue': net_revenue,
     }
-    return render(request, 'admindashboard/sales_report.html', context)
+
+    return render(
+        request,
+        'admindashboard/sales_report.html',
+        context
+    )
 
 
 @login_required(login_url='admin_login')

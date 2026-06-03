@@ -69,9 +69,13 @@
                 {% for variant in low_stock_variants %}
                 <div class="bg-white p-4 rounded-xl border border-rose-100 shadow-sm flex items-center gap-4">
                     <div class="w-10 h-10 bg-slate-100 rounded-lg overflow-hidden">
-                        {% with img=variant.images.first %}
-                        <img src="{{ img.image.url }}" class="w-full h-full object-cover">
-                        {% endwith %}
+                     {% with img=variant.images.all.0 %}
+                        {% if img and img.image %}
+                            <img src="{{ img.image.url }}" class="w-full h-full object-cover" alt="Product">
+                        {% else %}
+                            <img src="https://via.placeholder.com/150?text=No+Image" class="w-full h-full object-cover" alt="No Image">
+                        {% endif %}
+                    {% endwith %}
                     </div>
                     <div>
                         <p class="text-xs font-bold">{{ variant.product.product_name }}</p>
@@ -111,9 +115,13 @@
                             <div class="flex items-center gap-4">
                                 {% with item=order.items.first %}
                                 <div class="w-12 h-14 bg-slate-100 rounded-lg overflow-hidden">
-                                    {% with img=item.variant.images.first %}
-                                    <img src="{{ img.image.url }}" class="w-full h-full object-cover">
-                                    {% endwith %}
+                                {% with img=item.variant.images.all.0 %}
+                                    {% if img and img.image %}
+                                        <img src="{{ img.image.url }}" class="w-full h-full object-cover" alt="Product">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/150?text=No+Image" class="w-full h-full object-cover" alt="No Image">
+                                    {% endif %}
+                                {% endwith %}
                                 </div>
                                 <div>
                                     <p class="text-sm font-bold leading-tight">{{ item.product_name }}</p>

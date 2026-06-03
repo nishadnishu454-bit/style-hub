@@ -95,13 +95,7 @@
             </div>
 
             <!-- Messages -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="mb-6 bg-gray-100 text-black px-5 py-3 text-xs font-bold uppercase">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+            {% include 'toast.html' %}
 
             <!-- User Info -->
             <div class="flex gap-8 mb-16">

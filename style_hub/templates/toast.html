@@ -1,0 +1,173 @@
+<!-- Toast Notification Container -->
+<div id="toast-container" class="fixed top-24 right-6 z-[9999] flex flex-col gap-4 pointer-events-none">
+    {% if messages %}
+        {% for message in messages %}
+            <!-- Toast Item -->
+            <div class="toast-item pointer-events-auto flex items-start gap-4 p-4 min-w-[320px] max-w-md rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] border border-white/10 bg-[#071b3b]/90 backdrop-blur-xl transform translate-x-full opacity-0 transition-all duration-500 ease-out cursor-pointer hover:scale-[1.02]"
+                 onclick="this.remove()">
+                
+                <div class="flex-shrink-0 mt-0.5">
+                    {% if message.tags == 'error' %}
+                        <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-red-400 text-lg">error</span>
+                        </div>
+                    {% elif message.tags == 'success' %}
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>
+                        </div>
+                    {% elif message.tags == 'warning' %}
+                        <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-amber-400 text-lg">warning</span>
+                        </div>
+                    {% else %}
+                        <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-blue-400 text-lg">info</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="flex-1 min-w-0 pt-1">
+                    <p class="text-sm font-bold tracking-tight text-white leading-tight">
+                        {% if message.tags == 'error' %}Error{% elif message.tags == 'success' %}Success{% elif message.tags == 'warning' %}Warning{% else %}Notice{% endif %}
+                    </p>
+                    <p class="text-xs text-[#c5c6cf] mt-1 pr-2 break-words">
+                        {{ message }}
+                    </p>
+                </div>
+                
+                <button class="flex-shrink-0 text-slate-400 hover:text-white transition-colors" onclick="event.stopPropagation(); this.closest('.toast-item').remove()">
+                    <span class="material-symbols-outlined text-sm">close</span>
+                </button>
+                
+                <!-- Progress Bar -->
+                <div class="absolute bottom-0 left-0 h-1 bg-gradient-to-r 
+                    {% if message.tags == 'error' %}from-red-500/80 to-red-400/20
+                    {% elif message.tags == 'success' %}from-emerald-500/80 to-emerald-400/20
+                    {% elif message.tags == 'warning' %}from-amber-500/80 to-amber-400/20
+                    {% else %}from-blue-500/80 to-blue-400/20{% endif %} 
+                    rounded-b-2xl toast-progress" style="width: 100%;"></div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<style>
+    /* Toast Animation Keyframes */
+    @keyframes slideIn {
+        from { transform: translateX(120%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(120%); opacity: 0; }
+    }
+    @keyframes progressShrink {
+        from { width: 100%; }
+        to { width: 0%; }
+    }
+    
+    .toast-item.show {
+        animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    
+    .toast-item.hide {
+        animation: slideOut 0.4s ease-in forwards;
+    }
+    
+    .toast-progress {
+        animation: progressShrink 5s linear forwards;
+    }
+</style>
+
+<script>
+    window.showToast = function(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        
+        let bgClass = 'bg-[#071b3b]/90';
+        let icon = 'info';
+        let iconColorClass = 'text-blue-400';
+        let iconBgClass = 'bg-blue-500/20';
+        let title = 'Notice';
+        let progressGradient = 'from-blue-500/80 to-blue-400/20';
+        
+        if (type === 'error') {
+            icon = 'error';
+            iconColorClass = 'text-red-400';
+            iconBgClass = 'bg-red-500/20';
+            title = 'Error';
+            progressGradient = 'from-red-500/80 to-red-400/20';
+        } else if (type === 'success') {
+            icon = 'check_circle';
+            iconColorClass = 'text-emerald-400';
+            iconBgClass = 'bg-emerald-500/20';
+            title = 'Success';
+            progressGradient = 'from-emerald-500/80 to-emerald-400/20';
+        } else if (type === 'warning') {
+            icon = 'warning';
+            iconColorClass = 'text-amber-400';
+            iconBgClass = 'bg-amber-500/20';
+            title = 'Warning';
+            progressGradient = 'from-amber-500/80 to-amber-400/20';
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = `toast-item pointer-events-auto flex items-start gap-4 p-4 min-w-[320px] max-w-md rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] border border-white/10 ${bgClass} backdrop-blur-xl transform translate-x-full opacity-0 transition-all duration-500 ease-out cursor-pointer hover:scale-[1.02] relative`;
+        toast.onclick = function() { toast.remove(); };
+        
+        toast.innerHTML = `
+            <div class="flex-shrink-0 mt-0.5">
+                <div class="w-8 h-8 rounded-full ${iconBgClass} flex items-center justify-center">
+                    <span class="material-symbols-outlined ${iconColorClass} text-lg">${icon}</span>
+                </div>
+            </div>
+            <div class="flex-1 min-w-0 pt-1">
+                <p class="text-sm font-bold tracking-tight text-white leading-tight">${title}</p>
+                <p class="text-xs text-[#c5c6cf] mt-1 pr-2 break-words">${message}</p>
+            </div>
+            <button class="flex-shrink-0 text-slate-400 hover:text-white transition-colors" onclick="event.stopPropagation(); this.closest('.toast-item').remove()">
+                <span class="material-symbols-outlined text-sm">close</span>
+            </button>
+            <div class="absolute bottom-0 left-0 h-1 bg-gradient-to-r ${progressGradient} rounded-b-2xl toast-progress" style="width: 100%;"></div>
+        `;
+        
+        container.appendChild(toast);
+        
+        // Trigger reflow
+        toast.offsetHeight;
+        
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+            setTimeout(() => toast.remove(), 400);
+        }, 5000);
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const toasts = document.querySelectorAll('.toast-item');
+        toasts.forEach((toast, index) => {
+            // Stagger animation based on index
+            setTimeout(() => {
+                toast.classList.add('show');
+                
+                // Auto hide after 5 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 400); // Remove from DOM after animation
+                }, 5000);
+            }, index * 200); // 200ms delay between each toast
+        });
+
+        // Global input trimming on form submission
+        document.addEventListener("submit", function(event) {
+            const form = event.target;
+            const inputs = form.querySelectorAll("input[type='text'], input[type='email'], input[type='password'], textarea");
+            inputs.forEach(input => {
+                input.value = input.value.trim();
+            });
+        });
+    });
+</script>

@@ -227,7 +227,15 @@ def approve_return(request):
                     item.variant.save()
 
                 if item.order.payment_status in ['Completed','completed']:
-                    refund_amount = item.price * item.quantity
+                    from decimal import Decimal
+                    order = item.order
+                    refund_amount = Decimal(str(item.price * item.quantity))
+
+                    if order.discount_amount > 0 and order.subtotal > 0:
+                        item_discount = (refund_amount / order.subtotal) * order.discount_amount
+                        refund_amount = refund_amount - item_discount
+                    
+                    refund_amount = refund_amount.quantize(Decimal('0.01'))
 
                     credit_wallet(
                         user=item.order.user,
@@ -238,9 +246,24 @@ def approve_return(request):
 
                 order = item.order
 
-                if not order.items.exclude(item_status__in=['Returned', 'Cancelled']).exists():
+                remaining_items = order.items.exclude(item_status__in=['Returned', 'Cancelled'])
+                if remaining_items.exists():
+                    from decimal import Decimal
+                    new_subtotal = sum(i.total_price for i in remaining_items)
+                    new_discount = Decimal('0.00')
+                    if order.discount_amount > 0 and order.subtotal > 0:
+                        new_discount = (new_subtotal / order.subtotal) * order.discount_amount
+                    new_total = new_subtotal - new_discount + order.delivery_charge
+                    order.subtotal = new_subtotal
+                    order.discount_amount = new_discount
+                    order.total_amount = max(new_total, Decimal('0.00')).quantize(Decimal('0.01'))
+                else:
+                    from decimal import Decimal
                     order.order_status = 'Returned'
-                    order.payment_status = 'refunded'
+                    order.payment_status = 'Refunded'
+                    order.subtotal = Decimal('0.00')
+                    order.discount_amount = Decimal('0.00')
+                    order.total_amount = Decimal('0.00')
                 order.save()
 
                 messages.success(request, f'Return approved and refund processed for item: {item.product_name}')
@@ -268,6 +291,7 @@ def approve_return(request):
                             item.variant.save()
 
                 if order.payment_status == 'Completed':
+                    from decimal import Decimal
                     credit_wallet(
                         user=order.user,
                         amount=order.total_amount,
@@ -275,7 +299,10 @@ def approve_return(request):
                         order=order
                     )
 
-                    order.payment_status = 'refunded'
+                    order.payment_status = 'Refunded'
+                    order.subtotal = Decimal('0.00')
+                    order.discount_amount = Decimal('0.00')
+                    order.total_amount = Decimal('0.00')
                     order.save()
 
                 messages.success(request, f'Return approved and refund processed for order: {order.order_number}')

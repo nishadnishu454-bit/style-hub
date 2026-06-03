@@ -46,21 +46,7 @@
     <main class="max-w-7xl mx-auto px-6 py-12">
 
         <!-- Messages Section -->
-        {% if messages %}
-            <div class="mb-12 space-y-3">
-                {% for message in messages %}
-                    <div class="p-4 rounded-xl glass-card border border-white/10 shadow-lg flex items-center gap-3
-                        {% if message.tags == 'error' %}text-red-400{% else %}text-emerald-400{% endif %}">
-                        {% if message.tags == 'error' %}
-                            <span class="material-symbols-outlined">error</span>
-                        {% else %}
-                            <span class="material-symbols-outlined">check_circle</span>
-                        {% endif %}
-                        <p class="text-sm font-bold tracking-tight">{{ message }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'toast.html' %}
 
         <!-- HEADER -->
         <header class="mb-16">
@@ -228,9 +214,15 @@
                                     </div>
                                 {% endif %}
 
-                                <span class="absolute top-5 left-5 bg-white text-black px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full">
+                                {% if product.display_variant.has_active_offer %}
+                                <span class="absolute top-5 left-5 bg-red-600 text-white px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full z-10 shadow-lg shadow-red-600/30">
+                                    Offer
+                                </span>
+                                {% else %}
+                                <span class="absolute top-5 left-5 bg-white text-black px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full z-10">
                                     New
                                 </span>
+                                {% endif %}
                             </div>
 
                         </a>
@@ -238,8 +230,10 @@
                         <!-- WISHLIST -->
                         {% if product.display_variant %}
                         <a href="{% url 'add_to_wishlist' product.display_variant.id %}"
+                           data-wishlist-toggle
                            class="absolute top-5 right-5 p-3 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-black transition-all z-10">
-                            <span class="material-symbols-outlined text-[20px]">
+                            <span class="material-symbols-outlined text-[20px] {% if product.display_variant.id in wishlist_variant_ids %}text-red-500{% endif %}"
+                                  style="{% if product.display_variant.id in wishlist_variant_ids %}font-variation-settings: 'FILL' 1;{% endif %}">
                                 favorite
                             </span>
                         </a>
@@ -444,6 +438,54 @@
 
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wishlistButtons = document.querySelectorAll('[data-wishlist-toggle]');
+            wishlistButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    const icon = this.querySelector('span');
+
+                    fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (data.action === 'added') {
+                                icon.classList.add('text-red-500');
+                                icon.style.fontVariationSettings = "'FILL' 1";
+                            } else {
+                                icon.classList.remove('text-red-500');
+                                icon.style.fontVariationSettings = "'FILL' 0";
+                            }
+
+                            // Update wishlist count in navbar if element exists
+                            const wishlistCountEl = document.getElementById('wishlist-count');
+                            if (wishlistCountEl) {
+                                wishlistCountEl.textContent = data.wishlist_count;
+                                if (data.wishlist_count > 0) {
+                                    wishlistCountEl.classList.remove('hidden');
+                                } else {
+                                    wishlistCountEl.classList.add('hidden');
+                                }
+                            }
+                        } else {
+                            // If user is not logged in, they will be redirected by Django or we get error
+                            window.location.href = '/login/';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error toggling wishlist:', err);
+                        window.location.href = '/login/';
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

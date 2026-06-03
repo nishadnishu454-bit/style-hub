@@ -59,7 +59,8 @@ def cart_page(request):
         'discount': discount,
         'delivery_charge': delivery_charge,
         'total_amount': total_amount,
-        'cart_count': cart_items.count()
+        'cart_count': cart_items.count(),
+        'has_out_of_stock': any(item.variant.variant_stock < item.quantity for item in cart_items)
     }
 
     return render(request, 'cartlisting.html', context)
@@ -207,6 +208,25 @@ def update_cart_quantity_ajax(request):
                 )
             
             sub_total = sum(item.variant.offer_price * item.quantity for item in cart_items)
+
+            # Revalidate session coupon
+            coupon_id = request.session.get('coupon_id')
+            coupon_removed = False
+            if coupon_id:
+                from admin_panel.couponmanagement.models import Coupon
+                coupon = Coupon.objects.filter(id=coupon_id, is_active=True, is_deleted=False).first()
+                if coupon:
+                    if sub_total < coupon.min_purchase:
+                        request.session.pop('coupon_id', None)
+                        request.session.pop('discount_amount', None)
+                        coupon_removed = True
+                        message = f"Coupon '{coupon.coupon_code}' removed: minimum purchase of ₹{coupon.min_purchase} not met."
+                else:
+                    request.session.pop('coupon_id', None)
+                    request.session.pop('discount_amount', None)
+                    coupon_removed = True
+                    message = "Applied coupon is no longer valid."
+
             offer_discount = sum((item.variant.variant_price - item.variant.offer_price) * item.quantity for item in cart_items)
             original_subtotal = sub_total + offer_discount
             
@@ -224,6 +244,7 @@ def update_cart_quantity_ajax(request):
             return JsonResponse({
                 'status': status,
                 'message': message,
+                'coupon_removed': coupon_removed,
                 'quantity': cart_item.quantity,
                 'item_total': item_total,
                 'sub_total': sub_total,
@@ -234,7 +255,8 @@ def update_cart_quantity_ajax(request):
                 'delivery_charge': "FREE" if delivery_charge == 0 and sub_total > 0 else f"₹{delivery_charge}",
                 'total_amount': total_amount,
                 'cart_count': cart_items.count(),
-                'deleted': deleted
+                'deleted': deleted,
+                'has_out_of_stock': any(item.variant.variant_stock < item.quantity for item in cart_items)
             })
             
         except Exception as e:

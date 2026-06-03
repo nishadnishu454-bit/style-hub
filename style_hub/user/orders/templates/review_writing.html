@@ -112,19 +112,19 @@
             <a class="text-sm text-[#e2e2e2] border-b-2 border-[#e2e2e2] pb-1" href="{% url 'product_page' %}">
                 Products
             </a>
+
+            <a class="text-sm text-[#c5c6cf] hover:text-[#e2e2e2]" href="{% url 'category_page' %}">
+                Category
+            </a>
+
+            <a class="text-sm text-[#e2e2e2] border-b-2 border-[#e2e2e2] pb-1" href="{% url 'about_page' %}">
+                About
+            </a>
         </div>
     </div>
 </nav>
 
-{% if messages %}
-<div class="fixed top-24 right-6 z-50 space-y-3">
-    {% for message in messages %}
-    <div class="px-6 py-4 rounded-xl bg-green-600 text-white shadow-xl">
-        {{ message }}
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+{% include 'toast.html' %}
 
 <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 flex flex-col items-center">
 

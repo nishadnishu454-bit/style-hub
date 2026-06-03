@@ -60,12 +60,12 @@
 
     <div class="hidden md:flex items-center gap-8">
         <a class="text-[#c5c6cf] hover:text-white transition-colors duration-300" href="{% url 'home' %}">Home</a>
-        <a class="text-[#c5c6cf] hover:text-white transition-colors duration-300" href="{% url 'product_listing' %}">Products</a>
-        <a class="text-[#c5c6cf] hover:text-white transition-colors duration-300" href="{% url 'category_listing' %}">Categories</a>
+        <a class="text-[#c5c6cf] hover:text-white transition-colors duration-300" href="{% url 'product_page' %}">Products</a>
+        <a class="text-[#c5c6cf] hover:text-white transition-colors duration-300" href="{% url 'category_page' %}">Categories</a>
         <a class="text-[#c5c6cf] hover:text-white transition-colors duration-300" href="{% url 'about_page' %}">About</a>
 
 
-        <form method="GET" action="{% url 'product_listing' %}" class="relative group mx-4">
+        <form method="GET" action="{% url 'product_page' %}" class="relative group mx-4">
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#c5c6cf] text-sm">search</span>
             <input name="search"
                    class="bg-[#233456]/40 border-none text-white pl-9 pr-4 py-1.5 rounded-full text-xs w-48 focus:ring-1 focus:ring-[#e2e2e2]/30 transition-all placeholder:text-[#c5c6cf]/60"
@@ -141,15 +141,7 @@
         </header>
 
         <!-- Messages -->
-        {% if messages %}
-            <div class="mb-6 space-y-3">
-                {% for message in messages %}
-                    <div class="px-5 py-3 rounded-xl bg-[#233456]/70 text-white border border-white/10">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'toast.html' %}
 
         <!-- Wallet Balance -->
         <section class="mb-16">
@@ -363,7 +355,7 @@
         <span class="text-[10px] font-bold tracking-widest uppercase">Home</span>
     </a>
 
-    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'product_listing' %}">
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'product_page' %}">
         <span class="material-symbols-outlined">search</span>
         <span class="text-[10px] font-bold tracking-widest uppercase">Shop</span>
     </a>

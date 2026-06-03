@@ -98,11 +98,11 @@
 <span class="material-symbols-outlined">person</span>
 <span>Profile</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 bg-slate-800 text-white rounded-lg translate-x-1 transition-transform" href="#">
+<a class="flex items-center gap-3 px-4 py-3 bg-slate-800 text-white rounded-lg translate-x-1 transition-transform" href="{% url "address_page" %}">
 <span class="material-symbols-outlined active-icon" style="font-variation-settings: 'FILL' 1;">location_on</span>
 <span>Address</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="{% url "user_orders_listing" %}">
 <span class="material-symbols-outlined">package_2</span>
 <span>My Orders</span>
 </a>
@@ -110,7 +110,7 @@
 <span class="material-symbols-outlined">favorite</span>
 <span>Wishlist</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all rounded-lg" href="{% url "wallet_page" %}">
 <span class="material-symbols-outlined">account_balance_wallet</span>
 <span>Wallet</span>
 </a>
@@ -125,22 +125,7 @@
     </div>
 
     <!-- Messages -->
-    {% if messages %}
-        <div class="mb-8 space-y-3">
-            {% for message in messages %}
-                <div class="p-4 rounded-xl text-sm font-bold flex items-center gap-3
-                    {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400
-                    {% else %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% endif %}">
-                    {% if message.tags == 'error' %}
-                        <span class="material-symbols-outlined text-red-400">error</span>
-                    {% else %}
-                        <span class="material-symbols-outlined text-emerald-400">check_circle</span>
-                    {% endif %}
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    {% include 'toast.html' %}
 <!-- Action Bar -->
 <!-- 🔥 ACTION BAR (UPDATED SEARCH WORKING) -->
 <div class="flex flex-col sm:flex-row justify-between items-center gap-6 mb-10">
@@ -177,7 +162,7 @@
 <!-- Address Grid -->
 <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
 
-{% for address in address %}
+{% for address in addresses %}
 <div class="glass-card p-6 rounded-xl relative group border border-outline-variant/10 hover:border-outline-variant/30 transition-all duration-500 shadow-2xl">
 
     <div class="flex justify-between items-start mb-6">

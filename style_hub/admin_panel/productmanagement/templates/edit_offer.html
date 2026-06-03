@@ -30,15 +30,7 @@
                 <p class="text-sm text-gray-300">Update promotional settings and discount value configurations.</p>
             </div>
 
-            {% if messages %}
-                <div class="px-12 pt-6">
-                    {% for message in messages %}
-                        <div class="p-4 rounded-xl {% if message.tags == 'error' %}bg-red-50 text-red-600{% else %}bg-green-50 text-green-600{% endif %} text-xs font-bold uppercase tracking-widest">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+            {% include 'toast.html' %}
 
             <form method="POST" id="offerForm">
                 {% csrf_token %}

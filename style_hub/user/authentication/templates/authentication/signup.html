@@ -116,15 +116,7 @@ body {
             <p class="text-on-surface-variant text-lg">Join STYLE-HUB and explore premium men’s fashion</p>
         </header>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="mb-4 text-center text-sm p-3 rounded
-                    {% if message.tags == 'error' %} bg-red-500/20 text-red-300 {% endif %}
-                    {% if message.tags == 'success' %} bg-green-500/20 text-green-300 {% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+        {% include 'toast.html' %}
 
         <form class="space-y-6" method="POST" action="{% url 'signup' %}">
             {% csrf_token %}

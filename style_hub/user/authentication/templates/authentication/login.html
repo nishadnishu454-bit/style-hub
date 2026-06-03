@@ -87,15 +87,7 @@ body {
                 </p>
             </div>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="mb-4 text-sm p-3 rounded-lg
-                        {% if message.tags == 'error' %}bg-red-500/20 text-red-300{% endif %}
-                        {% if message.tags == 'success' %}bg-green-500/20 text-green-300{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+            {% include 'toast.html' %}
 
             <form class="space-y-6" method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
@@ -111,7 +103,7 @@ body {
                             placeholder="Email or username"
                             type="text"
                             name="username_or_email"
-                            value="{{ request.POST.username_or_email }}"
+                            value="{{ old_data.username_or_email }}"
                             required
                             />
                     </div>
