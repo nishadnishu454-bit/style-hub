@@ -107,18 +107,19 @@
 
                         <div class="flex items-center bg-[#18294b] rounded-full px-4 py-2">
 
-                            <button onclick="updateQuantity({{ item.id }}, 'decrease')"
-                               class="material-symbols-outlined text-xs hover:text-white transition-colors">
-                                remove
-                            </button>
+                                                <button 
+                            id="decrease-btn-{{ item.id }}"
+                            onclick="updateQuantity({{ item.id }}, 'decrease')"
+                            class="material-symbols-outlined text-xs hover:text-white transition-colors">
+                            remove
+                        </button>
 
                             <span id="item-qty-{{ item.id }}" class="mx-6 text-sm font-bold w-4 text-center">
                                 {{ item.quantity }}
                             </span>
 
                             <button id="increase-btn-{{ item.id }}" onclick="updateQuantity({{ item.id }}, 'increase')"
-                               class="material-symbols-outlined text-xs hover:text-white transition-colors {% if item.quantity >= item.variant.variant_stock %}text-slate-500 cursor-not-allowed{% endif %}"
-                               {% if item.quantity >= item.variant.variant_stock %}disabled{% endif %}>
+                               class="material-symbols-outlined text-xs hover:text-white transition-colors">
                                 add
                             </button>
 
@@ -382,24 +383,18 @@ function updateQuantity(cartId, action) {
             
             // Update cart count badge
             const badge = document.getElementById('cart-count-badge');
-            if (data.cart_count > 0) {
-                badge.innerText = data.cart_count;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-            
-            // Handle stock limit buttons
-            const increaseBtn = document.getElementById(`increase-btn-${cartId}`);
-            if (increaseBtn) {
-                if (data.message === "Stock limit reached" || data.quantity >= 5) {
-                    increaseBtn.classList.add('text-slate-500', 'cursor-not-allowed');
-                    increaseBtn.disabled = true;
+            if (badge) {
+                if (data.cart_count > 0) {
+                    badge.innerText = data.cart_count;
+                    badge.classList.remove('hidden');
                 } else {
-                    increaseBtn.classList.remove('text-slate-500', 'cursor-not-allowed');
-                    increaseBtn.disabled = false;
+                    badge.classList.add('hidden');
                 }
             }
+            
+
+
+
 
             // Update checkout button state
             const checkoutContainer = document.getElementById('checkout-button-container');

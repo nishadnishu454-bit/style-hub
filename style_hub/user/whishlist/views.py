@@ -94,8 +94,8 @@ def add_to_wishlist(request, id):
     else:
         messages.warning(request, msg)
 
-    return redirect('product_page')
 
+    return redirect('product_detail', id=variant.product.id)
 
 @login_required(login_url='login')
 def remove_wishlist_item(request, id):

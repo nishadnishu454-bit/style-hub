@@ -39,34 +39,53 @@ body { font-family: 'Manrope', sans-serif; }
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
 
         <!-- Gallery Section -->
-        <div class="lg:col-span-7 space-y-6">
+        
+<div class="lg:col-span-7 space-y-6">
 
-            <div class="zoom-container aspect-[3/4] overflow-hidden rounded-xl group" id="mainImageContainer">
-                {% if variants and variants.first.images.first %}
-                    <img alt="{{ product.product_name }}"
-                         id="mainProductImage"
-                         class="zoom-image w-full h-full object-cover"
-                         src="{{ variants.first.images.first.image.url }}">
-                {% else %}
-                    <div class="w-full h-full flex items-center justify-center bg-[#0c1f40]">
-                        <span class="material-symbols-outlined text-7xl text-slate-500">image</span>
-                    </div>
-                {% endif %}
-            </div>
+    <div class="relative">
 
-            <div class="grid grid-cols-4 gap-4" id="thumbnailGrid">
-                {% if variants and variants.first.images.all %}
-                    {% for img in variants.first.images.all %}
-                    <div class="aspect-square rounded-lg overflow-hidden border border-[#44474e] cursor-pointer thumbnail-item {% if forloop.first %}active border-white{% endif %}"
-                         onclick="updateMainImage('{{ img.image.url }}', this)">
-                        <img src="{{ img.image.url }}" class="w-full h-full object-cover">
-                    </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
+        <!-- Wishlist Icon -->
+       
+                    <button
+                            type="button"
+                            id="wishlist-btn"
+                            disabled
+                            class="absolute top-4 right-4 z-20 w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center opacity-50 cursor-not-allowed transition-all group">
 
+  <span
+    id="wishlist-icon"
+    class="material-symbols-outlined text-white group-hover:text-red-400 transition-colors">
+    favorite
+</span>
+            </button>
+
+        <div class="zoom-container aspect-[3/4] overflow-hidden rounded-xl group" id="mainImageContainer">
+            {% if variants and variants.first.images.first %}
+                <img alt="{{ product.product_name }}"
+                     id="mainProductImage"
+                     class="zoom-image w-full h-full object-cover"
+                     src="{{ variants.first.images.first.image.url }}">
+            {% else %}
+                <div class="w-full h-full flex items-center justify-center bg-[#0c1f40]">
+                    <span class="material-symbols-outlined text-7xl text-slate-500">image</span>
+                </div>
+            {% endif %}
         </div>
 
+    </div>
+
+    <div class="grid grid-cols-4 gap-4" id="thumbnailGrid">
+        {% if variants and variants.first.images.all %}
+            {% for img in variants.first.images.all %}
+            <div class="aspect-square rounded-lg overflow-hidden border border-[#44474e] cursor-pointer thumbnail-item {% if forloop.first %}active border-white{% endif %}"
+                 onclick="updateMainImage('{{ img.image.url }}', this)">
+                <img src="{{ img.image.url }}" class="w-full h-full object-cover">
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+</div>
         <!-- Details Section -->
         <div class="lg:col-span-5 flex flex-col">
 
@@ -263,6 +282,7 @@ body { font-family: 'Manrope', sans-serif; }
         "original_price": "{{ variant.variant_price }}",
         "has_offer": {{ variant.has_active_offer|yesno:"true,false" }},
         "stock": {{ variant.variant_stock }},
+        "is_wishlisted": {{ variant.is_wishlisted|yesno:"true,false" }},
         "images": [
             {% for img in variant.images.all %}
                 "{{ img.image.url }}"{% if not forloop.last %},{% endif %}
@@ -369,6 +389,11 @@ body { font-family: 'Manrope', sans-serif; }
         }
     }
 
+
+    const wishlistIcon = document.getElementById('wishlist-icon');
+
+
+
     function selectSize(variant, element) {
         selectedSize = variant.size;
 
@@ -394,6 +419,28 @@ body { font-family: 'Manrope', sans-serif; }
         const buyNowBtn = document.getElementById('buy-now-btn');
         buyNowBtn.href = `/products/buy_now/?variant_id=${variant.id}`;
         buyNowBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+        const wishlistBtn = document.getElementById('wishlist-btn');
+
+                wishlistBtn.disabled = false;
+
+        wishlistBtn.classList.remove(
+            'opacity-50',
+            'cursor-not-allowed'
+        );
+
+            if (variant.is_wishlisted) {
+        wishlistIcon.style.fontVariationSettings = "'FILL' 1";
+        wishlistIcon.classList.add('text-red-500');
+    } else {
+        wishlistIcon.style.fontVariationSettings = "'FILL' 0";
+        wishlistIcon.classList.remove('text-red-500');
+    }
+
+       wishlistBtn.setAttribute(
+    'onclick',
+    `window.location.href='/whislist/add/${variant.id}/'`
+);
 
         updateGallery(variant.images);
     }

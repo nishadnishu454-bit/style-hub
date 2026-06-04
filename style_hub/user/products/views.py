@@ -144,6 +144,18 @@ def product_detail(request, id):
         variants__is_active=True
     ).exclude(id=product.id).distinct()[:4]
 
+
+
+    wishlist_variant_ids = []
+
+    if request.user.is_authenticated:
+        wishlist_variant_ids = Wishlist.objects.filter(
+            user=request.user
+        ).values_list('variant_id', flat=True)
+
+    for variant in variants:
+        variant.is_wishlisted = variant.id in wishlist_variant_ids
+
     context = {
         'product': product,
         'variants': variants,

@@ -154,7 +154,7 @@ def decrease_cart_quantity(request, id):
         cart_item.quantity -= 1
         cart_item.save()
     else:
-        cart_item.delete()
+        messages.warning(request, 'Minimum 1 quantity required')
 
     return redirect('cart_page')
 
@@ -193,8 +193,8 @@ def update_cart_quantity_ajax(request):
                     cart_item.quantity -= 1
                     cart_item.save()
                 else:
-                    cart_item.delete()
-                    deleted = True
+                    status = False
+                    message = "Minimum 1 quantity required"
             
             # Recalculate totals
             cart_items = Cart.objects.filter(

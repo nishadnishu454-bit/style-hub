@@ -232,10 +232,11 @@
                         <a href="{% url 'add_to_wishlist' product.display_variant.id %}"
                            data-wishlist-toggle
                            class="absolute top-5 right-5 p-3 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-black transition-all z-10">
-                            <span class="material-symbols-outlined text-[20px] {% if product.display_variant.id in wishlist_variant_ids %}text-red-500{% endif %}"
-                                  style="{% if product.display_variant.id in wishlist_variant_ids %}font-variation-settings: 'FILL' 1;{% endif %}">
-                                favorite
-                            </span>
+                           <span
+                            class="material-symbols-outlined {% if product.display_variant.id in wishlist_variant_ids %}text-red-500{% else %}text-white{% endif %}"
+                            style="font-variation-settings: 'FILL' {% if product.display_variant.id in wishlist_variant_ids %}1{% else %}0{% endif %};">
+                            favorite
+                        </span>
                         </a>
                         {% endif %}
 
