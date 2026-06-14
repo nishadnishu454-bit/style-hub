@@ -82,50 +82,20 @@
     </style>
 </head>
 <body class="bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary">
-<!-- TopNavBar -->
-<nav class="sticky top-0 w-full z-50 bg-[#001232]/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 max-w-full no-border shadow-[0_20px_40px_rgba(0,13,40,0.4)]">
-<div class="text-2xl font-black tracking-tighter text-white font-manrope">STYLE-HUB</div>
-<div class="hidden md:flex items-center space-x-8 font-manrope tracking-tight">
-<a class="text-white border-b-2 border-white/20 pb-1" href="{% url "home" %}">Home</a>
-<a class="text-slate-400 hover:text-white transition-colors" href="{% url "product_page" %}">Products</a>
-<a class="text-slate-400 hover:text-white transition-colors" href="{% url "category_page" %}">Categories</a>
-<a class="text-slate-400 hover:text-white transition-colors" href="{% url "about_page" %}">About</a>
-</div><div class="hidden lg:flex items-center flex-1 max-w-xs mx-8 relative group">
-<span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-white transition-colors text-sm">search</span>
-<input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-white/20 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-all focus:bg-white/10" placeholder="Search collections..." type="text"/>
-</div>
-<div class="flex items-center space-x-6 text-slate-200">
-<button class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90">
-<span class="material-symbols-outlined">favorite</span>
-</button>
-<button class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 relative">
-<span class="material-symbols-outlined">shopping_cart</span>
-<span class="absolute top-0 right-0 bg-tertiary text-on-tertiary text-[10px] font-bold px-1.5 py-0.5 rounded-full">2</span>
-</button>
-{% if request.user.is_authenticated %}
-    <a href="{% url 'profile' %}"
-       class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 inline-block">
-        <span class="material-symbols-outlined">person</span>
-    </a>
-{% else %}
-    <a href="{% url 'login' %}"
-       class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 inline-block">
-        <span class="material-symbols-outlined">person</span>
-    </a>
-{% endif %}
-</div>
-</nav>
+{% include 'user_navbar.html' %}
 <main>
+    <!-- Messages Section -->
+    {% include 'toast.html' %}
 <!-- Hero Section -->
 <section class="relative min-h-[870px] flex items-center overflow-hidden">
 <div class="absolute inset-0 z-0">
-<img class="w-full h-full object-cover object-center scale-105" data-alt="high-fashion portrait of a stylish man in a tailored charcoal overcoat standing against a dark architectural background with moody low-key lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYwA1vCC5FrHfQ3eA2XrMAbPktKMvfOqXx854JOsuWBjV4rtgcBQxQ5zGAO8NNb3BoR5zu1JLMQ4n6EylSRxmbHZpQ9NJv5DeKQ_wxQQZuMa495Tt27G3AF5B_t6MdpbMkQzlIuSVPELFmv3yzwjFUczvoIrnu1mAzTi1c_mQ-clUT2IhJ-VZ8bWQdXDP5IayAGkwhtEwk3vNMNzLTbFt-ZnqoIFo9JR6j-xWErbbcgldTUCY84Ti6LZOCAd849tgISY2z1OL9WStm"/>
+<img class="w-full h-full object-cover object-center scale-105" data-alt="high-fashion portrait of a stylish man in a tailored charcoal overcoat standing against a dark architectural background with moody low-key lighting" src="https://www.liveabout.com/thmb/2x8Ii2nnZBU7Xk1VwBYGlfnK4NU=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/159349548-copy-56a631213df78cf7728bc438.jpg"/>
 <div class="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
 </div>
 <div class="relative z-10 max-w-7xl mx-auto px-8 w-full">
 <div class="max-w-2xl">
-<span class="text-primary tracking-[0.2rem] font-bold uppercase text-xs mb-4 block">New Season 2024</span>
+<span class="text-primary tracking-[0.2rem] font-bold uppercase text-xs mb-4 block">New Season 2026</span>
 <h1 class="text-7xl md:text-8xl font-black text-white tracking-tighter leading-[0.9] mb-6">
                         Upgrade <br/> Your Style
                     </h1>
@@ -153,31 +123,31 @@
 </div>
 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-[800px] md:h-[600px]">
 <!-- Shirts -->
-<div class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.shirts %}{% url 'product_page' %}?category={{ category_map.shirts }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="close-up of a crisp white linen shirt on a hanger with clean shadows and high-end retail aesthetic" src="https://images.squarespace-cdn.com/content/v1/67c446f1faaf6d5dabbbd29c/c147c204-4fb5-4f01-8d15-6bf692a08c5c/closeup-photo-fashionable-clothes-hangers-shop.jpg"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
 <h3 class="text-2xl font-bold text-white">Shirts</h3>
 <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Premium Cotton &amp; Silk</p>
 </div>
-</div>
+</a>
 <!-- T-Shirts -->
-<div class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.t_shirts %}{% url 'product_page' %}?category={{ category_map.t_shirts }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="minimalist studio shot of high-quality oversized t-shirts in earth tones draped elegantly" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDL9XF0RA5E3NY1T4jjhY3uBioiiurJb8Croyxj7cr9iu6jgwtakx4kfhvBvuz7SC3XQwQBC7Gpy5ea97v1aMfDQEBKl7_N-R8eFI9NXF8uiMwsaHAH2HH_cOTB_TIb2eNj7EsRaBdVAO54lPhxWZTykyf3CeCqq8Kz8BIyt8gfkUdaKLEiY1t8RQ8i1m-dmURBE6k-5RegGk9kaRT1xuCbNS7ulGGK0IWox4iDlecj_fNPaDk3xdUomoAY4twzFCGOqIqG6cfbBZLV"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
 <h3 class="text-2xl font-bold text-white">T-Shirts</h3>
 <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Essentials Reimagined</p>
 </div>
-</div>
+</a>
 <!-- Jeans -->
-<div class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.pants %}{% url 'product_page' %}?category={{ category_map.pants }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="stack of high-quality raw indigo denim jeans showing texture and stitching details in moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkdDPZ3fK9ZRRALu6AoC4h64CW-6iYX8qvkWQtHs0yP6wlH8Ummr-exzfn97qk5NJ3xrSE1oFq960o86l1qzNC4MUQjeSYdsidqGcCBeFtMg8xE2yGUcfpo8CU3ebcvSPH4lwmI-F36vQP_tATIrxlOvleia1w4s-yORFBPr3V1XqAKS29uOrQvhk3Dt0nGqjRImxrtVJCCm7Ayw9MXM05y6ozoJwToFw1Xgb-0q5GFWtz-OOCO3SXz6eOWBxAMltVkmGffi5y5DF3"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
 <h3 class="text-2xl font-bold text-white">Pants</h3>
 <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Japanese Raw Denim</p>
 </div>
-</div>
+</a>
 <!-- Jerseys -->
-<div class="md:col-span-5 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.jerseys %}{% url 'product_page' %}?category={{ category_map.jerseys }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
     <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         src="https://c8.alamy.com/comp/2KFK5W7/calcutta-india-november-15-2022-soccer-jerseys-of-various-country-are-hanging-in-a-retail-shop-to-sell-2KFK5W7.jpg"
         alt="football jerseys hanging in store"/>
@@ -188,10 +158,10 @@
             Sporty & Stylish Wear
         </p>
     </div>
-</div>
+</a>
 
 <!-- Hoodies -->
-<div class="md:col-span-3 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl">
+<a href="{% if category_map.hoodies %}{% url 'product_page' %}?category={{ category_map.hoodies }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
     <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         src="https://img.freepik.com/free-photo/fashionable-men-jacket-hanging-clothing-store-generated-by-ai_188544-40066.jpg?semt=ais_hybrid&w=740&q=80"
         alt="man wearing stylish hoodie"/>
@@ -202,152 +172,21 @@
             Comfort Meets Style
         </p>
     </div>
-</div>
-</div>
-</div>
-</section>
-<!-- Trending Products -->
-<section class="py-24 px-8 bg-surface-container-low">
-<div class="max-w-7xl mx-auto">
-<h2 class="text-4xl font-bold text-white mb-12 text-center tracking-tight">Trending Products</h2>
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-<!-- Product Card 1 -->
-<div class="group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[3/4] mb-6">
-<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="man wearing a tailored black suit jacket over a turtleneck with elegant minimalist composition" src="https://evalaxy.com/cdn/shop/files/685.jpg?v=1740059424"/>
-<button class="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:text-error transition-colors">
-<span class="material-symbols-outlined">favorite</span>
-</button>
-<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-<button class="w-full py-3 bg-white text-black font-bold rounded-lg shadow-xl">Quick Add</button>
-</div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<h3 class="text-white font-medium text-lg">Midnight Blazer</h3>
-<p class="text-on-surface-variant text-sm">Wool Blend</p>
-</div>
-<p class="text-primary font-bold">$249.00</p>
-</div>
-</div>
-<!-- Product Card 2 -->
-<div class="group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[3/4] mb-6">
-<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="casual puffer jacket in olive green worn by a male model in a minimal studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGlTaPOXMpT-UX6a0ODt9TBAkBiHNC-kg-psl2SzsmZlpyqbPwjgRT6YljQDsbsCYORd0HrUZ9m6CLU1OAMSdkTOorVzkfEt0gwicv5imPW3xT6FHebjQGSIFSJ6g7uR3R5Vl-rEpx_0i-X4uFsBlZb_lsArmSFufUiQgWPNWGzclzaXLcvglJmABNN5WBILz13B9D6AZt7Pu2m00jwW-bjuFYDi8BMGDBWUdnJ5i0Wp2t80nGr7ATCwXrGb3sX8AiJfEDU8TwiFe9"/>
-<button class="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:text-error transition-colors">
-<span class="material-symbols-outlined">favorite</span>
-</button>
-<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-<button class="w-full py-3 bg-white text-black font-bold rounded-lg shadow-xl">Quick Add</button>
-</div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<h3 class="text-white font-medium text-lg">Alpine Puffer</h3>
-<p class="text-on-surface-variant text-sm">Thermal Tech</p>
-</div>
-<p class="text-primary font-bold">$189.00</p>
-</div>
-</div>
-<!-- Product Card 3 -->
-<div class="group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[3/4] mb-6">
-<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="close up of premium black leather boots with intricate stitching on a polished wood floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV7q6uM7O-61pKgBnzNAmvBy1xAA4B_z4hIKphzgQVmzM6UGuyAd-aAqYK7eLP7auAHJug4HyBh_J1W3189c7mdPkiQIK9px-XK2rRfXif3Yw1376ZWrJMiTpPjpbhrYbPsttmYb0zt4woGKpSBDqqqPHMg419-nsynRj5t9SYPs_6JUZORjsoJgE-rTCuw17VOKSnoD0lcdov7TGNgbPZwVPuSeGnDfYNCYjerEvO6R6vT4gdTfNwYkCBg9EZWyHDbu6gJ5Rb6aQv"/>
-<button class="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:text-error transition-colors">
-<span class="material-symbols-outlined">favorite</span>
-</button>
-<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-<button class="w-full py-3 bg-white text-black font-bold rounded-lg shadow-xl">Quick Add</button>
-</div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<h3 class="text-white font-medium text-lg">Oxford Chelsea</h3>
-<p class="text-on-surface-variant text-sm">Full-Grain Leather</p>
-</div>
-<p class="text-primary font-bold">$310.00</p>
-</div>
-</div>
-<!-- Product Card 4 -->
-<div class="group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[3/4] mb-6">
-<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="folded premium dark grey sweatshirt with subtle logo detail and high-end texture visible" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZq0mze9kzUN0KH2O5Ie8KrKagWL6YKQfD4CqHt8axi9O1N23OPReDOa8jvDwlJlJ3XrzA2WwXoXYOdWPNO1ge5AKw9jjOSiXtkSHxFXe7SJGkIIWBk8WAFx5shHKir0QPcTGNinNkkper6UkbLGr57UI4pwRBxJqOGuOX8WDj_8SrG8xJRWPSNBwT3vGnL0l93zmFU9BceGsYbn8Zd3PImquPFhB3gTsriopnPFlRF95r71kKLG495NZwkWgbcHXTlCconcVpy1hN"/>
-<button class="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:text-error transition-colors">
-<span class="material-symbols-outlined">favorite</span>
-</button>
-<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-<button class="w-full py-3 bg-white text-black font-bold rounded-lg shadow-xl">Quick Add</button>
-</div>
-</div>
-<div class="flex justify-between items-start">
-<div>
-<h3 class="text-white font-medium text-lg">Studio Hoodie</h3>
-<p class="text-on-surface-variant text-sm">Organic Heavyweight</p>
-</div>
-<p class="text-primary font-bold">$120.00</p>
-</div>
-</div>
+</a>
 </div>
 </div>
 </section>
-<!-- Referral / Invite Section -->
-<section class="py-24 px-8 bg-[#0B1E3F]">
-<div class="max-w-7xl mx-auto">
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-surface-container-high/40 rounded-[2.5rem] p-8 md:p-16 border border-white/5 relative overflow-hidden">
-<!-- Decorative Element -->
-<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full"></div>
-<div class="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/10 blur-[100px] rounded-full"></div>
-<div class="relative z-10">
-<h2 class="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight leading-tight">Invite Your Friends &amp; Earn Rewards</h2>
-<p class="text-on-surface-variant text-lg md:text-xl mb-8 font-light max-w-lg">Share STYLE-HUB with your friends and get exclusive discounts on your next purchase.</p>
-<div class="flex flex-col sm:flex-row gap-4 items-center">
-<button class="w-full sm:w-auto px-10 py-4 bg-white text-[#0B1E3F] rounded-full font-bold text-lg hover:scale-105 transition-all duration-300 shadow-xl shadow-white/5">
-                            Invite Now
-                        </button>
-<div class="flex items-center space-x-4">
-<div class="flex space-x-3">
-</div>
-</div>
-</div>
-<div class="mt-10 flex items-center bg-primary/10 border border-primary/20 rounded-2xl p-4 w-fit">
-<span class="material-symbols-outlined text-primary-fixed mr-3">redeem</span>
-<span class="text-white font-bold">Get ₹100 for every successful referral</span>
-</div>
-</div>
-<div class="relative z-10 flex justify-center lg:justify-end">
-<div class="glass-card p-10 rounded-[2rem] border border-white/10 w-full max-w-sm shadow-2xl relative">
-<div class="absolute top-0 right-0 p-6 opacity-20">
-<span class="material-symbols-outlined text-6xl">token</span>
-</div>
-<span class="text-primary-fixed text-xs font-bold uppercase tracking-[0.2em] mb-4 block">Your Referral Code</span>
-<div class="bg-[#0B1E3F]/80 border border-dashed border-white/30 rounded-xl p-8 mb-6 flex flex-col items-center">
-<span class="text-4xl font-black text-white tracking-[0.1em] mb-4">STYLE123</span>
-<button class="flex items-center text-primary-fixed hover:text-white transition-colors text-sm font-bold group">
-<span class="material-symbols-outlined text-sm mr-2">content_copy</span>
-                                Copy Code
-                            </button>
-</div>
-<div class="space-y-4">
-<div class="flex items-center text-xs text-on-surface-variant font-medium">
-<span class="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] mr-2">1</span>
-                                Friend joins &amp; shops
-                            </div>
-<div class="flex items-center text-xs text-on-surface-variant font-medium">
-<span class="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] mr-2">2</span>
-                                You both get rewarded
-                            </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
+
+
+
+
+
 <!-- Featured Split Layout -->
 <section class="py-24 px-8 bg-surface">
 <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 <div class="relative group">
 <div class="absolute -top-6 -left-6 w-full h-full border border-primary/20 rounded-xl -z-10 group-hover:top-0 group-hover:left-0 transition-all duration-500"></div>
-<img class="w-full aspect-[4/5] object-cover rounded-xl shadow-2xl" data-alt="portrait of a man in a premium leather jacket leaning against a concrete wall with dramatic chiaroscuro lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbIHY9N5iS__yPkfPESZcvBELsH_xqcrb5djerD1nx5tUoLuRL5NCnGTsRgLe8scxAdlWjYRxvVH30OoolN8B5t8SAQDEyG5A_80SUdXndIClFzKLZaDQ6kU1XK3bCK8QpEtmzHxCQjoYlZt0gxSCL8dfq_SNepmRy5VyynzW8vZnWYSkJcnzd7zkw2LVbUpf03LEOYfIh5cBKVptQflLBhnlZ5XrBcXa6H9qj1zPuUb-P6ypBOTM0Gm0lKEJS2lFJ29Pip5u6EBMI"/>
+<img class="w-full aspect-[4/5] object-cover rounded-xl shadow-2xl" data-alt="portrait of a man in a premium leather jacket leaning against a concrete wall with dramatic chiaroscuro lighting" src="https://img.magnific.com/free-photo/portrait-young-handsome-bearded-man_1303-19639.jpg?semt=ais_hybrid&w=740&q=80"/>
 </div>
 <div>
 <span class="text-primary font-bold tracking-widest uppercase text-xs">The Signature Collection</span>
@@ -379,21 +218,7 @@
 </div>
 </section>
 <!-- Community Newsletter -->
-<section class="py-24 px-8 bg-surface-container-high relative overflow-hidden">
-<div class="absolute top-0 left-0 w-96 h-96 bg-primary/5 blur-[120px] -z-10"></div>
-<div class="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 blur-[120px] -z-10"></div>
-<div class="max-w-4xl mx-auto text-center">
-<h2 class="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">Join Our Community</h2>
-<p class="text-on-surface-variant text-xl mb-12 font-light">Get updates on new arrivals, editorial stories, and exclusive offers delivered to your inbox.</p>
-<form class="flex flex-col sm:flex-row gap-4 glass-card p-2 rounded-full border border-white/10">
-<input class="flex-grow bg-transparent border-none focus:ring-0 px-6 py-4 text-white placeholder:text-slate-500 rounded-full" placeholder="Enter your email address" type="email"/>
-<button class="bg-primary-fixed text-on-primary-fixed px-10 py-4 rounded-full font-bold hover:bg-primary transition-all duration-300">
-                        Subscribe
-                    </button>
-</form>
-<p class="mt-6 text-xs text-on-surface-variant opacity-60">By subscribing, you agree to our Privacy Policy and Terms of Service.</p>
-</div>
-</section>
+
 </main>
 <!-- Footer -->
 <footer class="bg-[#0c1f40] w-full py-16 px-8 tonal-shift-bg font-manrope text-sm">
@@ -403,42 +228,23 @@
 <p class="text-slate-400 leading-relaxed mb-6">
                     Redefining contemporary men's fashion through the lens of minimalism and high-craftsmanship since 2024.
                 </p>
-<div class="flex space-x-4">
-<a class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 text-slate-200 transition-all" href="#">
-<span class="material-symbols-outlined text-sm">public</span>
-</a>
-<a class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 text-slate-200 transition-all" href="#">
-<span class="material-symbols-outlined text-sm">alternate_email</span>
-</a>
-<a class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 text-slate-200 transition-all" href="#">
-<span class="material-symbols-outlined text-sm">smart_display</span>
-</a>
-</div>
+
 </div>
 <div>
 <h4 class="text-white font-bold mb-6">Quick Links</h4>
 <ul class="space-y-3">
-<li><a class="text-slate-400 hover:text-white transition-colors" href="#">Home</a></li>
-<li><a class="text-slate-400 hover:text-white transition-colors" href="#">Products</a></li>
-<li><a class="text-slate-400 hover:text-white transition-colors" href="#">Categories</a></li>
-<li><a class="text-slate-400 hover:text-white transition-colors" href="#">About</a></li>
+<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url "home" %}">Home</a></li>
+<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url "product_page" %}">Products</a></li>
+<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url "category_page" %}">Categories</a></li>
+<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url "about_page" %}">About</a></li>
 </ul>
 </div>
+
 <div>
-<h4 class="text-white font-bold mb-6">Customer Support</h4>
-<ul class="space-y-3">
-<li><a class="text-slate-400 hover:text-white transition-colors" href="#">Contact</a></li>
-<li><a class="text-slate-400 hover:text-white transition-colors" href="#">FAQ</a></li>
-<li><a class="text-slate-400 hover:text-white transition-colors" href="#">Shipping &amp; Returns</a></li>
-<li><a class="text-slate-400 hover:text-white transition-colors" href="#">Privacy Policy</a></li>
-</ul>
-</div>
-<div>
-<h4 class="text-white font-bold mb-6">Our Atelier</h4>
+<h4 class="text-white font-bold mb-6">Our Place</h4>
 <p class="text-slate-400 mb-2">124 Fashion Avenue</p>
 <p class="text-slate-400 mb-6">New York, NY 10001</p>
-<p class="text-white font-bold">concierge@style-hub.com</p>
-<p class="text-slate-400">+1 (555) 800-4400</p>
+<p class="text-white font-bold">stylehub140@gmail.com</p>
 </div>
 </div>
 <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-slate-400 text-xs">

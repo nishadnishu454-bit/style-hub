@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style-Hub Admin | Referral Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; }
+        .stat-label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; }
+    </style>
+</head>
+<body class="flex min-h-screen text-gray-900">
+
+<!-- Sidebar -->
+{% include 'admin_sidebar.html' %}
+
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-full flex flex-col min-h-screen">
+    <header class="h-16 bg-white border-b border-gray-50 flex items-center justify-between px-10">
+        <div class="relative w-96">
+            <i class="fas fa-search absolute left-0 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+            <input type="text" placeholder="Global system search..." class="w-full pl-8 py-2 text-xs border-none focus:ring-0 placeholder-gray-300 font-medium">
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <div class="h-8 w-8 rounded-full border-2 border-black flex items-center justify-center">
+                <i class="fas fa-user text-[10px]"></i>
+            </div>
+            <span class="text-[11px] font-black uppercase tracking-widest">
+                {{ request.user.username }}
+            </span>
+        </div>
+    </header>
+
+    <div class="p-10 max-w-7xl mx-auto w-full">
+        <div class="mb-12">
+            <p class="stat-label mb-1">Referral Program</p>
+            <div class="flex justify-between items-center">
+                <h2 class="text-4xl font-black tracking-tight">Referral Log</h2>
+                <a href="{% url 'admin_dashboard' %}"
+                   class="bg-black text-white px-10 py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter Form -->
+        <form method="GET" class="bg-gray-50 p-6 rounded-sm mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div class="md:col-span-3">
+                <label class="block text-[10px] font-black uppercase text-gray-400 mb-2">Search User</label>
+                <input type="text" name="search" value="{{ search }}" placeholder="Search by referrer or referred username/email..." class="w-full bg-white border border-gray-200 text-xs px-3 py-2.5 rounded-sm focus:outline-none focus:border-black font-semibold">
+            </div>
+
+            <div>
+                <button type="submit" class="w-full bg-black text-white py-2.5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition rounded-sm">
+                    Search
+                </button>
+            </div>
+        </form>
+
+        <!-- Referrals Table -->
+        <div class="overflow-x-auto bg-white border border-gray-100 rounded-sm">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[10px] font-black text-gray-300 uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
+                        <th class="py-4 px-6">Referrer</th>
+                        <th class="py-4 px-6">Referred User</th>
+                        <th class="py-4 px-6 text-right">Referred Reward</th>
+                        <th class="py-4 px-6 text-right">Referrer Reward</th>
+                        <th class="py-4 px-6 text-center">Referrer Status</th>
+                        <th class="py-4 px-6 text-center">Date Joined</th>
+                    </tr>
+                </thead>
+                <tbody class="text-[11px]">
+                    {% for referral in referrals %}
+                    <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
+                        <td class="py-5 px-6 font-bold">
+                            {{ referral.referrer.username }}
+                            <p class="text-[9px] text-gray-400 font-normal">{{ referral.referrer.email }}</p>
+                        </td>
+                        <td class="py-5 px-6 font-bold">
+                            {{ referral.referred_user.username }}
+                            <p class="text-[9px] text-gray-400 font-normal">{{ referral.referred_user.email }}</p>
+                        </td>
+                        <td class="py-5 px-6 text-right font-medium text-gray-600">
+                            ₹{{ referral.benefit_amount_referred }}
+                            <p class="text-[8px] text-green-600 font-bold uppercase tracking-wider">Paid (Signup)</p>
+                        </td>
+                        <td class="py-5 px-6 text-right font-medium text-gray-600">
+                            ₹{{ referral.benefit_amount_referrer }}
+                        </td>
+                        <td class="py-5 px-6 text-center">
+                            {% if referral.is_referrer_rewarded %}
+                                <span class="bg-green-50 text-green-700 px-2.5 py-1 font-black text-[9px] rounded-sm uppercase tracking-wider">
+                                    Paid
+                                </span>
+                            {% else %}
+                                <span class="bg-amber-50 text-amber-700 px-2.5 py-1 font-black text-[9px] rounded-sm uppercase tracking-wider">
+                                    Pending (1st Purchase)
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-5 px-6 text-center text-gray-500 font-medium">
+                            {{ referral.created_at|date:"d M Y, h:i A" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="py-10 text-center text-gray-400 font-bold text-xs uppercase">
+                            No referrals logged in the system
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if referrals.has_other_pages %}
+        <div class="mt-8 flex items-center justify-between border-t border-gray-100 pt-8 pb-20">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Page {{ referrals.number }} of {{ referrals.paginator.num_pages }}
+            </p>
+            <div class="flex space-x-2 text-[10px] font-black uppercase">
+                {% if referrals.has_previous %}
+                <a href="?page={{ referrals.previous_page_number }}&search={{ search }}" class="px-4 py-2 border border-gray-100 hover:border-black transition">Previous</a>
+                {% endif %}
+                {% if referrals.has_next %}
+                <a href="?page={{ referrals.next_page_number }}&search={{ search }}" class="px-4 py-2 border border-gray-100 hover:border-black transition">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</main>
+</body>
+</html>

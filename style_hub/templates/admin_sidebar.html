@@ -1,0 +1,142 @@
+{% with url_name=request.resolver_match.url_name %}
+<aside class="w-64 min-h-screen bg-white border-r border-slate-100 flex flex-col p-6 sticky top-0 shrink-0 h-screen">
+    <div class="mb-10">
+        <h1 class="text-xl font-black tracking-tighter italic text-slate-800">STYLE-HUB</h1>
+        <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Admin Console</p>
+    </div>
+
+    <nav class="flex-1 space-y-1 overflow-y-auto pr-2">
+        <a href="{% url 'admin_dashboard' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'admin_dashboard' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-th-large w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Dashboard</span>
+        </a>
+
+        <a href="{% url 'product_listing' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'product_listing' or url_name == 'add_product' or url_name == 'edit_product' or url_name == 'variant_management' or url_name == 'view_product' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-archive w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Products</span>
+        </a>
+
+        <a href="{% url 'category_listing' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'category_listing' or url_name == 'add_category' or url_name == 'edit_category' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-network-wired w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Categories</span>
+        </a>
+
+        <a href="{% url 'orders_listing' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'orders_listing' or url_name == 'order_details' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-shopping-bag w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Orders</span>
+        </a>
+
+        <a href="{% url 'user_management' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'user_management' or url_name == 'user_detail' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-user-friends w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Users</span>
+        </a>
+
+        <a href="{% url 'coupon_listing' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'coupon_listing' or url_name == 'add_coupon' or url_name == 'edit_coupon' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-ticket-alt w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Coupons</span>
+        </a>
+
+        <a href="{% url 'offer_listing' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'offer_listing' or url_name == 'add_offer' or url_name == 'edit_offer' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-tag w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Offers</span>
+        </a>
+
+        <a href="{% url 'return_requests' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'return_requests' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-arrow-rotate-left w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Returns</span>
+        </a>
+
+        <a href="{% url 'admin_referrals' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'admin_referrals' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-gift w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Referrals</span>
+        </a>
+
+        <a href="{% url 'admin_reviews' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'admin_reviews' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-star w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Reviews</span>
+        </a>
+    </nav>
+
+    <div class="p-4 mt-auto">
+        <a href="{% url 'admin_logout' %}" data-confirm="Are you sure you want to logout?"
+           class="flex items-center justify-center w-full px-4 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition font-bold text-xs uppercase tracking-wider">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        </a>
+    </div>
+</aside>
+{% endwith %}
+
+<!-- SweetAlert2 Confirmation Dialog Integration -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Intercept link clicks with data-confirm
+    document.addEventListener('click', function(e) {
+        const confirmEl = e.target.closest('a[data-confirm]');
+        if (confirmEl) {
+            e.preventDefault();
+            const message = confirmEl.getAttribute('data-confirm');
+            
+            // Determine button colors/labels based on message type
+            let confirmColor = '#1a1a1a'; // default black
+            let confirmText = 'Yes, Proceed';
+            if (message.toLowerCase().includes('delete') || message.toLowerCase().includes('deactivate') || message.toLowerCase().includes('reject') || message.toLowerCase().includes('logout')) {
+                confirmColor = '#ef4444'; // red for destructive actions
+                confirmText = 'Yes, Confirm';
+            } else if (message.toLowerCase().includes('activate') || message.toLowerCase().includes('approve')) {
+                confirmColor = '#10b981'; // emerald for positive actions
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: confirmColor,
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Cancel',
+                background: '#ffffff',
+                color: '#1a1a1a',
+                customClass: {
+                    popup: 'rounded-2xl border border-slate-100 shadow-xl font-sans'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = confirmEl.href;
+                }
+            });
+        }
+    });
+
+    // Intercept form submissions with data-confirm
+    document.addEventListener('submit', function(e) {
+        const form = e.target.closest('form[data-confirm]');
+        if (form && !form.dataset.confirmed) {
+            e.preventDefault();
+            const message = form.getAttribute('data-confirm');
+            
+            let confirmColor = '#3b71fe'; // blue for status updates
+            let confirmText = 'Yes, Update';
+            if (message.toLowerCase().includes('approve')) {
+                confirmColor = '#10b981'; // emerald
+                confirmText = 'Yes, Approve';
+            } else if (message.toLowerCase().includes('reject')) {
+                confirmColor = '#ef4444'; // red
+                confirmText = 'Yes, Reject';
+            }
+
+            Swal.fire({
+                title: 'Confirm Action',
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: confirmColor,
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Cancel',
+                background: '#ffffff',
+                color: '#1a1a1a',
+                customClass: {
+                    popup: 'rounded-2xl border border-slate-100 shadow-xl font-sans'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.dataset.confirmed = 'true';
+                    form.submit();
+                }
+            });
+        }
+    });
+});
+</script>

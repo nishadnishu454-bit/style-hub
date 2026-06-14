@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STYLE-HUB | Variant Management</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FFFFFF; }
+        .table-header { background-color: #F9FAFB; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; font-weight: 700; color: #9CA3AF; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
+    </style>
+</head>
+
+<body class="flex min-h-screen">
+    <!-- SIDEBAR (Reusing existing sidebar structure) -->
+    {% include 'admin_sidebar.html' %}
+    <main class="flex-1 p-8">
+        {% include 'toast.html' %}
+
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Variant Management</p>
+                <h2 class="text-4xl font-black tracking-tighter uppercase">Product Variants</h2>
+            </div>
+            <form method="GET" class="relative w-96">
+                <input type="text" name="search" value="{{ search }}" placeholder="Search products..." class="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border-none rounded-md text-sm outline-none">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400"><i class="fa-solid fa-magnifying-glass text-xs"></i></span>
+            </form>
+        </div>
+
+        <div class="space-y-12">
+            {% for product in products %}
+            <div class="border rounded-xl overflow-hidden bg-white shadow-sm border-gray-100">
+                <div class="px-8 py-6 bg-gray-50 flex justify-between items-center border-b">
+                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-16 bg-gray-200 rounded overflow-hidden">
+                        {% with img=product.variants.first.images.first %}
+                            {% if img %}
+                                <img src="{{ img.image.url }}" class="w-full h-full object-cover">
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                        <div>
+                            <h3 class="text-lg font-black uppercase tracking-tight text-gray-800">{{ product.product_name }}</h3>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase">ID: #PRD-{{ product.id }} | {{ product.category.category_name }}</p>
+                        </div>
+                    </div>
+                    <button onclick="openAddVariantModal('{{ product.id }}', '{{ product.product_name }}')" class="bg-black text-white px-6 py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-all">
+                        Add Variant
+                    </button>
+                </div>
+
+                <div class="p-0">
+                    <table class="w-full text-left">
+                        <thead class="table-header">
+                            <tr>
+                                <th class="py-4 px-8">Variant (Size/Color)</th>
+                                <th class="py-4 px-8">Price</th>
+                                <th class="py-4 px-8">Stock</th>
+                                <th class="py-4 px-8">Images</th>
+                                <th class="py-4 px-8 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            {% for variant in product.variants.all %}
+                                {% if not variant.is_deleted %}
+                                <tr class="text-[11px] font-medium text-gray-600 hover:bg-gray-50/50">
+                                    <td class="py-6 px-8">
+                                        <span class="font-black text-black">{{ variant.size }}</span> / {{ variant.color }}
+                                    </td>
+                                    <td class="py-6 px-8 font-black text-black">₹{{ variant.variant_price }}</td>
+                                    <td class="py-6 px-8">
+                                        {% if variant.variant_stock <= 5 %}
+                                            <span class="text-red-500 font-bold">{{ variant.variant_stock }} (Low)</span>
+                                        {% else %}
+                                            {{ variant.variant_stock }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-6 px-8">
+                                        <div class="flex -space-x-2">
+                                            {% for img in variant.images.all|dictsort:"position" %}
+                                                <img src="{{ img.image.url }}" class="w-8 h-8 rounded-full border-2 border-white object-cover">
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td class="py-6 px-8 text-right space-x-4">
+                                         <button
+                                                data-id="{{ variant.id }}"
+                                                data-size="{{ variant.size|escapejs }}"
+                                                data-color="{{ variant.color|escapejs }}"
+                                                data-price="{{ variant.variant_price }}"
+                                                data-stock="{{ variant.variant_stock }}"
+                                                data-images='[
+                                                    {% for img in variant.images.all|dictsort:"position" %}
+                                                        "{{ img.image.url }}"{% if not forloop.last %},{% endif %}
+                                                    {% endfor %}
+                                                ]'
+                                                onclick="openEditVariantModalFromBtn(this)"
+                                                class="text-[10px] font-black uppercase text-gray-400 hover:text-black">
+
+                                                Edit
+                                            </button>
+
+                                     <button onclick="confirmDelete('{% url 'delete_variant' variant.id %}')" class="text-[10px] font-black uppercase text-red-400 hover:text-red-600">Delete</button>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% empty %}
+                                <tr><td colspan="5" class="py-12 text-center text-gray-400 text-[10px] font-bold uppercase">No variants found for this product</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <footer class="flex justify-between items-center mt-12 border-t border-gray-100 pt-8 pb-20">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Showing page {{ products.number }} of {{ products.paginator.num_pages }}
+            </p>
+
+            <div class="flex items-center space-x-3">
+
+                {% if products.has_previous %}
+                    <a href="?page={{ products.previous_page_number }}&search={{ search }}"
+                       class="text-gray-300 hover:text-black transition-all">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </a>
+                {% endif %}
+
+                <div class="flex items-center space-x-1">
+                    {% for num in products.paginator.page_range %}
+                        {% if products.number == num %}
+                            <div class="w-9 h-9 bg-black flex items-center justify-center rounded-sm shadow-sm">
+                                <span class="text-white font-bold text-xs">{{ num }}</span>
+                            </div>
+                        {% else %}
+                            <a href="?page={{ num }}&search={{ search }}"
+                               class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-black font-bold text-xs transition-all">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}&search={{ search }}"
+                       class="text-gray-400 hover:text-black transition-all">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </a>
+                {% endif %}
+
+            </div>
+        </footer>
+        {% endif %}
+    </main>
+
+    <!-- Add Variant Modal -->
+    <div id="addVariantModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
+            <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="text-lg font-black uppercase tracking-widest" id="modalTitle">Add Variant</h3>
+                <button onclick="closeAddModal()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="addVariantForm" method="POST" action="">
+                {% csrf_token %}
+                <div class="p-8 space-y-6">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Size</label>
+                            <input type="text" name="size" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Color</label>
+                            <input type="text" name="color" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Price (₹)</label>
+                            <input type="number" step="0.01" name="variant_price" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Stock</label>
+                            <input type="number" name="variant_stock" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-4">Variant Images</label>
+                        <div class="grid grid-cols-3 gap-4">
+                            {% for i in "123" %}
+                            <div class="relative group h-32 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+                                <img id="v_preview{{ i }}" class="hidden w-full h-full object-cover absolute inset-0">
+                                <div id="v_content{{ i }}" class="flex flex-col items-center">
+                                    <i class="fa-solid fa-camera text-xl text-gray-300"></i>
+                                    <span class="text-[8px] font-bold text-gray-400 mt-1 uppercase">Image {{ i }}</span>
+                                </div>
+                                <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="initVariantCropper(event, {{ i }})">
+                                <input type="hidden" name="variant_cropped_image_{{ i }}" id="v_croppedImage{{ i }}">
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 bg-gray-50 flex justify-end space-x-4">
+                    <button type="button" onclick="closeAddModal()" class="px-6 py-3 text-xs font-bold uppercase text-gray-400">Cancel</button>
+                    <button type="submit" class="bg-black text-white px-10 py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">Save Variant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<!-- Edit Variant Modal -->
+<div id="editVariantModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
+        <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+            <h3 class="text-lg font-black uppercase tracking-widest">Edit Variant</h3>
+            <button onclick="closeEditModal()" class="text-gray-400 hover:text-black">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="editVariantForm" method="POST" action="">
+            {% csrf_token %}
+
+            <div class="p-8 space-y-6">
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Size</label>
+                        <input type="text" name="size" id="edit_size" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Color</label>
+                        <input type="text" name="color" id="edit_color" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Price (₹)</label>
+                        <input type="number" step="0.01" name="variant_price" id="edit_price" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Stock</label>
+                        <input type="number" name="variant_stock" id="edit_stock" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                    </div>
+                </div>
+
+                <!-- 🔥 IMAGE CROPPER (MATCHES BACKEND) -->
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-gray-400 mb-4">
+                        Variant Images (Min 3 Required)
+                    </label>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        {% for i in "123" %}
+                        <div class="relative group h-32 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+
+                            <img id="edit_v_preview{{ i }}" class="hidden w-full h-full object-cover absolute inset-0">
+
+                            <div id="edit_v_content{{ i }}" class="flex flex-col items-center">
+                                <i class="fa-solid fa-camera text-xl text-gray-300"></i>
+                                <span class="text-[8px] font-bold text-gray-400 mt-1 uppercase">
+                                    Image {{ i }}
+                                </span>
+                            </div>
+
+                            <input type="file" accept="image/*"
+                                   class="absolute inset-0 opacity-0 cursor-pointer"
+                                   onchange="initEditVariantCropper(event, {{ i }})">
+
+                            <input type="hidden"
+                                   name="variant_cropped_image_{{ i }}"
+                                   id="edit_v_croppedImage{{ i }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-gray-400 font-bold uppercase">
+                    Upload any images to replace existing ones.
+                </p>
+
+            </div>
+
+            <div class="p-8 bg-gray-50 flex justify-end space-x-4">
+                <button type="button" onclick="closeEditModal()" class="px-6 py-3 text-xs font-bold uppercase text-gray-400">
+                    Cancel
+                </button>
+
+                <button type="submit" class="bg-black text-white px-10 py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">
+                    Update Variant
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <!-- Crop Modal (Shared) -->
+    <div id="v_cropModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/80 p-4">
+        <div class="bg-white w-full max-w-xl rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-4 border-b flex justify-between items-center">
+                <span class="text-xs font-black uppercase">Crop Variant Image</span>
+                <button onclick="closeVCropModal()" class="text-gray-400"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4">
+                <div class="max-h-[400px] overflow-hidden bg-gray-100 rounded-lg">
+                    <img id="v_cropperImage" class="max-w-full">
+                </div>
+            </div>
+            <div class="p-4 flex justify-end gap-3">
+                <button onclick="closeVCropModal()" class="px-4 py-2 text-[10px] font-bold uppercase text-gray-400">Cancel</button>
+                <button onclick="cropVariantImage()" class="bg-black text-white px-6 py-2 rounded text-[10px] font-bold uppercase">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-8 text-center shadow-2xl">
+            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-trash-can text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-black uppercase tracking-tight mb-2">Are you sure?</h3>
+            <p class="text-sm text-gray-400 mb-8 font-medium">This variant will be soft deleted and hidden from users.</p>
+            <div class="flex gap-4">
+                <button onclick="closeDeleteModal()" class="flex-1 px-6 py-3 border border-gray-100 rounded-xl text-xs font-bold uppercase text-gray-400 hover:bg-gray-50">No, Cancel</button>
+                <a id="deleteBtn" href="" class="flex-1 px-6 py-3 bg-red-500 text-white rounded-xl text-xs font-bold uppercase shadow-lg shadow-red-200">Yes, Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+    let v_cropper;
+    let v_currentIdx;
+    let currentMode = "add";
+
+    const addModal = document.getElementById('addVariantModal');
+    const editModal = document.getElementById('editVariantModal');
+
+    const v_cropModal = document.getElementById('v_cropModal');
+    const v_cropperImg = document.getElementById('v_cropperImage');
+
+    const deleteModal = document.getElementById('deleteModal');
+
+    // =====================================
+    // AUTO REOPEN MODALS AFTER VALIDATION
+    // =====================================
+
+    window.addEventListener('DOMContentLoaded', () => {
+
+        const params = new URLSearchParams(window.location.search);
+
+        // =========================
+        // REOPEN ADD MODAL
+        // =========================
+
+        const addVariantError = params.get('add_variant_error');
+
+        if (addVariantError) {
+
+            const addBtn = document.querySelector(
+                `button[onclick*="openAddVariantModal('${addVariantError}'"]`
+            );
+
+            if (addBtn) {
+
+                const productName =
+                    addBtn.closest('.border')
+                          .querySelector('h3')
+                          .innerText;
+
+                openAddVariantModal(
+                    addVariantError,
+                    productName
+                );
+            }
+        }
+
+        // =========================
+        // REOPEN EDIT MODAL
+        // =========================
+
+        const editVariantError = params.get('edit_variant_error');
+
+        if (editVariantError) {
+
+            const editBtn = document.querySelector(
+                `button[data-id="${editVariantError}"]`
+            );
+
+            if (editBtn) {
+                openEditVariantModalFromBtn(editBtn);
+            }
+        }
+    });
+
+    // =========================
+    // ADD MODAL
+    // =========================
+
+    function openAddVariantModal(pId, pName) {
+
+        document.getElementById('modalTitle').innerText =
+            'Add Variant for ' + pName;
+
+        document.getElementById('addVariantForm').action =
+            '/variant_management/add_variant/' + pId + '/';
+
+        addModal.classList.remove('hidden');
+    }
+
+    function closeAddModal() {
+
+        addModal.classList.add('hidden');
+    }
+
+    // =========================
+    // EDIT MODAL
+    // =========================
+
+    function openEditVariantModalFromBtn(btn) {
+
+        const id = btn.dataset.id;
+        const size = btn.dataset.size;
+        const color = btn.dataset.color;
+        const price = btn.dataset.price;
+        const stock = btn.dataset.stock;
+
+        let images = [];
+
+        try {
+
+            images = JSON.parse(btn.dataset.images || "[]");
+
+        } catch (e) {
+
+            images = [];
+        }
+
+        document.getElementById('edit_size').value = size;
+        document.getElementById('edit_color').value = color;
+        document.getElementById('edit_price').value = price;
+        document.getElementById('edit_stock').value = stock;
+
+        const form = document.getElementById('editVariantForm');
+
+        form.action = `/variant_management/edit_variant/${id}/`;
+
+        // =========================
+        // RESET PREVIEWS
+        // =========================
+
+        for (let i = 1; i <= 3; i++) {
+
+            const preview =
+                document.getElementById(`edit_v_preview${i}`);
+
+            const content =
+                document.getElementById(`edit_v_content${i}`);
+
+            const hidden =
+                document.getElementById(`edit_v_croppedImage${i}`);
+
+            preview.src = "";
+
+            preview.classList.add("hidden");
+
+            content.classList.remove("hidden");
+
+            hidden.value = "";
+        }
+
+        // =========================
+        // SHOW EXISTING IMAGES
+        // =========================
+
+        images.forEach((img, index) => {
+
+            const preview =
+                document.getElementById(
+                    `edit_v_preview${index + 1}`
+                );
+
+            const content =
+                document.getElementById(
+                    `edit_v_content${index + 1}`
+                );
+
+            if (preview && content) {
+
+                preview.src = img;
+
+                preview.classList.remove("hidden");
+
+                content.classList.add("hidden");
+            }
+        });
+
+        editModal.classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+
+        editModal.classList.add('hidden');
+    }
+
+    // =========================
+    // ADD IMAGE CROPPER
+    // =========================
+
+    function initVariantCropper(event, idx) {
+
+        currentMode = "add";
+
+        const file = event.target.files[0];
+
+        if (!file) return;
+
+        v_currentIdx = idx;
+
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+
+            v_cropperImg.src = e.target.result;
+
+            v_cropModal.classList.remove('hidden');
+
+            if (v_cropper) {
+                v_cropper.destroy();
+            }
+
+            v_cropper = new Cropper(v_cropperImg, {
+
+                aspectRatio: 3 / 4,
+                viewMode: 2,
+            });
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    // =========================
+    // EDIT IMAGE CROPPER
+    // =========================
+
+    function initEditVariantCropper(event, idx) {
+
+        currentMode = "edit";
+
+        const file = event.target.files[0];
+
+        if (!file) return;
+
+        v_currentIdx = idx;
+
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+
+            v_cropperImg.src = e.target.result;
+
+            v_cropModal.classList.remove('hidden');
+
+            if (v_cropper) {
+                v_cropper.destroy();
+            }
+
+            v_cropper = new Cropper(v_cropperImg, {
+
+                aspectRatio: 3 / 4,
+                viewMode: 2,
+            });
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    // =========================
+    // CLOSE CROP MODAL
+    // =========================
+
+    function closeVCropModal() {
+
+        v_cropModal.classList.add('hidden');
+
+        if (v_cropper) {
+            v_cropper.destroy();
+        }
+    }
+
+    // =========================
+    // APPLY CROPPED IMAGE
+    // =========================
+
+    function cropVariantImage() {
+
+        const canvas = v_cropper.getCroppedCanvas({
+
+            width: 600,
+            height: 800
+        });
+
+        const base64 =
+            canvas.toDataURL('image/jpeg', 0.9);
+
+        // =====================
+        // ADD MODE
+        // =====================
+
+        if (currentMode === "add") {
+
+            document.getElementById(
+                'v_croppedImage' + v_currentIdx
+            ).value = base64;
+
+            const preview =
+                document.getElementById(
+                    'v_preview' + v_currentIdx
+                );
+
+            const content =
+                document.getElementById(
+                    'v_content' + v_currentIdx
+                );
+
+            preview.src = base64;
+
+            preview.classList.remove('hidden');
+
+            content.classList.add('hidden');
+        }
+
+        // =====================
+        // EDIT MODE
+        // =====================
+
+        else {
+
+            document.getElementById(
+                'edit_v_croppedImage' + v_currentIdx
+            ).value = base64;
+
+            const preview =
+                document.getElementById(
+                    'edit_v_preview' + v_currentIdx
+                );
+
+            const content =
+                document.getElementById(
+                    'edit_v_content' + v_currentIdx
+                );
+
+            preview.src = base64;
+
+            preview.classList.remove('hidden');
+
+            content.classList.add('hidden');
+        }
+
+        closeVCropModal();
+    }
+
+    // =========================
+    // DELETE MODAL
+    // =========================
+
+    function confirmDelete(url) {
+
+        document.getElementById('deleteBtn').href = url;
+
+        deleteModal.classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+
+        deleteModal.classList.add('hidden');
+    }
+
+</script>
+</body>
+</html>

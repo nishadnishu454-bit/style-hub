@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>Cancellation Success | STYLE-HUB</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        background: "#001232",
+                        surface: "#071b3b",
+                        card: "#0c1f40",
+                        border: "#233456",
+                        text: "#d8e2ff",
+                        muted: "#9caecc",
+                        primary: "#c6c6c7",
+                        accent: "#b4c7ee",
+                        success: "#22c55e",
+                        danger: "#ffb4ab"
+                    },
+                    fontFamily: {
+                        sans: ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .glass {
+            background: rgba(12, 31, 64, 0.75);
+            backdrop-filter: blur(18px);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
+        }
+
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-text min-h-screen">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#001232]/90 backdrop-blur-xl border-b border-white/5">
+
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
+
+            <a href="{% url 'home' %}"
+                class="text-2xl font-black tracking-tight text-white uppercase">
+                STYLE-HUB
+            </a>
+
+            <div class="hidden md:flex items-center gap-10 text-sm">
+
+                <a href="{% url 'home' %}"
+                    class="text-slate-400 hover:text-white transition">
+                    Home
+                </a>
+
+                <a href="#"
+                    class="text-slate-400 hover:text-white transition">
+                    Collections
+                </a>
+
+                <a href="#"
+                    class="text-slate-400 hover:text-white transition">
+                    New Drops
+                </a>
+
+            </div>
+
+            <div class="flex items-center gap-5">
+
+                <a href="{% url 'cart_page' %}" class="text-slate-300 hover:text-white transition">
+                    <span class="material-symbols-outlined">
+                        shopping_bag
+                    </span>
+                </a>
+
+                <a href="{% url 'profile' %}" class="text-slate-300 hover:text-white transition">
+                    <span class="material-symbols-outlined">
+                        person
+                    </span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- MAIN -->
+    <main class="pt-32 pb-24 px-5 md:px-8">
+
+        <div class="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+            <!-- SIDEBAR -->
+            <aside class="lg:col-span-3">
+
+                <div class="glass rounded-2xl p-7 sticky top-28 border border-white/5">
+
+                    <div class="mb-8">
+
+                        <p class="text-xs uppercase tracking-[0.25em] text-muted mb-2">
+                            Account
+                        </p>
+
+                        <h2 class="text-xl font-bold text-white">
+                            {{ request.user.username }}
+                        </h2>
+
+                    </div>
+
+                    <nav class="space-y-2">
+
+                        <a href="{% url 'profile' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+
+                            <span class="material-symbols-outlined">
+                                person
+                            </span>
+
+                            <span>Profile</span>
+
+                        </a>
+
+                        <a href="{% url 'address_page' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+
+                            <span class="material-symbols-outlined">
+                                location_on
+                            </span>
+
+                            <span>Address</span>
+
+                        </a>
+
+                        <a href="{% url 'user_orders_listing' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl bg-[#233456] text-white">
+
+                            <span class="material-symbols-outlined">
+                                shopping_cart
+                            </span>
+
+                            <span>My Orders</span>
+
+                        </a>
+
+                        <a href="{% url 'wishlist_page' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+
+                            <span class="material-symbols-outlined">
+                                favorite
+                            </span>
+
+                            <span>Wishlist</span>
+
+                        </a>
+
+                        <a href="{% url 'wallet_page' %}"
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition">
+
+                            <span class="material-symbols-outlined">
+                                account_balance_wallet
+                            </span>
+
+                            <span>Wallet</span>
+
+                        </a>
+
+                    </nav>
+
+                </div>
+
+            </aside>
+
+            <!-- CONTENT -->
+            <section class="lg:col-span-9 space-y-10">
+
+                <!-- SUCCESS -->
+                <div class="glass rounded-3xl border border-white/5 p-10 text-center">
+
+                    <div
+                        class="w-24 h-24 mx-auto rounded-full bg-emerald-500/15 flex items-center justify-center mb-6">
+
+                        <span class="material-symbols-outlined text-5xl text-emerald-400"
+                            style="font-variation-settings:'FILL' 1;">
+                            check_circle
+                        </span>
+
+                    </div>
+
+                    <h1 class="text-4xl font-black text-white tracking-tight mb-4">
+
+                        {% if cancel_type == 'item' %}
+                        Item Cancelled Successfully
+                        {% else %}
+                        Order Cancelled Successfully
+                        {% endif %}
+
+                    </h1>
+
+                    <p class="max-w-2xl mx-auto text-muted text-lg leading-relaxed">
+                        Your cancellation request has been processed successfully and updated in your account.
+                    </p>
+
+                    {% if refund_amount > 0 %}
+                    <div
+                        class="inline-flex items-center gap-3 mt-8 bg-white/5 border border-white/10 rounded-full px-6 py-3">
+
+                        <span class="material-symbols-outlined text-accent">
+                            account_balance_wallet
+                        </span>
+
+                        <span class="text-sm text-accent font-semibold">
+                            ₹{{ refund_amount }} refund will be credited to your wallet shortly.
+                        </span>
+
+                    </div>
+                    {% endif %}
+
+                </div>
+
+<!-- CANCELLED ITEMS -->
+<div class="space-y-6">
+
+    <div class="flex items-center justify-between">
+
+        <div>
+            <h2 class="text-2xl font-bold text-white">
+                Cancelled Items
+            </h2>
+
+            <p class="text-muted text-sm mt-1">
+                Order #{{ cancelled_order.order_number }}
+            </p>
+        </div>
+
+        <div class="hidden md:flex items-center gap-2 text-sm text-muted">
+
+            <span class="material-symbols-outlined text-base">
+                calendar_today
+            </span>
+
+            {{ cancelled_order.updated_at|date:"F d, Y" }}
+
+        </div>
+
+    </div>
+
+    <!-- ITEMS LOOP -->
+    <div class="space-y-5">
+
+        {% for item in cancelled_order.items.all %}
+
+        {% if item.cancelled_quantity > 0 %}
+
+        <div
+            class="glass rounded-2xl border border-white/5 overflow-hidden flex flex-col md:flex-row">
+
+            <!-- IMAGE -->
+            <div class="w-full md:w-56 h-60 md:h-auto bg-[#09162d] overflow-hidden">
+
+                {% if item.variant and item.variant.images.first %}
+
+                <img src="{{ item.variant.images.first.image.url }}"
+                    alt="{{ item.product_name }}"
+                    class="w-full h-full object-cover">
+
+                {% elif item.variant and item.variant.product.images.first %}
+
+                <img src="{{ item.variant.product.images.first.image.url }}"
+                    alt="{{ item.product_name }}"
+                    class="w-full h-full object-cover">
+
+                {% else %}
+
+                <div class="w-full h-full flex items-center justify-center text-muted">
+                    No Image
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            <!-- DETAILS -->
+            <div class="flex-1 p-7">
+
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+                    <div>
+
+                        <div
+                            class="inline-flex items-center gap-2 bg-red-500/10 text-red-300 border border-red-400/10 rounded-full px-4 py-1.5 text-xs uppercase tracking-widest font-bold mb-4">
+
+                            <span class="w-2 h-2 rounded-full bg-red-400"></span>
+
+                            {% if item.item_status == 'Partially Cancelled' %}
+                            Partially Cancelled
+                            {% else %}
+                            Cancelled
+                            {% endif %}
+
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-white mb-3">
+                            {{ item.product_name }}
+                        </h3>
+
+                        <div class="flex flex-wrap gap-5 text-sm text-muted">
+
+                            {% if item.variant.size %}
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">
+                                    straighten
+                                </span>
+                                Size: {{ item.variant.size }}
+                            </div>
+                            {% endif %}
+
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">
+                                    inventory_2
+                                </span>
+                                Cancelled Qty: {{ item.cancelled_quantity }}
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">
+                                    payments
+                                </span>
+                                ₹{{ item.price }}
+                            </div>
+
+                        </div>
+
+                        {% if item.reason %}
+                        <div
+                            class="mt-5 bg-white/5 border border-white/5 rounded-xl p-4">
+
+                            <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                Cancellation Reason
+                            </p>
+
+                            <p class="text-sm text-text leading-relaxed">
+                                {{ item.reason }}
+                            </p>
+
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    <!-- STATUS -->
+                    <div class="min-w-[220px]">
+
+                        <div
+                            class="bg-[#101f3b] border border-white/5 rounded-2xl p-5 space-y-5">
+
+                            <div>
+
+                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                    Refund Status
+                                </p>
+
+                                {% if refund_amount > 0 %}
+                                <div
+                                    class="inline-flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+
+                                    Processing
+
+                                </div>
+                                {% else %}
+                                <div
+                                    class="inline-flex items-center gap-2 text-muted font-semibold text-sm">
+
+                                    <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+
+                                    Not Applicable
+
+                                </div>
+                                {% endif %}
+
+                            </div>
+
+                            <div>
+
+                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                    Payment Method
+                                </p>
+
+                                <p class="text-white font-semibold">
+                                    {{ cancelled_order.payment_method }}
+                                </p>
+
+                            </div>
+
+                            <div>
+
+                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                    Order Number
+                                </p>
+
+                                <p class="text-accent font-semibold">
+                                    #{{ cancelled_order.order_number }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+        {% endfor %}
+
+    </div>
+
+</div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="flex flex-col md:flex-row items-center justify-center gap-5 pt-5">
+
+                    <a href="{% url 'user_orders_listing' %}"
+                        class="w-full md:w-auto px-10 py-4 rounded-full bg-primary text-black text-center font-bold uppercase tracking-widest text-xs hover:scale-105 transition">
+
+                        Back To My Orders
+
+                    </a>
+
+                    <a href="{% url 'home' %}"
+                        class="w-full md:w-auto px-10 py-4 rounded-full border border-white/10 text-white text-center font-bold uppercase tracking-widest text-xs hover:bg-white/5 transition">
+
+                        Continue Shopping
+
+                    </a>
+
+                    <a href="{% url 'orders_view' %}?order_id={{ cancelled_order.id }}"
+                        class="w-full md:w-auto px-10 py-4 rounded-full bg-[#233456] text-white text-center font-bold uppercase tracking-widest text-xs hover:bg-[#2f4673] transition">
+
+                        View Order Details
+
+                    </a>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+<footer class="border-t border-white/5 py-10 px-6">
+
+    <div class="max-w-screen-2xl mx-auto flex justify-center items-center text-center">
+
+        <p class="text-[11px] uppercase tracking-[0.25em] text-slate-500">
+            © 2026 STYLE-HUB DIGITAL FLAGSHIP. ALL RIGHTS RESERVED.
+        </p>
+
+    </div>
+
+</footer>
+
+</body>
+
+</html>

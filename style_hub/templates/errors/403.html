@@ -1,0 +1,306 @@
+
+{% load static %}
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>404 - Page Not Found | STYLE-HUB</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script>
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+        extend: {
+            colors: {
+                "secondary": "#b4c7ee",
+                "surface-tint": "#c6c6c7",
+                "primary-container": "#1d1f20",
+                "surface-dim": "#001232",
+                "on-primary-fixed-variant": "#454747",
+                "on-background": "#d8e2ff",
+                "surface": "#001232",
+                "on-tertiary-fixed-variant": "#80272b",
+                "on-primary-container": "#858787",
+                "surface-container": "#0c1f40",
+                "tertiary": "#ffb3b1",
+                "tertiary-fixed-dim": "#ffb3b1",
+                "surface-bright": "#28395b",
+                "secondary-fixed-dim": "#b4c7ee",
+                "on-surface-variant": "#c5c6cf",
+                "on-surface": "#d8e2ff",
+                "surface-variant": "#233456",
+                "primary-fixed-dim": "#c6c6c7",
+                "primary-fixed": "#e2e2e2",
+                "on-tertiary": "#620f17",
+                "error-container": "#93000a",
+                "on-secondary-fixed": "#051b3a",
+                "inverse-on-surface": "#1f3052",
+                "background": "#001232",
+                "on-error-container": "#ffdad6",
+                "primary": "#c6c6c7",
+                "surface-container-lowest": "#000d28",
+                "surface-container-low": "#071b3b",
+                "on-tertiary-container": "#d36565",
+                "on-primary-fixed": "#1a1c1c",
+                "surface-container-high": "#18294b",
+                "on-error": "#690005",
+                "error": "#ffb4ab",
+                "tertiary-container": "#470009",
+                "tertiary-fixed": "#ffdad8",
+                "on-secondary-fixed-variant": "#344768",
+                "outline": "#8f9099",
+                "secondary-fixed": "#d7e3ff",
+                "surface-container-highest": "#233456",
+                "secondary-container": "#344768",
+                "on-secondary": "#1d3050",
+                "on-tertiary-fixed": "#410007",
+                "outline-variant": "#44474e",
+                "on-secondary-container": "#a3b5dc",
+                "inverse-surface": "#d8e2ff",
+                "inverse-primary": "#5d5f5f",
+                "on-primary": "#2f3131"
+            },
+
+            fontFamily: {
+                "headline": ["Manrope"],
+                "body": ["Manrope"],
+                "label": ["Manrope"]
+            },
+
+            borderRadius: {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            }
+        }
+    }
+}
+</script>
+
+<style>
+body {
+    font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+</style>
+
+</head>
+
+<body class="bg-surface text-on-surface selection:bg-primary selection:text-on-primary">
+
+<header class="w-full top-0 z-50 sticky bg-[#001232] shadow-[0px_20px_40px_rgba(0,13,40,0.4)]">
+
+<div class="flex justify-between items-center px-8 py-6 max-w-[1440px] mx-auto font-['Manrope'] antialiased tracking-tight">
+
+<a href="{% url 'home' %}" class="text-2xl font-black tracking-tighter text-[#e2e2e2]">
+    STYLE-HUB
+</a>
+
+<nav class="hidden md:flex items-center space-x-10">
+
+<a class="text-[#c5c6cf] hover:text-[#e2e2e2] transition-colors" href="{% url 'home' %}">
+    Home
+</a>
+
+<a class="text-[#c5c6cf] hover:text-[#e2e2e2] transition-colors" href="{% url 'product_page' %}">
+    Products
+</a>
+
+<a class="text-[#c5c6cf] hover:text-[#e2e2e2] transition-colors" href="{% url 'category_page' %}">
+    Categories
+</a>
+
+<a class="text-[#c5c6cf] hover:text-[#e2e2e2] transition-colors" href="{% url 'about_page' %}">
+    About
+</a>
+
+</nav>
+
+<div class="flex items-center space-x-6">
+
+<a href="{% url 'wishlist_page' %}" class="text-[#e2e2e2] hover:bg-[#28395b]/40 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90">
+    <span class="material-symbols-outlined">favorite</span>
+</a>
+
+<a href="{% url 'cart_page' %}" class="text-[#e2e2e2] hover:bg-[#28395b]/40 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90 relative">
+    <span class="material-symbols-outlined">shopping_cart</span>
+</a>
+
+<a href="{% url 'profile' %}" class="text-[#e2e2e2] hover:bg-[#28395b]/40 p-2 rounded-full transition-all duration-300 scale-95 active:scale-90">
+    <span class="material-symbols-outlined">person</span>
+</a>
+
+</div>
+</div>
+</header>
+
+<main class="min-h-[819px] flex items-center justify-center px-6 py-20 bg-surface">
+
+<div class="max-w-6xl w-full overflow-hidden rounded-[2rem] bg-surface-container-low shadow-[0px_40px_80px_rgba(0,0,0,0.5)] border border-outline-variant/10">
+
+<div class="p-12 md:p-16 flex flex-col justify-center space-y-8 bg-surface-container-low text-center items-center">
+
+<div class="space-y-4">
+
+<div class="inline-flex items-center space-x-2 text-primary font-bold tracking-[0.2em] text-xs uppercase">
+<span class="w-8 h-[1px] bg-primary"></span>
+<span>Error Encountered</span>
+</div>
+
+<div class="text-[8rem] md:text-[12rem] font-black leading-none tracking-tighter bg-gradient-to-b from-primary-fixed to-primary bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(198,198,199,0.3)] select-none mb-4">
+404
+</div>
+
+<h1 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface leading-tight">
+Page Not Found
+</h1>
+
+<p class="text-xl text-on-surface-variant font-light max-w-md leading-relaxed">
+Oops! The page you are looking for doesn’t exist or may have been moved.
+</p>
+
+</div>
+
+<div class="space-y-6">
+
+<div class="flex flex-col sm:flex-row gap-4">
+
+<a class="inline-flex items-center justify-center px-10 py-4 bg-primary-fixed text-on-primary-fixed font-bold rounded-full hover:bg-primary transition-all duration-300 transform active:scale-95 shadow-lg shadow-primary/10"
+href="{% url 'home' %}">
+Back to Home
+</a>
+
+<a class="inline-flex items-center justify-center px-10 py-4 border border-outline-variant/30 text-on-surface font-semibold rounded-full hover:bg-surface-bright/20 transition-all duration-300 transform active:scale-95"
+href="{% url 'product_page' %}">
+Continue Shopping
+</a>
+
+</div>
+
+<a class="inline-flex items-center space-x-2 text-on-surface-variant hover:text-on-surface transition-colors group"
+href="javascript:history.back()">
+
+<span class="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">
+arrow_back
+</span>
+
+<span class="text-sm font-medium">
+Back to Previous Page
+</span>
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer class="w-full border-t border-[#44474e]/20 bg-[#0c1f40]">
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-16 py-20 max-w-[1440px] mx-auto">
+
+<div class="col-span-1 md:col-span-1">
+
+<div class="text-xl font-bold text-[#e2e2e2] uppercase tracking-[0.2em] mb-6">
+STYLE-HUB
+</div>
+
+<p class="text-sm text-[#c5c6cf] leading-relaxed">
+Defining the modern male silhouette through architectural precision and midnight aesthetics.
+</p>
+
+</div>
+
+<div>
+<h4 class="text-[#e2e2e2] font-semibold mb-6">Collections</h4>
+
+<ul class="space-y-4 text-sm text-[#c5c6cf]">
+
+<li>
+<a class="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
+href="{% url 'product_page' %}">
+New Arrivals
+</a>
+</li>
+
+<li>
+<a class="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
+href="{% url 'category_page' %}">
+Essentials
+</a>
+</li>
+
+</ul>
+</div>
+
+<div>
+<h4 class="text-[#e2e2e2] font-semibold mb-6">Experience</h4>
+
+<ul class="space-y-4 text-sm text-[#c5c6cf]">
+
+<li>
+<a class="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
+href="{% url 'about_page' %}">
+About Us
+</a>
+</li>
+
+</ul>
+</div>
+
+<div>
+<h4 class="text-[#e2e2e2] font-semibold mb-6">Support</h4>
+
+<ul class="space-y-4 text-sm text-[#c5c6cf]">
+
+<li>
+<a class="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
+href="#">
+Shipping & Returns
+</a>
+</li>
+
+<li>
+<a class="hover:text-white transition-colors hover:translate-x-1 inline-block transform duration-200"
+href="#">
+Contact Support
+</a>
+</li>
+
+</ul>
+</div>
+
+</div>
+
+<div class="max-w-[1440px] mx-auto px-16 py-8 border-t border-[#44474e]/10 text-center">
+
+<span class="text-xs text-[#c5c6cf]/60 tracking-widest uppercase">
+© 2024 STYLE-HUB. AN ATELIER EXPERIENCE.
+</span>
+
+</div>
+
+</footer>
+
+</body>
+</html>
+

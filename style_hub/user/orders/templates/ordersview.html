@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "inverse-primary": "#5d5f5f",
+            "on-surface": "#d8e2ff",
+            "surface-container-low": "#071b3b",
+            "secondary-fixed-dim": "#b4c7ee",
+            "on-background": "#d8e2ff",
+            "on-secondary": "#1d3050",
+            "inverse-surface": "#d8e2ff",
+            "surface-container": "#0c1f40",
+            "on-tertiary-container": "#d36565",
+            "tertiary-fixed-dim": "#ffb3b1",
+            "primary-fixed": "#e2e2e2",
+            "primary-container": "#1d1f20",
+            "tertiary": "#ffb3b1",
+            "surface-dim": "#001232",
+            "outline-variant": "#44474e",
+            "surface-bright": "#28395b",
+            "secondary-fixed": "#d7e3ff",
+            "on-tertiary-fixed-variant": "#80272b",
+            "on-secondary-fixed-variant": "#344768",
+            "outline": "#8f9099",
+            "secondary-container": "#344768",
+            "surface-container-highest": "#233456",
+            "background": "#001232",
+            "on-secondary-fixed": "#051b3a",
+            "on-error": "#690005",
+            "on-secondary-container": "#a3b5dc",
+            "surface-variant": "#233456",
+            "primary-fixed-dim": "#c6c6c7",
+            "on-tertiary-fixed": "#410007",
+            "tertiary-fixed": "#ffdad8",
+            "surface": "#001232",
+            "on-primary-fixed-variant": "#454747",
+            "error": "#ffb4ab",
+            "on-primary": "#2f3131",
+            "on-primary-fixed": "#1a1c1c",
+            "on-primary-container": "#858787",
+            "surface-container-high": "#18294b",
+            "secondary": "#b4c7ee",
+            "surface-container-lowest": "#000d28",
+            "on-tertiary": "#620f17",
+            "tertiary-container": "#470009",
+            "surface-tint": "#c6c6c7",
+            "on-error-container": "#ffdad6",
+            "error-container": "#93000a",
+            "primary": "#c6c6c7",
+            "on-surface-variant": "#c5c6cf",
+            "inverse-on-surface": "#1f3052"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Manrope"],
+            "label": ["Manrope"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Manrope', sans-serif; }
+    .glass-card {
+      background: rgba(40, 57, 91, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+{% include 'user_navbar.html' %}
+
+<!-- Messages Section -->
+{% include 'toast.html' %}
+
+<main class="max-w-[1440px] mx-auto px-12 py-12">
+<div class="flex flex-col lg:flex-row gap-12">
+<!-- Left Sidebar: Dashboard Menu -->
+{% include "user_sidebar.html" %}
+<!-- Right Content Area -->
+<section class="flex-1 space-y-8">
+<!-- Header Section -->
+<div class="space-y-1">
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface">Order Details</h1>
+<p class="text-on-surface-variant">View complete information about your order</p>
+</div>
+  <!-- Order Summary & Progress Tracker -->
+  <div class="glass-card rounded-xl p-8 space-y-10">
+  <div class="flex flex-wrap justify-between items-start gap-6">
+  <div class="space-y-4">
+  <div class="flex items-center gap-3">
+  <span class="text-sm uppercase tracking-[0.1rem] text-primary-fixed">Order ID</span>
+  <span class="text-xl font-bold">#{{ order.order_number }}</span>
+  <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider 
+      {% if order.order_status == 'Delivered' %}bg-emerald-100 text-emerald-900
+      {% elif order.order_status == 'Cancelled' %}bg-rose-100 text-rose-900
+      {% else %}bg-amber-100 text-amber-900{% endif %}">
+      {{ order.order_status }}
+  </span>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+  <div>
+  <p class="text-xs uppercase tracking-widest text-on-surface-variant mb-1">Order Date</p>
+  <p class="font-semibold">{{ order.ordered_at|date:"F d, Y" }}</p>
+  </div>
+  <div>
+  <p class="text-xs uppercase tracking-widest text-on-surface-variant mb-1">Payment Method</p>
+  <p class="font-semibold">{{ order.get_payment_method_display }} ({{ order.payment_status }})</p>
+  </div>
+  <div>
+  <p class="text-xs uppercase tracking-widest text-on-surface-variant mb-1">Total Amount</p>
+  <p class="font-bold text-primary-fixed">₹{{ order.total_amount }}</p>
+  </div>
+  </div>
+  {% if order.reason %}
+  <div class="mt-4 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20">
+      <p class="text-xs uppercase tracking-widest text-rose-300 font-bold mb-1">Reason for Cancellation/Return</p>
+      <p class="text-sm font-semibold text-rose-100">{{ order.reason }}</p>
+  </div>
+  {% endif %}
+  </div>
+  <div class="flex gap-3">
+  {% if order.order_status == 'Delivered' %}
+  <button onclick="document.getElementById('return-order-modal').classList.remove('hidden')" class="px-6 py-3 rounded-full font-bold text-sm border border-outline-variant/30 hover:bg-surface-container-highest transition-all scale-95 active:scale-90 flex items-center gap-2">
+  <span class="material-symbols-outlined text-sm">keyboard_return</span>
+    Return Order
+  </button>
+  {% elif order.order_status != 'Cancelled' and order.order_status != 'Delivered' and order.order_status != 'Returned' %}
+  <form method="POST" action="{% url 'order_cancel_success' %}">
+      {% csrf_token %}
+      <input type="hidden" name="order_id" value="{{ order.id }}">
+      
+  </form>
+  {% endif %}
+  <a href="{% url 'invoice' %}?order_id={{ order.id }}" class="bg-primary-fixed text-on-primary-fixed px-6 py-3 rounded-full font-bold hover:bg-primary-fixed-dim transition-all scale-95 active:scale-90 flex items-center gap-2">
+  <span class="material-symbols-outlined text-sm">download</span>
+                  Invoice
+                </a>
+  </div>
+  </div>
+  <!-- Order Tracking -->
+  <div class="relative pt-4">
+  <div class="flex justify-between items-center mb-4">
+  <span class="text-sm font-bold text-primary">Track Status</span>
+  <span class="text-sm text-on-surface-variant italic">Order {{ order.order_status }}</span>
+  </div>
+  <div class="relative flex justify-between">
+  <!-- Connector Lines -->
+  <div class="absolute top-4 left-0 w-full h-[2px] bg-surface-container-highest -z-10"></div>
+  <div class="absolute top-4 left-0 h-[2px] bg-primary -z-10 transition-all duration-1000" 
+       style="width: {% if order.order_status == 'Pending' %}12.5%{% elif order.order_status == 'Confirmed' or order.order_status == 'Processing' %}37.5%{% elif order.order_status == 'Shipped' or order.order_status == 'Out for Delivery' %}62.5%{% elif order.order_status == 'Delivered' or order.order_status == 'Return Requested' or order.order_status == 'Returned' or order.order_status == 'Return Rejected' %}100%{% else %}0%{% endif %};"></div>
+  <!-- Steps -->
+  <div class="flex flex-col items-center gap-3 w-1/4">
+  <div class="w-8 h-8 rounded-full {% if order.order_status != 'Pending' and order.order_status != 'Cancelled' %}bg-primary text-on-primary{% else %}bg-surface-container-highest text-on-surface-variant{% endif %} flex items-center justify-center">
+  <span class="material-symbols-outlined text-base">{% if order.order_status != 'Pending' %}check{% else %}order_approve{% endif %}</span>
+  </div>
+  <span class="text-xs font-bold uppercase tracking-tighter">Placed</span>
+  </div>
+  <div class="flex flex-col items-center gap-3 w-1/4">
+  <div class="w-8 h-8 rounded-full {% if order.order_status == 'Confirmed' or order.order_status == 'Processing' or order.order_status == 'Shipped' or order.order_status == 'Out for Delivery' or order.order_status == 'Delivered' %}bg-primary text-on-primary{% else %}bg-surface-container-highest text-on-surface-variant{% endif %} flex items-center justify-center">
+  <span class="material-symbols-outlined text-base">{% if order.order_status == 'Shipped' or order.order_status == 'Delivered' or order.order_status == 'Out for Delivery' %}check{% else %}inventory{% endif %}</span>
+  </div>
+  <span class="text-xs font-bold uppercase tracking-tighter">Processing</span>
+  </div>
+  <div class="flex flex-col items-center gap-3 w-1/4">
+  <div class="w-8 h-8 rounded-full {% if order.order_status == 'Shipped' or order.order_status == 'Out for Delivery' or order.order_status == 'Delivered' %}bg-primary text-on-primary{% else %}bg-surface-container-highest text-on-surface-variant{% endif %} flex items-center justify-center">
+  <span class="material-symbols-outlined text-base">{% if order.order_status == 'Delivered' or order.order_status == 'Out for Delivery' %}check{% else %}local_shipping{% endif %}</span>
+  </div>
+  <span class="text-xs font-bold uppercase tracking-tighter">Shipped</span>
+  </div>
+  <div class="flex flex-col items-center gap-3 w-1/4">
+  <div class="w-8 h-8 rounded-full {% if order.order_status == 'Delivered' or order.order_status == 'Return Requested' or order.order_status == 'Returned' or order.order_status == 'Return Rejected' %}bg-primary text-on-primary{% else %}bg-surface-container-highest text-on-surface-variant{% endif %} flex items-center justify-center">
+  <span class="material-symbols-outlined text-base">{% if order.order_status == 'Returned' %}keyboard_return{% elif order.order_status == 'Return Requested' %}pending_actions{% else %}package{% endif %}</span>
+  </div>
+  <span class="text-xs font-bold uppercase tracking-tighter">
+    {% if order.order_status == 'Return Requested' %}Return Req{% elif order.order_status == 'Returned' %}Returned{% elif order.order_status == 'Return Rejected' %}Rejected{% else %}Delivered{% endif %}
+  </span>
+  </div>
+  </div>
+  </div>
+  </div>
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+  <!-- Ordered Items -->
+  <div class="xl:col-span-2 space-y-6">
+  <h3 class="text-xl font-bold tracking-tight px-2">Ordered Items</h3>
+  <div class="glass-card rounded-xl overflow-hidden divide-y divide-outline-variant/10">
+{% for item in order.items.all %}
+  <div class="p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
+  <div class="w-32 h-40 rounded-lg overflow-hidden bg-surface-container shrink-0">
+  {% with primary_image=item.variant.images.all.0 %}
+  <img alt="{{ item.product_name }}" class="w-full h-full object-cover" src="{% if primary_image %}{{ primary_image.image.url }}{% endif %}"/>
+  {% endwith %}
+  </div>
+  <div class="flex-1 space-y-2 w-full">
+  <div class="flex justify-between items-start">
+  <h4 class="text-lg font-bold">{{ item.product_name }}</h4>
+  <p class="font-bold text-lg text-primary-fixed">₹{{ item.price }}</p>
+  </div>
+  <div class="flex gap-6 text-on-surface-variant text-sm">
+  <p><span class="uppercase tracking-widest text-[10px]">Size:</span> <span class="text-on-surface font-semibold">{{ item.variant.size }}</span></p>
+  <p><span class="uppercase tracking-widest text-[10px]">Qty:</span> <span class="text-on-surface font-semibold">{{ item.remaining_quantity }}</span></p>
+  <p><span class="uppercase tracking-widest text-[10px]">Status:</span> <span class="text-on-surface font-bold text-primary">{{ item.item_status }}</span></p>
+  {% if item.reason %}
+  <p><span class="uppercase tracking-widest text-[10px]">Reason:</span> <span class="text-rose-400 font-semibold">{{ item.reason }}</span></p>
+  {% endif %}
+  </div>
+  <div class="pt-6 flex flex-wrap gap-4">
+  {% if item.item_status == 'Delivered' or item.item_status == 'Partially Returned' or item.item_status == 'Return Rejected' %}
+  <a href="{% url 'review_writing' %}?item_id={{ item.id }}" class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 border border-outline-variant/30 px-3 py-2 rounded-lg">
+  <span class="material-symbols-outlined text-sm">rate_review</span>
+                        Write Review
+                      </a>
+  <button onclick="openReturnItemModal('{{ item.id }}', {{ item.remaining_quantity }})" class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 border border-outline-variant/30 px-3 py-2 rounded-lg">
+  <span class="material-symbols-outlined text-sm">keyboard_return</span>
+                        Return Item
+                      </button>
+  {% elif item.item_status != 'Cancelled' and item.item_status != 'Returned' and item.item_status != 'Return Requested' and order.order_status != 'Delivered' %}
+  <button type="button" onclick="openCancelItemModal({{ item.id }}, {{ item.remaining_quantity }})" class="text-[10px] font-bold uppercase tracking-widest text-error/70 hover:text-error transition-colors flex items-center gap-1.5 border border-error/20 px-3 py-2 rounded-lg">
+      <span class="material-symbols-outlined text-sm">cancel</span>
+      Cancel Item
+  </button>
+  {% endif %}
+  </div>
+  </div>
+  </div>
+  {% endfor %}
+  </div>
+  </div>
+  <!-- Secondary Column: Info Cards -->
+  <div class="space-y-8">
+  <!-- Shipping Address -->
+  <div class="space-y-4">
+  <h3 class="text-xl font-bold tracking-tight px-2">Shipping Address</h3>
+  <div class="glass-card rounded-xl p-6 space-y-3">
+  <div class="flex items-center gap-2 text-primary">
+  <span class="material-symbols-outlined text-sm">person</span>
+  <p class="font-bold">{{ order.address.full_name }}</p>
+  </div>
+  <div class="flex items-center gap-2 text-on-surface-variant">
+  <span class="material-symbols-outlined text-sm">call</span>
+  <p class="text-sm">{{ order.address.phone_number }}</p>
+  </div>
+  <div class="flex items-start gap-2 text-on-surface-variant">
+  <span class="material-symbols-outlined text-sm mt-1">location_on</span>
+  <p class="text-sm leading-relaxed">
+                      {{ order.address.house_name }}, {{ order.address.address }}<br/>
+                      {{ order.address.area }}, {{ order.address.district }}<br/>
+                      {{ order.address.state }}, {{ order.address.country }} - {{ order.address.pincode }}
+                    </p>
+  </div>
+  </div>
+  </div>
+  <!-- Payment Summary -->
+  <div class="space-y-4">
+  <h3 class="text-xl font-bold tracking-tight px-2">Payment Details</h3>
+  <div class="glass-card rounded-xl p-6 space-y-4">
+  <div class="flex justify-between text-sm text-on-surface-variant">
+  <span>Subtotal</span>
+  <span class="font-medium text-on-surface">₹{{ original_subtotal }}</span>
+  </div>
+  {% if offer_discount %}
+  <div class="flex justify-between text-sm text-on-surface-variant">
+  <span>Offer Discount</span>
+  <span class="font-medium text-tertiary">-₹{{ offer_discount }}</span>
+  </div>
+  {% endif %}
+  {% if order.discount_amount %}
+  <div class="flex justify-between text-sm text-on-surface-variant">
+  <span>Coupon Discount</span>
+  <span class="font-medium text-tertiary">-₹{{ order.discount_amount }}</span>
+  </div>
+  {% endif %}
+  <div class="flex justify-between text-sm text-on-surface-variant">
+  <span>Delivery</span>
+  <span class="font-medium text-on-surface">{% if order.delivery_charge == 0 %}FREE{% else %}₹{{ order.delivery_charge }}{% endif %}</span>
+  </div>
+  <div class="h-[1px] bg-outline-variant/20"></div>
+  <div class="flex justify-between text-lg">
+  <span class="font-extrabold uppercase tracking-widest text-sm">Total</span>
+  <span class="font-black text-primary-fixed">₹{{ order.total_amount }}</span>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  <!-- Sticky Footer Actions -->
+  <div class="flex flex-wrap items-center justify-between gap-6 pt-12">
+  <a href="{% url 'user_orders_listing' %}" class="text-on-surface-variant hover:text-primary flex items-center gap-2 font-bold transition-all group">
+  <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+              Back to Orders
+            </a>
+  <div class="flex gap-4">
+  {% if order.order_status != 'Cancelled' and order.order_status != 'Delivered' and order.order_status != 'Returned' %}
+      <button type="button" onclick="document.getElementById('cancel-order-modal').classList.remove('hidden')" class="px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest border border-outline-variant/30 hover:bg-surface-container-highest transition-all text-error">
+        Cancel Order
+      </button>
+  {% endif %}
+
+  </div>
+  </div>
+</section>
+</div>
+</main>
+
+<!-- Return Order Modal -->
+<div id="return-order-modal" class="fixed inset-0 z-[100] hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+    <div class="glass-card rounded-[2rem] w-full max-w-md p-8 border border-primary/20">
+        <h3 class="text-2xl font-bold mb-4">Return Order</h3>
+        <p class="text-on-surface-variant text-sm mb-6">Are you sure you want to return this order? Please provide a reason.</p>
+        <form method="POST" action="{% url 'return_order' %}">
+            {% csrf_token %}
+            <input type="hidden" name="order_id" value="{{ order.id }}">
+            <textarea name="reason" required class="w-full bg-surface-container-highest/40 border border-outline-variant/30 rounded-xl p-4 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-primary mb-6" rows="4" placeholder="Reason for return..."></textarea>
+            <div class="flex gap-4">
+                <button type="button" onclick="document.getElementById('return-order-modal').classList.add('hidden')" class="flex-1 py-3 rounded-full font-bold text-sm border border-outline-variant/30 hover:bg-surface-container-highest">Go Back</button>
+                <button type="submit" class="flex-1 py-3 rounded-full font-bold text-sm bg-primary text-on-primary">Confirm Return</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Return Item Modal -->
+<div id="return-item-modal" class="fixed inset-0 z-[100] hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+    <div class="glass-card rounded-[2rem] w-full max-w-md p-8 border border-primary/20">
+        <h3 class="text-2xl font-bold mb-4">Return Item</h3>
+        <p class="text-on-surface-variant text-sm mb-6">Are you sure you want to return this item? Please provide a quantity and reason.</p>
+        <form method="POST" action="{% url 'return_order' %}">
+            {% csrf_token %}
+            <input type="hidden" name="item_id" id="return-item-id">
+            <div class="mb-4">
+                <label class="block text-xs uppercase tracking-widest text-on-surface-variant mb-2 font-bold">Quantity to Return</label>
+                <input type="number" name="quantity" id="return-item-qty" min="1" value="1" required class="w-full bg-surface-container-highest/40 border border-outline-variant/30 rounded-xl p-4 text-on-surface focus:ring-primary">
+            </div>
+            <textarea name="reason" required class="w-full bg-surface-container-highest/40 border border-outline-variant/30 rounded-xl p-4 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-primary mb-6" rows="4" placeholder="Reason for return..."></textarea>
+            <div class="flex gap-4">
+                <button type="button" onclick="document.getElementById('return-item-modal').classList.add('hidden')" class="flex-1 py-3 rounded-full font-bold text-sm border border-outline-variant/30 hover:bg-surface-container-highest">Go Back</button>
+                <button type="submit" class="flex-1 py-3 rounded-full font-bold text-sm bg-primary text-on-primary">Confirm Return</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Cancel Order Modal -->
+<div id="cancel-order-modal" class="fixed inset-0 z-[100] hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+    <div class="glass-card rounded-[2rem] w-full max-w-md p-8 border border-primary/20">
+        <h3 class="text-2xl font-bold mb-4 text-error">Cancel Order</h3>
+        <p class="text-on-surface-variant text-sm mb-6">Are you sure you want to cancel this order? This action cannot be undone.</p>
+        <form method="POST" action="{% url 'order_cancel_success' %}">
+            {% csrf_token %}
+            <input type="hidden" name="order_id" value="{{ order.id }}">
+            <textarea name="reason" required class="w-full bg-surface-container-highest/40 border border-outline-variant/30 rounded-xl p-4 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-primary mb-6" rows="4" placeholder="Reason for cancellation..."></textarea>
+            <div class="flex gap-4">
+                <button type="button" onclick="document.getElementById('cancel-order-modal').classList.add('hidden')" class="flex-1 py-3 rounded-full font-bold text-sm border border-outline-variant/30 hover:bg-surface-container-highest">Go Back</button>
+                <button type="submit" class="flex-1 py-3 rounded-full font-bold text-sm bg-error text-white">Confirm Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Cancel Item Modal -->
+<div id="cancel-item-modal" class="fixed inset-0 z-[100] hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+    <div class="glass-card rounded-[2rem] w-full max-w-md p-8 border border-primary/20">
+        <h3 class="text-2xl font-bold mb-4 text-error">Cancel Item</h3>
+        <p class="text-on-surface-variant text-sm mb-6">Are you sure you want to cancel this item? This action cannot be undone.</p>
+        <form method="POST" action="{% url 'order_cancel_success' %}">
+            {% csrf_token %}
+            <input type="hidden" name="item_id" id="cancel-item-id">
+            <div class="mb-4">
+                <label class="block text-xs uppercase tracking-widest text-on-surface-variant mb-2 font-bold">Quantity to Cancel</label>
+                <input type="number" name="quantity" id="cancel-item-qty" min="1" value="1" required class="w-full bg-surface-container-highest/40 border border-outline-variant/30 rounded-xl p-4 text-on-surface focus:ring-primary">
+            </div>
+            <textarea name="reason" required class="w-full bg-surface-container-highest/40 border border-outline-variant/30 rounded-xl p-4 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-primary mb-6" rows="4" placeholder="Reason for cancellation..."></textarea>
+            <div class="flex gap-4">
+                <button type="button" onclick="document.getElementById('cancel-item-modal').classList.add('hidden')" class="flex-1 py-3 rounded-full font-bold text-sm border border-outline-variant/30 hover:bg-surface-container-highest">Go Back</button>
+                <button type="submit" class="flex-1 py-3 rounded-full font-bold text-sm bg-error text-white">Confirm Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openReturnItemModal(itemId, maxQty) {
+        document.getElementById('return-item-id').value = itemId;
+        const qtyInput = document.getElementById('return-item-qty');
+        qtyInput.max = maxQty;
+        qtyInput.value = 1;
+        document.getElementById('return-item-modal').classList.remove('hidden');
+    }
+    function openCancelItemModal(itemId, maxQty) {
+        document.getElementById('cancel-item-id').value = itemId;
+        const qtyInput = document.getElementById('cancel-item-qty');
+        qtyInput.max = maxQty;
+        qtyInput.value = 1;
+        document.getElementById('cancel-item-modal').classList.remove('hidden');
+    }
+</script>
+
+</body></html>
+
+</body></html>

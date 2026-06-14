@@ -1,0 +1,66 @@
+{% load static %}
+
+<!-- SIDEBAR -->
+
+<aside class="flex flex-col gap-4 p-4 h-fit w-full md:w-64 md:ml-6 bg-[#0c1f40]/70 backdrop-blur-lg rounded-2xl w-full md:w-64 transition-all duration-300 overflow-hidden shadow-2xl shrink-0 border border-white/5">
+
+    <nav class="flex flex-col gap-2">
+
+        <a class="{% if active_page == 'profile' %}bg-primary text-on-primary-fixed shadow-[0_0_20px_rgba(198,198,199,0.2)]{% else %}text-slate-300 hover:bg-white/5{% endif %} rounded-xl flex items-center gap-4 p-3.5 transition-all duration-200"
+           href="{% url 'profile' %}">
+
+            <span class="material-symbols-outlined">person</span>
+
+            <span class="font-manrope text-xs uppercase tracking-widest font-bold">
+                Profile
+            </span>
+        </a>
+
+        <a class="{% if active_page == 'address' %}bg-primary text-on-primary-fixed shadow-[0_0_20px_rgba(198,198,199,0.2)]{% else %}text-slate-300 hover:bg-white/5{% endif %} rounded-xl flex items-center gap-4 p-3.5 transition-all duration-200"
+           href="{% url 'address_page' %}">
+
+            <span class="material-symbols-outlined">location_on</span>
+
+            <span class="font-manrope text-xs uppercase tracking-widest font-bold">
+                Address
+            </span>
+        </a>
+
+        <a class="{% if active_page == 'orders' %}bg-primary text-on-primary-fixed shadow-[0_0_20px_rgba(198,198,199,0.2)]{% else %}text-slate-300 hover:bg-white/5{% endif %} rounded-xl flex items-center gap-4 p-3.5 transition-all duration-200"
+           href="{% url 'user_orders_listing' %}">
+
+            <span class="material-symbols-outlined">package_2</span>
+
+            <span class="font-manrope text-xs uppercase tracking-widest font-bold">
+                My Orders
+            </span>
+        </a>
+
+        <a class="{% if active_page == 'wishlist' %}bg-primary text-on-primary-fixed shadow-[0_0_20px_rgba(198,198,199,0.2)]{% else %}text-slate-300 hover:bg-white/5{% endif %} rounded-xl flex items-center gap-4 p-3.5 transition-all duration-200"
+           href="{% url 'wishlist_page' %}">
+
+            <span class="material-symbols-outlined">favorite</span>
+
+            <span class="font-manrope text-xs uppercase tracking-widest font-bold">
+                Wishlist
+            </span>
+        </a>
+
+        <a class="{% if active_page == 'wallet' %}bg-primary text-on-primary-fixed shadow-[0_0_20px_rgba(198,198,199,0.2)]{% else %}text-slate-300 hover:bg-white/5{% endif %} rounded-xl flex items-center gap-4 p-3.5 transition-all duration-200"
+           href="{% url 'wallet_page' %}">
+
+            <span class="material-symbols-outlined">account_balance_wallet</span>
+
+            <span class="font-manrope text-xs uppercase tracking-widest font-bold">
+                Wallet
+            </span>
+        </a>
+
+    </nav>
+
+</aside>
+
+
+
+</body>
+</html>

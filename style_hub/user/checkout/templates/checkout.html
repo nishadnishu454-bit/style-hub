@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Checkout | STYLE-HUB</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                colors: {
+                  "tertiary-fixed-dim": "#ffb3b1",
+                  "surface-container-highest": "#233456",
+                  "inverse-surface": "#d8e2ff",
+                  "secondary-fixed": "#d7e3ff",
+                  "on-tertiary-fixed-variant": "#80272b",
+                  "on-background": "#d8e2ff",
+                  "error": "#ffb4ab",
+                  "surface": "#001232",
+                  "on-primary-fixed": "#1a1c1c",
+                  "inverse-on-surface": "#1f3052",
+                  "primary-fixed-dim": "#c6c6c7",
+                  "outline": "#8f9099",
+                  "on-error-container": "#ffdad6",
+                  "secondary": "#b4c7ee",
+                  "surface-dim": "#001232",
+                  "on-secondary-fixed": "#051b3a",
+                  "tertiary-container": "#470009",
+                  "on-tertiary-container": "#d36565",
+                  "on-surface": "#d8e2ff",
+                  "on-tertiary-fixed": "#410007",
+                  "on-primary-fixed-variant": "#454747",
+                  "error-container": "#93000a",
+                  "on-secondary-fixed-variant": "#344768",
+                  "surface-variant": "#233456",
+                  "on-surface-variant": "#c5c6cf",
+                  "primary-fixed": "#e2e2e2",
+                  "primary-container": "#1d1f20",
+                  "outline-variant": "#44474e",
+                  "surface-tint": "#c6c6c7",
+                  "on-secondary": "#1d3050",
+                  "background": "#001232",
+                  "on-secondary-container": "#a3b5dc",
+                  "on-error": "#690005",
+                  "surface-container-low": "#071b3b",
+                  "on-primary-container": "#858787",
+                  "surface-container": "#0c1f40",
+                  "inverse-primary": "#5d5f5f",
+                  "tertiary": "#ffb3b1",
+                  "on-primary": "#2f3131",
+                  "primary": "#c6c6c7",
+                  "surface-container-high": "#18294b",
+                  "secondary-fixed-dim": "#b4c7ee",
+                  "tertiary-fixed": "#ffdad8",
+                  "surface-bright": "#28395b",
+                  "secondary-container": "#344768",
+                  "on-tertiary": "#620f17",
+                  "surface-container-lowest": "#000d28"
+                },
+                fontFamily: {
+                  "headline": ["Manrope"],
+                  "body": ["Manrope"],
+                  "label": ["Manrope"]
+                },
+                borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+              },
+            },
+          }
+    </script>
+    <style>
+          .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+          }
+          .glass-card {
+            background: rgba(40, 57, 91, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+          }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+
+{% include 'user_navbar.html' %}
+{% include 'toast.html' %}
+<main class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <header class="mb-12">
+        <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-white mb-2">Checkout</h1>
+        <p class="text-on-surface-variant text-lg">Complete your order securely</p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <div class="lg:col-span-8 space-y-10">
+            
+            <section class="glass-card rounded-xl p-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary">inventory_2</span> Order Items
+                    </h2>
+                    <span class="text-sm text-on-surface-variant">{{ cart_items.count }} Items</span>
+                </div>
+                <div class="space-y-6">
+                    {% for item in cart_items %}
+                    <div class="flex flex-col sm:flex-row gap-6 p-4 rounded-lg bg-surface-container/40">
+                        {% with primary_image=item.variant.images.all.0 %}
+                        <img alt="{{ item.variant.product.product_name }}" class="w-28 h-36 object-cover rounded-lg" src="{% if primary_image %}{{ primary_image.image.url }}{% endif %}"/>
+                        {% endwith %}
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-white mb-1">{{ item.variant.product.product_name }}</h3>
+                                <p class="text-sm text-on-surface-variant mb-4">{{ item.variant.product.category.category_name }}</p>
+                                <div class="flex gap-6 text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
+                                    <span>Size: {{ item.variant.size }}</span>
+                                    <span>Color: {{ item.variant.color }}</span>
+                                    <span>Qty: {{ item.quantity }}</span>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-lg font-bold text-white">₹{{ item.variant.variant_price }}</span>
+                                <span class="text-sm text-on-surface-variant ml-2">Total: ₹{{ item.item_total }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <form id="checkout-form" method="POST" action="{% url 'checkout' %}">
+                {% csrf_token %}
+                <section class="glass-card rounded-xl p-8 mb-10">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                            <span class="material-symbols-outlined text-secondary">local_shipping</span> Shipping Address
+                        </h2>
+                        <a href="{% url 'add_address' %}?next=checkout" class="text-sm font-bold text-primary-fixed hover:text-white uppercase tracking-widest">Add New</a>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {% for addr in addresses %}
+                        <label class="relative p-6 rounded-xl border {% if addr.is_default %}border-primary-fixed/40 bg-secondary-container/20{% else %}border-primary-fixed/10 bg-surface-container/40{% endif %} cursor-pointer hover:border-primary-fixed/60 transition-all">
+                            <input type="radio" name="address_id" value="{{ addr.id }}" {% if addr.is_default %}checked{% endif %} class="absolute top-4 right-4 w-4 h-4 text-primary-fixed"/>
+                            <h4 class="text-white font-bold mb-2">{{ addr.full_name }}</h4>
+                            <p class="text-on-surface-variant text-sm leading-relaxed mb-4">
+                                {{ addr.house_name }}, {{ addr.address }}<br/>
+                                {{ addr.area }}, {{ addr.district }}<br/>
+                                {{ addr.state }}, {{ addr.country }} - {{ addr.pincode }}
+                            </p>
+                            <div class="flex justify-between items-center pt-2 border-t border-white/5">
+                                <span class="text-sm text-on-surface-variant font-mono">{{ addr.phone_number }}</span>
+                                <a href="{% url 'edit_address' addr.id %}?next=checkout" onclick="event.stopPropagation();" class="text-xs font-bold text-secondary hover:text-white uppercase tracking-widest">Edit</a>
+                            </div>
+                        </label>
+                        {% empty %}
+                        <div class="md:col-span-2 p-10 rounded-xl border border-dashed border-outline-variant/40 text-center">
+                            <p class="text-on-surface-variant mb-4">No address found. Please add one to continue.</p>
+                             <a href="{% url 'add_address' %}?next=checkout" class="inline-block px-8 py-3 bg-primary-fixed text-on-primary-fixed font-bold rounded-full">Add Address</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="glass-card rounded-xl p-8">
+                    <h2 class="text-xl font-bold tracking-tight text-white flex items-center gap-2 mb-8">
+                        <span class="material-symbols-outlined text-secondary">account_balance_wallet</span> Payment Method
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="relative flex items-center p-4 rounded-xl border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high/40">
+                            <input type="radio" name="payment_method" value="RAZORPAY" checked class="w-4 h-4 text-primary-fixed"/>
+                            <div class="ml-4">
+                                <p class="text-sm font-bold text-white">Razorpay</p>
+                                <p class="text-xs text-on-surface-variant">Cards, Netbanking</p>
+                            </div>
+                        </label>
+                        <label class="relative flex items-center p-4 rounded-xl border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high/40">
+                            <input type="radio" name="payment_method" value="COD" class="w-4 h-4 text-primary-fixed"/>
+                            <div class="ml-4">
+                                <p class="text-sm font-bold text-white">Cash on Delivery</p>
+                                <p class="text-xs text-on-surface-variant">Pay when item arrives</p>
+                            </div>
+                        </label>
+                        <label class="relative flex items-center p-4 rounded-xl border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high/40">
+                            <input type="radio" name="payment_method" value="WALLET" class="w-4 h-4 text-primary-fixed"/>
+                            <div class="ml-4">
+                                <p class="text-sm font-bold text-white">Wallet</p>
+                                <p class="text-xs text-on-surface-variant">Pay from your credits</p>
+                            </div>
+                        </label>
+                      
+                    </div>
+                </section>
+            </form>
+        </div>
+<aside class="lg:col-span-4 space-y-8 sticky top-28">
+    <section class="glass-card rounded-xl p-8">
+
+        <h2 class="text-xl font-bold tracking-tight text-white mb-8">
+            Summary
+        </h2>
+
+        <!-- Coupon Section -->
+        <form method="POST" action="{% url 'apply_coupon' %}" class="mb-4">
+            {% csrf_token %}
+
+            <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3 block">
+                Apply Coupon
+            </label>
+
+            <div class="flex gap-2">
+
+                <input
+                    type="text"
+                    name="coupon_code"
+                    value="{% if applied_coupon %}{{ applied_coupon.code }}{% endif %}"
+                    placeholder="Enter coupon code"
+                    class="flex-1 bg-surface-container/50 border border-outline-variant/30 rounded-full px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:ring-1 focus:ring-primary-fixed"
+                >
+
+                <button
+                    type="submit"
+                    class="px-5 py-3 bg-primary-fixed text-on-primary-fixed rounded-full font-black uppercase tracking-widest text-xs hover:bg-primary-fixed-dim transition-all"
+                >
+                    Apply
+                </button>
+
+            </div>
+        </form>
+
+        <!-- View Available Coupons Button -->
+        <button type="button"
+                onclick="openCouponModal()"
+                class="w-full mb-8 py-3 rounded-full border border-outline-variant/30 text-white text-xs font-black uppercase tracking-widest hover:bg-surface-container-high/40 transition-all">
+
+            View Available Coupons
+
+        </button>
+
+        <!-- Available Coupons -->
+       <!-- Coupon Modal -->
+<div id="couponModal"
+     class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+
+    <div class="w-full max-w-lg glass-card rounded-2xl border border-outline-variant/20 overflow-hidden">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/20">
+
+            <div>
+                <h2 class="text-lg font-black tracking-tight text-white">
+                    Available Coupons
+                </h2>
+
+                <p class="text-xs text-on-surface-variant mt-1">
+                    Apply coupons and save more
+                </p>
+            </div>
+
+            <button type="button"
+                    onclick="closeCouponModal()"
+                    class="w-10 h-10 rounded-full hover:bg-white/5 transition-all flex items-center justify-center">
+
+                <span class="material-symbols-outlined text-white">
+                    close
+                </span>
+
+            </button>
+
+        </div>
+
+        <!-- Body -->
+        <div class="max-h-[500px] overflow-y-auto p-6 space-y-4">
+
+            {% if available_coupons %}
+
+                {% for coupon in available_coupons %}
+                <div class="p-4 rounded-xl bg-surface-container/40 border border-outline-variant/20">
+
+                    <div class="flex justify-between items-start gap-4">
+
+                        <div>
+
+                            <div class="flex items-center gap-2 mb-2">
+
+                                <p class="text-sm font-black text-white tracking-widest uppercase">
+                                    {{ coupon.code }}
+                                </p>
+
+                                <button type="button"
+                                        onclick="copyCoupon('{{ coupon.code }}')"
+                                        class="text-[10px] px-2 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-black uppercase tracking-widest hover:bg-white transition-all">
+
+                                    Copy
+
+                                </button>
+
+                            </div>
+
+                            <p class="text-xs text-on-surface-variant">
+                                {{ coupon.title }}
+                            </p>
+
+                            <p class="text-[11px] text-primary-fixed mt-2 font-bold">
+
+                                {% if coupon.discount_type == 'PERCENTAGE' %}
+                                    {{ coupon.discount_value }}% OFF
+                                {% else %}
+                                    ₹{{ coupon.discount_value }} OFF
+                                {% endif %}
+
+                            </p>
+
+                            <p class="text-xs text-on-surface-variant">
+
+                            <span class="text-[10px] text-white font-black block">
+                            {{ coupon.description }}.
+                            </span>
+                            
+                        </p>
+
+
+                        </div>
+
+                        <div class="text-right">
+
+                            <span class="text-[10px] text-white font-black block">
+                                Min ₹{{ coupon.min_purchase }}
+                            </span>
+
+                            {% if coupon.max_discount %}
+                            <span class="text-[10px] text-on-surface-variant block mt-1">
+                                Max ₹{{ coupon.max_discount }}
+                            </span>
+                            {% endif %}
+
+                            <span class="text-[10px] text-on-surface-variant block mt-2">
+                                Valid till {{ coupon.end_date }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+                {% endfor %}
+
+            {% else %}
+
+                <div class="text-center py-10">
+
+                    <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4">
+                        local_offer
+                    </span>
+
+                    <p class="text-sm text-on-surface-variant">
+                        No coupons available
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+        <!-- Applied Coupon -->
+        {% if applied_coupon %}
+        <form method="POST" action="{% url 'remove_coupon' %}" class="mb-8">
+            {% csrf_token %}
+
+            <div class="flex items-center justify-between bg-tertiary-container/30 border border-tertiary/20 rounded-xl px-4 py-3">
+
+                <div>
+                    <p class="text-xs font-bold text-white uppercase tracking-widest">
+                        {{ applied_coupon.code }} Applied
+                    </p>
+
+                    <p class="text-[10px] text-on-surface-variant">
+                        You saved ₹{{ discount_amount }}
+                    </p>
+                </div>
+
+                <button
+                    type="submit"
+                    class="text-tertiary text-xs font-black uppercase tracking-widest hover:text-white"
+                >
+                    Remove
+                </button>
+
+            </div>
+        </form>
+        {% endif %}
+
+        <!-- Summary Details -->
+        <div class="space-y-4 mb-8">
+
+            <div class="flex justify-between text-on-surface-variant">
+                <span class="text-sm">Subtotal</span>
+
+                <span class="text-sm font-semibold text-white">
+                    ₹{{ original_subtotal }}
+                </span>
+            </div>
+
+            {% if offer_discount %}
+            <div class="flex justify-between text-on-surface-variant">
+                <span class="text-sm">Offer Discount</span>
+
+                <span class="text-sm font-semibold text-tertiary">
+                    -₹{{ offer_discount }}
+                </span>
+            </div>
+            {% endif %}
+
+            {% if discount_amount %}
+            <div class="flex justify-between text-on-surface-variant">
+                <span class="text-sm">Coupon Discount</span>
+
+                <span class="text-sm font-semibold text-tertiary">
+                    -₹{{ discount_amount }}
+                </span>
+            </div>
+            {% endif %}
+
+            <div class="flex justify-between text-on-surface-variant">
+                <span class="text-sm">Delivery Charge</span>
+
+                <span class="text-sm font-semibold text-white">
+                    {% if delivery_charge == 0 %}
+                        Free
+                    {% else %}
+                        ₹{{ delivery_charge }}
+                    {% endif %}
+                </span>
+            </div>
+
+            {% if tax_amount %}
+            <div class="flex justify-between text-on-surface-variant">
+                <span class="text-sm">Estimated Tax</span>
+
+                <span class="text-sm font-semibold text-white">
+                    ₹{{ tax_amount }}
+                </span>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div class="pt-6 border-t border-white/5 mb-8">
+
+            <div class="flex justify-between items-end">
+
+                <span class="text-lg font-bold text-white">
+                    Total Amount
+                </span>
+
+                <span class="text-2xl font-black text-white">
+                    ₹{{ total_amount }}
+                </span>
+
+            </div>
+
+        </div>
+
+        <button type="submit"
+            form="checkout-form"
+            class="w-full py-4 bg-primary-fixed text-on-primary-fixed font-black uppercase tracking-widest rounded-full hover:bg-primary-fixed-dim transition-all mb-4">
+
+            Place Order
+
+        </button>
+
+        <p class="text-[10px] text-on-surface-variant text-center uppercase tracking-widest font-bold">
+            Delivery expected in {{ delivery_date }}
+        </p>
+
+    </section>
+</aside>
+
+
+    </div>
+</main>
+
+<footer class="w-full py-16 px-12 mt-20 bg-[#0c1f40] border-t border-white/5 text-sm">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-slate-500">
+        <p class="uppercase tracking-widest">© 2024 STYLE-HUB. THE MIDNIGHT ATELIER.</p>
+    </div>
+</footer>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+function openCouponModal() {
+
+    const modal = document.getElementById('couponModal');
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeCouponModal() {
+
+    const modal = document.getElementById('couponModal');
+
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function copyCoupon(code) {
+
+    navigator.clipboard.writeText(code);
+
+    const input = document.querySelector('input[name="coupon_code"]');
+
+    if (input) {
+        input.value = code;
+    }
+
+    if (window.showToast) {
+        window.showToast(code + ' copied successfully', 'success');
+    }
+}
+
+window.addEventListener('click', function(e) {
+
+    const modal = document.getElementById('couponModal');
+
+    if (e.target === modal) {
+        closeCouponModal();
+    }
+});
+
+
+document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    const paymentMethod = formData.get('payment_method');
+
+    // COD / WALLET / UPI normal submit
+    if (paymentMethod !== 'RAZORPAY') {
+        this.submit();
+        return;
+    }
+
+    try {
+
+        const response = await fetch("{% url 'checkout' %}", {
+
+            method: 'POST',
+
+            body: formData,
+
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.message || 'Something went wrong');
+            return;
+        }
+
+        const options = {
+
+            key: data.key,
+
+            amount: data.amount,
+
+            currency: "INR",
+
+            name: data.name,
+
+            description: data.description,
+
+            order_id: data.order_id,
+
+            handler: async function (response) {
+
+                const verifyResponse = await fetch(
+                    "{% url 'verify_razorpay_payment' %}",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+
+                        body: new URLSearchParams({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    }
+                );
+
+                const verifyData = await verifyResponse.json();
+
+                if (verifyData.success) {
+
+                    window.location.href = verifyData.redirect_url;
+
+                } else {
+
+                    window.location.href = "{% url 'payment_failure' %}";
+                }
+            },
+
+            modal: {
+
+                ondismiss: function () {
+
+                    window.location.href = "{% url 'payment_failure' %}";
+                }
+            },
+
+            theme: {
+                color: "#e2e2e2"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+
+        rzp.open();
+
+    } catch (error) {
+
+        alert("Something went wrong");
+        console.log(error);
+    }
+
+});
+
+
+
+setTimeout(() => {
+
+    const messages = document.querySelectorAll('.relative.overflow-hidden');
+
+    messages.forEach(message => {
+
+        message.style.transition = 'all 0.5s ease';
+
+        message.style.opacity = '0';
+
+        message.style.transform = 'translateY(-10px)';
+
+        setTimeout(() => {
+
+            message.remove();
+
+        }, 500);
+
+    });
+
+}, 3000);
+
+
+</script>
+
+</body>
+</html>

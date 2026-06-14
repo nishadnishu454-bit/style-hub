@@ -86,15 +86,7 @@
         </div>
 
         <!-- MESSAGE -->
-        {% if messages %}
-            {% for message in messages %}
-
-                <div class="bg-green-100 text-green-700 px-5 py-4 mb-6 text-sm font-semibold rounded-sm">
-                    {{ message }}
-                </div>
-
-            {% endfor %}
-        {% endif %}
+        {% include 'toast.html' %}
 
         <!-- FORM BOX -->
         <div class="bg-[#F2F2F2] p-8 md:p-12 rounded-sm custom-shadow w-full">

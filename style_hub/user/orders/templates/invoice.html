@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Invoice - STYLE-HUB</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-secondary-fixed-variant": "#344768",
+                "background": "#001232",
+                "inverse-primary": "#5d5f5f",
+                "surface-bright": "#28395b",
+                "outline": "#8f9099",
+                "on-tertiary-fixed-variant": "#80272b",
+                "tertiary-fixed-dim": "#ffb3b1",
+                "primary-fixed-dim": "#c6c6c7",
+                "inverse-surface": "#d8e2ff",
+                "secondary-container": "#344768",
+                "on-secondary": "#1d3050",
+                "tertiary-fixed": "#ffdad8",
+                "secondary": "#b4c7ee",
+                "on-surface-variant": "#c5c6cf",
+                "surface-container": "#0c1f40",
+                "on-primary-fixed": "#1a1c1c",
+                "surface-container-low": "#071b3b",
+                "outline-variant": "#44474e",
+                "on-secondary-fixed": "#051b3a",
+                "on-primary-container": "#858787",
+                "surface-container-highest": "#233456",
+                "on-tertiary-container": "#d36565",
+                "on-tertiary": "#620f17",
+                "on-error-container": "#ffdad6",
+                "error": "#ffb4ab",
+                "primary": "#c6c6c7",
+                "on-tertiary-fixed": "#410007",
+                "on-primary": "#2f3131",
+                "primary-container": "#1d1f20",
+                "on-secondary-container": "#a3b5dc",
+                "surface-tint": "#c6c6c7",
+                "on-surface": "#d8e2ff",
+                "tertiary": "#ffb3b1",
+                "inverse-on-surface": "#1f3052",
+                "surface-container-high": "#18294b",
+                "on-background": "#d8e2ff",
+                "secondary-fixed": "#d7e3ff",
+                "surface-dim": "#001232",
+                "on-error": "#690005",
+                "surface-variant": "#233456",
+                "surface-container-lowest": "#000d28",
+                "primary-fixed": "#e2e2e2",
+                "on-primary-fixed-variant": "#454747",
+                "tertiary-container": "#470009",
+                "error-container": "#93000a",
+                "secondary-fixed-dim": "#b4c7ee",
+                "surface": "#001232"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Manrope"],
+                "label": ["Manrope"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #001232; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(40, 57, 91, 0.4); backdrop-filter: blur(12px); }
+        .ghost-border { outline: 1px solid rgba(68, 71, 78, 0.2); }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<header class="bg-[#001232] text-[#e2e2e2] docked full-width top-0 z-50 bg-[#0c1f40] transition-colors duration-300 flat no shadows flex justify-between items-center w-full px-8 py-4 max-w-none">
+<div class="text-2xl font-black tracking-tighter text-white uppercase">THE ATELIER</div>
+<nav class="hidden md:flex items-center space-x-8 uppercase tracking-widest text-[10px] font-bold">
+<a class="text-[#c5c6cf] hover:text-white transition-colors" href="#">Home</a>
+<a class="text-[#c5c6cf] hover:text-white transition-colors" href="#">Products</a>
+<a class="text-[#c5c6cf] hover:text-white transition-colors" href="#">Categories</a>
+<a class="text-[#c5c6cf] hover:text-white transition-colors" href="#">About</a>
+</nav>
+<div class="flex items-center space-x-6">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container border-none rounded-full py-2 pl-10 pr-4 text-[10px] tracking-widest focus:ring-1 focus:ring-primary-fixed w-64 uppercase" placeholder="SEARCH COLLECTION" type="text"/>
+</div>
+<div class="flex items-center space-x-4">
+<button class="hover:bg-[#28395b]/40 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+<button class="hover:bg-[#28395b]/40 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<button class="hover:bg-[#28395b]/40 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex min-h-screen pt-2">
+<!-- Invoice Content Area - Now expanded and centered -->
+<section class="flex-1 px-8 py-12 max-w-5xl mx-auto space-y-10 w-full">
+<!-- Invoice Header Card -->
+<div class="glass-card ghost-border rounded-xl p-8 flex flex-col md:flex-row justify-between items-start md:items-center">
+<div class="space-y-2">
+<div class="flex items-center space-x-3">
+<h1 class="text-3xl font-headline font-extrabold tracking-tighter text-white">Invoice</h1>
+<span class="bg-[#00c853]/20 text-[#00c853] text-[10px] font-bold px-3 py-1 rounded-full border border-[#00c853]/30 tracking-widest uppercase shadow-[0_0_15px_rgba(0,200,83,0.3)]">PAID</span>
+</div>
+<p class="text-on-surface-variant text-sm font-medium">Order invoice details for your recent purchase</p>
+<div class="grid grid-cols-2 gap-x-8 gap-y-1 pt-4 text-xs tracking-wider uppercase">
+<span class="text-on-surface-variant">Invoice ID:</span>
+<span class="text-white font-bold">INV-2024-9981</span>
+<span class="text-on-surface-variant">Order ID:</span>
+<span class="text-white font-bold">ORD-2024-5542</span>
+<span class="text-on-surface-variant">Invoice Date:</span>
+<span class="text-white font-bold">Nov 15, 2024</span>
+<span class="text-on-surface-variant">Payment:</span>
+<span class="text-white font-bold">Credit Card (**** 4242)</span>
+</div>
+</div>
+<div class="mt-6 md:mt-0">
+<button class="bg-primary-fixed text-on-primary-fixed px-6 py-3 rounded-full text-xs font-bold tracking-widest uppercase flex items-center space-x-2 hover:bg-primary transition-all shadow-xl">
+<span class="material-symbols-outlined text-lg">download</span>
+<span>Download Invoice</span>
+</button>
+</div>
+</div>
+<!-- Tracking Section -->
+<div class="space-y-6">
+<h2 class="text-xs font-bold tracking-widest text-on-surface-variant uppercase flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">local_shipping</span>
+<span>Order Journey</span>
+</h2>
+<div class="relative px-4">
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-container-highest -translate-y-1/2"></div>
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-primary transition-all duration-500 -translate-y-1/2"></div>
+<div class="relative flex justify-between">
+<div class="flex flex-col items-center space-y-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center z-10 shadow-[0_0_15px_rgba(198,198,199,0.4)]">
+<span class="material-symbols-outlined text-background text-sm font-bold">check</span>
+</div>
+<span class="text-[10px] font-bold text-white tracking-widest uppercase">Placed</span>
+</div>
+<div class="flex flex-col items-center space-y-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center z-10 shadow-[0_0_15px_rgba(198,198,199,0.4)]">
+<span class="material-symbols-outlined text-background text-sm font-bold">check</span>
+</div>
+<span class="text-[10px] font-bold text-white tracking-widest uppercase">Processing</span>
+</div>
+<div class="flex flex-col items-center space-y-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center z-10 shadow-[0_0_15px_rgba(198,198,199,0.4)]">
+<span class="material-symbols-outlined text-background text-sm font-bold">check</span>
+</div>
+<span class="text-[10px] font-bold text-white tracking-widest uppercase">Shipped</span>
+</div>
+<div class="flex flex-col items-center space-y-3">
+<div class="w-10 h-10 -mt-1 rounded-full bg-primary border-4 border-background flex items-center justify-center z-10 shadow-[0_0_20px_rgba(198,198,199,0.6)]">
+<span class="material-symbols-outlined text-background text-md font-black">home</span>
+</div>
+<span class="text-[10px] font-bold text-white tracking-widest uppercase">Delivered</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Ordered Items Section -->
+<div class="space-y-6">
+<h2 class="text-xs font-bold tracking-widest text-on-surface-variant uppercase">Shipment Manifest</h2>
+
+
+<!-- Quantity + Cancel / Return Status -->
+<div class="flex flex-wrap gap-3 mt-3 text-[11px] uppercase tracking-widest">
+
+    <span class="px-3 py-1 rounded-full bg-surface-container text-white border border-outline-variant">
+        Ordered : {{ item.quantity }}
+    </span>
+
+    {% if item.cancelled_quantity > 0 %}
+    <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-400/30">
+        Cancelled : {{ item.cancelled_quantity }}
+    </span>
+    {% endif %}
+
+    {% if item.returned_quantity > 0 %}
+    <span class="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-200 border border-yellow-400/30">
+        Returned : {{ item.returned_quantity }}
+    </span>
+    {% endif %}
+
+    <span class="px-3 py-1 rounded-full bg-green-500/20 text-green-300 border border-green-400/30">
+        Active :
+        {{ item.quantity|add:"-"|add:item.cancelled_quantity|add:"-"|add:item.returned_quantity }}
+    </span>
+
+</div>
+
+
+
+<div class="space-y-4">
+<!-- Item 1 -->
+<div class="glass-card ghost-border rounded-xl p-4 flex items-center justify-between">
+<div class="flex items-center space-x-6">
+<div class="w-24 h-28 rounded-lg overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="High-fashion midnight blue tailored overcoat displayed on a minimalist background with soft shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuVLIxr1DlXIDVESYQlCZ_pCZR2Q1Qg7iCInsnHtVvVdsoN919hf88EG66HNGvkaF8dAkeYpNdNn8PvNMvHr8FnNk1SQIzV7AqxjSrFtyOX7DuwFp_Mqjqh5oqdqfdctwfXvAi9T2FMxAqb75621RjgPcTEk2mAhueICEUuTEdA4VVWrwej-eLLXNgSDWkWdz6FsH_wfnk2NMBKYWfd6o6YhaqJcVkVpagZ3bS440V8i9cc1sFLu_QsdUlS6MYAvlDz9bPvePxSyse"/>
+</div>
+<div>
+<h4 class="text-white font-headline font-bold text-lg">Atelier Midnight Coat</h4>
+<div class="flex space-x-4 mt-2 text-xs text-on-surface-variant font-medium uppercase tracking-widest">
+<span>Size: L</span>
+<span>Qty: 1</span>
+</div>
+<p class="text-primary-fixed-dim font-bold mt-2">$250.00</p>
+</div>
+</div>
+<div class="text-right hidden sm:block">
+<p class="text-on-surface-variant text-[10px] tracking-widest uppercase mb-1">Total</p>
+<p class="text-white font-extrabold text-xl">$250.00</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="glass-card ghost-border rounded-xl p-4 flex items-center justify-between">
+<div class="flex items-center space-x-6">
+<div class="w-24 h-28 rounded-lg overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Bespoke tailored wool trousers in deep charcoal, flat lay with elegant texture lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzlWKK3KzL-2lgfdCHghoOxFLUF-7caQxz_l2V6hsQt3TBO958N2_jRVomcdbqCIVTRK1L7TByjvBdqiyZHMe4O64JZHmIqdZR1055I48k8pUteavq9IvEAnr9IJvF4c6oK8uZpMCJeprj-ELa-rFB46ytsufz3MsAZFpNVupvCAi47crvzMarqA7UspeGwkj3bDICisoda4coZGMx5CqsCgq6gCcJUicd21mYhJ_mKrQneMtpwsxP_KAIzQ5Plt9vf6Qo-ipbjB4a"/>
+</div>
+<div>
+<h4 class="text-white font-headline font-bold text-lg">Tailored Wool Trousers</h4>
+<div class="flex space-x-4 mt-2 text-xs text-on-surface-variant font-medium uppercase tracking-widest">
+<span>Size: M</span>
+<span>Qty: 1</span>
+</div>
+<p class="text-primary-fixed-dim font-bold mt-2">$128.00</p>
+</div>
+</div>
+<div class="text-right hidden sm:block">
+<p class="text-on-surface-variant text-[10px] tracking-widest uppercase mb-1">Total</p>
+<p class="text-white font-extrabold text-xl">$128.00</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Address Section -->
+<div class="grid md:grid-cols-2 gap-6">
+<div class="glass-card ghost-border rounded-xl p-6 space-y-4">
+<h3 class="text-xs font-bold tracking-widest text-on-surface-variant uppercase flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Shipping Address</span>
+</h3>
+<div class="space-y-1">
+<p class="text-white font-bold">Alexander Sterling</p>
+<p class="text-on-surface-variant text-sm">248 Luxury Avenue, Suite 10</p>
+<p class="text-on-surface-variant text-sm">Metropolis, NY 10001</p>
+<p class="text-on-surface-variant text-sm">United States</p>
+<p class="text-on-surface-variant text-sm mt-2">+1 (555) 012-3456</p>
+</div>
+</div>
+<div class="glass-card ghost-border rounded-xl p-6 space-y-4">
+<h3 class="text-xs font-bold tracking-widest text-on-surface-variant uppercase flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">receipt_long</span>
+<span>Billing Address</span>
+</h3>
+<div class="space-y-1">
+<p class="text-white font-bold">Alexander Sterling</p>
+<p class="text-on-surface-variant text-sm">248 Luxury Avenue, Suite 10</p>
+<p class="text-on-surface-variant text-sm">Metropolis, NY 10001</p>
+<p class="text-on-surface-variant text-sm">United States</p>
+<p class="text-on-surface-variant text-sm mt-2">+1 (555) 012-3456</p>
+</div>
+</div>
+</div>
+<!-- Price Summary Section -->
+<div class="flex justify-end">
+<div class="w-full md:w-80 glass-card ghost-border rounded-xl p-8 space-y-4">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Subtotal</span>
+<span class="text-white font-medium">$378.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Discount</span>
+<span class="text-tertiary">-$20.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<div class="flex flex-col">
+<span class="text-on-surface-variant">Coupon</span>
+<span class="text-[10px] text-primary-fixed-dim uppercase tracking-tighter">STYLE123 Applied</span>
+</div>
+<span class="text-tertiary">-$10.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Delivery</span>
+<span class="text-[#00c853] font-bold uppercase tracking-widest text-[10px]">FREE</span>
+</div>
+<div class="pt-4 border-t border-outline-variant flex justify-between items-end">
+<span class="text-xs font-bold tracking-widest text-on-surface-variant uppercase">Total Amount</span>
+<span class="text-white font-headline font-black text-3xl tracking-tighter">$348.00</span>
+</div>
+</div>
+</div>
+<!-- Invoice Footer Section -->
+<footer class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-outline-variant space-y-6 md:space-y-0">
+<div class="text-center md:text-left">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest leading-loose">This is a system-generated invoice. No physical signature required.</p>
+<p class="text-xs font-bold text-white mt-1 uppercase tracking-widest">Thank you for shopping with STYLE-HUB</p>
+</div>
+<div class="flex flex-wrap justify-center gap-4">
+<button class="px-6 py-3 rounded-full border border-outline-variant text-on-surface-variant text-[10px] font-bold tracking-widest uppercase hover:bg-surface-container transition-all flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">print</span>
+<span>Print Invoice</span>
+</button>
+<button class="px-6 py-3 rounded-full border border-outline-variant text-on-surface-variant text-[10px] font-bold tracking-widest uppercase hover:bg-surface-container transition-all flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span>Back to Orders</span>
+</button>
+<button class="px-6 py-3 rounded-full bg-white text-[#001232] text-[10px] font-bold tracking-widest uppercase hover:opacity-90 transition-all flex items-center space-x-2 shadow-lg">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Download PDF</span>
+</button>
+</div>
+</footer>
+</section>
+</main>
+</body></html>

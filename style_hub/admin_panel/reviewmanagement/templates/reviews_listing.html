@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style-Hub Admin | Review Management</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+
+<body class="flex min-h-screen text-gray-900">
+
+    <!-- Sidebar -->
+    {% include 'admin_sidebar.html' %}
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full max-w-full flex flex-col min-h-screen">
+
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-gray-50 flex items-center justify-between px-10">
+
+            <div class="relative w-96">
+                <i class="fas fa-search absolute left-0 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+
+                <input
+                    type="text"
+                    placeholder="Global system search..."
+                    class="w-full pl-8 py-2 text-xs border-none focus:ring-0 placeholder-gray-300 font-medium"
+                >
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <div class="h-8 w-8 rounded-full border-2 border-black flex items-center justify-center">
+                    <i class="fas fa-user text-[10px]"></i>
+                </div>
+
+                <span class="text-[11px] font-black uppercase tracking-widest">
+                    {{ request.user.username }}
+                </span>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="p-10 max-w-7xl mx-auto w-full">
+
+            {% include 'toast.html' %}
+
+            <!-- Title Section -->
+            <div class="mb-12">
+                <p class="stat-label mb-1">
+                    Customer Feedback
+                </p>
+
+                <div class="flex justify-between items-center">
+
+                    <h2 class="text-4xl font-black tracking-tight">
+                        Reviews
+                    </h2>
+
+                    <a
+                        href="{% url 'admin_dashboard' %}"
+                        class="bg-black text-white px-10 py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition"
+                    >
+                        Back to Dashboard
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- Filter Form -->
+            <form
+                method="GET"
+                class="bg-gray-50 p-6 rounded-sm mb-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-end"
+            >
+
+                <!-- Search -->
+               <div class="md:col-span-6">
+
+    <label class="block text-[10px] font-black uppercase text-gray-400 mb-2">
+        Search Reviews
+    </label>
+
+    <div class="relative">
+
+        <!-- SEARCH ICON -->
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="fas fa-search text-gray-400 text-xs"></i>
+        </div>
+
+        <!-- INPUT -->
+        <input
+            id="searchInput"
+            type="text"
+            name="search"
+            value="{{ search }}"
+            placeholder="Search by product, username, title, or content..."
+            class="w-full bg-white border border-gray-200 text-xs pl-9 pr-10 py-2.5 rounded-sm focus:outline-none focus:border-black font-semibold"
+        >
+
+        <!-- CLEAR ICON -->
+        {% if search %}
+        <button
+            type="button"
+            onclick="clearSearch()"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center"
+        >
+            <i class="fas fa-times text-gray-400 hover:text-black text-xs"></i>
+        </button>
+        {% endif %}
+
+    </div>
+</div>
+
+                <!-- Rating Filter -->
+                <div class="md:col-span-3">
+
+                    <label class="block text-[10px] font-black uppercase text-gray-400 mb-2">
+                        Rating
+                    </label>
+
+                    <select
+                        name="rating"
+                        class="w-full bg-white border border-gray-200 text-xs px-3 py-2.5 rounded-sm focus:outline-none focus:border-black font-semibold"
+                    >
+                        <option value="">All Ratings</option>
+
+                        <option value="5" {% if rating_filter == '5' %}selected{% endif %}>
+                            5 Stars
+                        </option>
+
+                        <option value="4" {% if rating_filter == '4' %}selected{% endif %}>
+                            4 Stars
+                        </option>
+
+                        <option value="3" {% if rating_filter == '3' %}selected{% endif %}>
+                            3 Stars
+                        </option>
+
+                        <option value="2" {% if rating_filter == '2' %}selected{% endif %}>
+                            2 Stars
+                        </option>
+
+                        <option value="1" {% if rating_filter == '1' %}selected{% endif %}>
+                            1 Star
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Filter Button -->
+                <div class="md:col-span-3">
+
+                    <button
+                        type="submit"
+                        class="w-full bg-black text-white py-2.5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition rounded-sm"
+                    >
+                        Filter
+                    </button>
+
+                </div>
+            </form>
+
+            <!-- Reviews Table -->
+            <div class="overflow-x-auto bg-white border border-gray-100 rounded-sm">
+
+                <table class="w-full text-left">
+
+                    <!-- Table Head -->
+                    <thead>
+                        <tr class="text-[10px] font-black text-gray-300 uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
+
+                            <th class="py-4 px-6">Product</th>
+                            <th class="py-4 px-6">Customer</th>
+                            <th class="py-4 px-6">Rating</th>
+                            <th class="py-4 px-6">Review Content</th>
+                            <th class="py-4 px-6">Images</th>
+                            <th class="py-4 px-6 text-center">Date</th>
+                            <th class="py-4 px-6 text-right">Actions</th>
+
+                        </tr>
+                    </thead>
+
+                    <!-- Table Body -->
+                    <tbody class="text-[11px]">
+
+                        {% for review in reviews %}
+
+                        <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
+
+                            <!-- Product -->
+                            <td class="py-5 px-6 font-bold">
+
+                                <span class="text-xs text-gray-800">
+                                    {{ review.product.product_name }}
+                                </span>
+
+                                <p class="text-[9px] text-gray-400 font-normal">
+                                    ID: #PRD-{{ review.product.id }}
+                                </p>
+
+                            </td>
+
+                            <!-- Customer -->
+                            <td class="py-5 px-6 font-bold">
+
+                                {{ review.user.username }}
+
+                                <p class="text-[9px] text-gray-400 font-normal">
+                                    {{ review.user.email }}
+                                </p>
+
+                            </td>
+
+                            <!-- Rating -->
+                            <td class="py-5 px-6">
+
+                                <div class="flex text-amber-400">
+
+                                    {% for i in "12345" %}
+
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star text-xs"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-xs text-gray-300"></i>
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </td>
+
+                            <!-- Review -->
+                            <td class="py-5 px-6 max-w-sm">
+
+                                <p class="font-bold text-gray-800 text-[12px] mb-1">
+                                    {{ review.title }}
+                                </p>
+
+                                <p class="text-gray-500 font-medium leading-relaxed">
+                                    {{ review.content }}
+                                </p>
+
+                            </td>
+
+                            <!-- Images -->
+                            <td class="py-5 px-6">
+
+                                <div class="flex gap-2">
+
+                                    {% for img in review.images.all %}
+
+                                    <a
+                                        href="{{ img.image.url }}"
+                                        target="_blank"
+                                        class="w-8 h-10 border border-gray-100 rounded-sm overflow-hidden flex items-center justify-center bg-gray-50 hover:opacity-80 transition-opacity"
+                                    >
+                                        <img
+                                            src="{{ img.image.url }}"
+                                            class="w-full h-full object-cover"
+                                        >
+                                    </a>
+
+                                    {% empty %}
+
+                                    <span class="text-gray-300">-</span>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </td>
+
+                            <!-- Date -->
+                            <td class="py-5 px-6 text-center text-gray-500 font-medium whitespace-nowrap">
+                                {{ review.created_at|date:"d M Y, h:i A" }}
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="py-5 px-6 text-right">
+
+                                <a
+                                    href="{% url 'delete_review' review.id %}"
+                                    data-confirm="Are you sure you want to delete this review?"
+                                    class="text-red-500 hover:text-red-700 font-bold uppercase tracking-wider text-[10px]"
+                                >
+                                    Delete
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td
+                                colspan="7"
+                                class="py-10 text-center text-gray-400 font-bold text-xs uppercase"
+                            >
+                                No reviews found in the system
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if reviews.has_other_pages %}
+
+            <div class="mt-8 flex items-center justify-between border-t border-gray-100 pt-8 pb-20">
+
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}
+                </p>
+
+                <div class="flex space-x-2 text-[10px] font-black uppercase">
+
+                    {% if reviews.has_previous %}
+
+                    <a
+                        href="?page={{ reviews.previous_page_number }}&search={{ search }}&rating={{ rating_filter }}"
+                        class="px-4 py-2 border border-gray-100 hover:border-black transition"
+                    >
+                        Previous
+                    </a>
+
+                    {% endif %}
+
+                    {% if reviews.has_next %}
+
+                    <a
+                        href="?page={{ reviews.next_page_number }}&search={{ search }}&rating={{ rating_filter }}"
+                        class="px-4 py-2 border border-gray-100 hover:border-black transition"
+                    >
+                        Next
+                    </a>
+
+                    {% endif %}
+
+                </div>
+            </div>
+
+            {% endif %}
+
+        </div>
+    </main>
+
+<script>
+function clearSearch() {
+    window.location.href = window.location.pathname;
+}
+</script>
+
+
+</body>
+</html>

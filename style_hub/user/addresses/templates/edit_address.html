@@ -232,22 +232,27 @@
 </div>
 </main>
 <!-- Edit Address Popup Modal (Visible by default for demonstration) -->
-<div class="fixed inset-0 z-[100] flex items-center justify-center px-4 overflow-y-auto">
-<!-- Backdrop -->
+<div class="fixed inset-0 z-[100] overflow-y-auto">
+  <!-- Backdrop -->
 <div class="fixed inset-0 bg-surface-container-lowest/90 backdrop-blur-sm"></div>
+<div class="relative min-h-screen flex items-start md:items-center justify-center p-3 sm:p-6">
 <!-- Modal Content -->
-<div class="relative w-full max-w-2xl bg-surface-container-high rounded-2xl shadow-[0px_40px_80px_rgba(0,0,0,0.6)] overflow-hidden border border-outline-variant/20 my-8">
-<!-- Close Icon -->
-<button class="absolute top-6 right-6 text-on-surface-variant hover:text-white transition-colors">
+<div class="relative w-full max-w-2xl bg-surface-container-high rounded-2xl shadow-[0px_40px_80px_rgba(0,0,0,0.6)] border border-outline-variant/20 my-6 md:my-8">
+  <!-- Close Icon -->
+<a href="{% if next == 'checkout' %}{% url 'checkout' %}{% else %}{% url 'address_page' %}{% endif %}" class="absolute top-6 right-6 text-on-surface-variant hover:text-white transition-colors">
 <span class="material-symbols-outlined text-2xl">close</span>
-</button>
+</a>
 <div class="p-8 md:p-12">
 <div class="mb-10">
 <h2 class="text-3xl font-extrabold text-white tracking-tight">Edit Address</h2>
 <p class="text-on-surface-variant mt-1">Update your saved address details for accurate deliveries.</p>
 </div>
+
+<!-- Messages -->
+{% include 'toast.html' %}
 <form method="POST" action="{% url 'edit_address' address.id %}" class="px-8 pb-2 space-y-1">
     {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 <!-- Full Name -->
 <div class="space-y-1.5">
@@ -320,15 +325,7 @@
     </div>
 </div>
 <!-- Default Checkbox -->
-<label class="flex items-center space-x-3 cursor-pointer group w-fit">
-<div class="relative">
-<input class="peer hidden" type="checkbox" name="is_default" value="{{address.is_default}}"/>
-<div class="w-5 h-5 border-2 border-outline rounded flex items-center justify-center peer-checked:bg-primary peer-checked:border-primary transition-all">
-<span class="material-symbols-outlined text-on-primary text-[14px] hidden peer-checked:block" style="font-variation-settings: 'wght' 700;">check</span>
-</div>
-</div>
-<span class="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Set as default address</span>
-</label>
+
 <!-- Modal Footer Buttons -->
 <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 pt-6">
 
@@ -338,7 +335,7 @@
     </button>
 
     <!-- CANCEL (convert to a tag) -->
-    <a href="{% url 'address_page' %}"
+    <a href="{% if next == 'checkout' %}{% url 'checkout' %}{% else %}{% url 'address_page' %}{% endif %}"
        class="flex-1 border border-outline-variant/40 text-on-surface py-4 rounded-full font-extrabold tracking-widest text-sm hover:bg-surface-bright/20 transition-all text-center flex items-center justify-center">
         CANCEL
     </a>
@@ -348,18 +345,6 @@
 </div>
 </div>
 </div>
-<!-- Footer Implementation from JSON -->
-<footer class="bg-[#001232] w-full py-12 border-t border-[#44474e]/20 mt-20">
-<div class="flex flex-col md:flex-row justify-between items-center px-12 w-full max-w-screen-2xl mx-auto space-y-6 md:space-y-0">
-<div class="text-lg font-bold text-white">STYLE-HUB</div>
-<div class="flex flex-wrap justify-center gap-8 text-sm font-manrope text-[#c5c6cf]">
-<a class="hover:text-white transition-opacity" href="#">Privacy Policy</a>
-<a class="hover:text-white transition-opacity" href="#">Terms of Service</a>
-<a class="hover:text-white transition-opacity" href="#">Support</a>
 </div>
-<div class="text-sm font-manrope text-[#c5c6cf]">
-        © 2024 STYLE-HUB. All rights reserved.
-      </div>
-</div>
-</footer>
+
 </body></html>
