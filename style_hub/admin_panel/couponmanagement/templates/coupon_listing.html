@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Style-Hub | Coupon Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -85,6 +85,10 @@
                 <tr class="table-header">
                     <th class="py-4 px-4">Coupon Code</th>
                     <th class="py-4 px-4">Title</th>
+
+                    <!-- ✅ ADDED -->
+                    <th class="py-4 px-4">Description</th>
+
                     <th class="py-4 px-4">Discount</th>
                     <th class="py-4 px-4">Min Spend</th>
                     <th class="py-4 px-4">Max Discount</th>
@@ -98,6 +102,7 @@
             <tbody class="divide-y divide-gray-50">
                 {% for coupon in coupons %}
                 <tr class="group hover:bg-gray-50/50 transition-all">
+
                     <td class="py-6 px-4">
                         <span class="bg-gray-100 text-black px-3 py-1 font-black text-xs uppercase tracking-wider rounded-sm border border-gray-200">
                             {{ coupon.code }}
@@ -107,6 +112,11 @@
 
                     <td class="py-6 px-4 text-sm font-medium text-gray-700">
                         {{ coupon.title }}
+                    </td>
+
+                    <!-- ✅ ADDED FIELD -->
+                    <td class="py-6 px-4 text-sm text-gray-600">
+                        {{ coupon.description }}
                     </td>
 
                     <td class="py-6 px-4 text-sm font-extrabold text-black">
@@ -157,55 +167,22 @@
                             Edit
                         </a>
                         <a href="{% url 'delete_coupon' coupon.id %}"
-                           onclick="return confirm('Are you sure you want to delete this coupon?')"
+                           data-confirm="Are you sure you want to delete this coupon?"
                            class="text-[10px] font-black uppercase tracking-widest text-red-500 hover:underline">
                             Delete
                         </a>
                     </td>
+
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="9" class="py-12 text-center text-gray-400 text-xs font-bold uppercase tracking-widest">
+                    <td colspan="10" class="py-12 text-center text-gray-400 text-xs font-bold uppercase tracking-widest">
                         No Coupons Found
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-
-        <!-- PAGINATION -->
-        {% if coupons.paginator.num_pages > 1 %}
-        <footer class="flex justify-between items-center mt-12 border-t border-gray-100 pt-8">
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                Showing page {{ coupons.number }} of {{ coupons.paginator.num_pages }}
-            </p>
-            <div class="flex items-center space-x-3">
-                {% if coupons.has_previous %}
-                    <a href="?page={{ coupons.previous_page_number }}&search={{ search }}" class="text-gray-300 hover:text-black transition-all">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </a>
-                {% endif %}
-                <div class="flex items-center space-x-1">
-                    {% for num in coupons.paginator.page_range %}
-                        {% if coupons.number == num %}
-                            <div class="w-9 h-9 bg-black flex items-center justify-center rounded-sm">
-                                <span class="text-white font-bold text-xs">{{ num }}</span>
-                            </div>
-                        {% else %}
-                            <a href="?page={{ num }}&search={{ search }}" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-black font-bold text-xs transition-all">
-                                {{ num }}
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                {% if coupons.has_next %}
-                    <a href="?page={{ coupons.next_page_number }}&search={{ search }}" class="text-gray-400 hover:text-black transition-all">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </a>
-                {% endif %}
-            </div>
-        </footer>
-        {% endif %}
 
     </main>
 </body>

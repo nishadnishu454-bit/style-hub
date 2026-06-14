@@ -141,14 +141,37 @@ def update_status(request, id):
             order.save()
 
             if new_status in ['Cancelled', 'Returned'] and old_status not in ['Cancelled', 'Returned', 'Return Requested']:
+                from decimal import Decimal
+                if order.payment_status in ['Completed', 'completed'] and order.total_amount > 0:
+                    credit_wallet(
+                        user=order.user,
+                        amount=order.total_amount.quantize(Decimal('0.01')),
+                        purpose=f'Order {new_status} Refund',
+                        order=order
+                    )
+                    order.payment_status = 'Refunded'
+
                 for item in order.items.all():
                     if item.item_status not in ['Cancelled', 'Returned']:
-                        if item.variant:
-                            item.variant.variant_stock += item.quantity
-                            item.variant.save()
-
+                        active_qty = item.quantity - item.cancelled_quantity - item.returned_quantity
+                        if active_qty > 0:
+                            if item.variant:
+                                item.variant.variant_stock += active_qty
+                                item.variant.save()
+                            
+                            if new_status == 'Cancelled':
+                                item.cancelled_quantity += active_qty
+                            elif new_status == 'Returned':
+                                item.returned_quantity += active_qty
+                                
                         item.item_status = new_status
+                        item.total_price = Decimal('0.00')
                         item.save()
+                        
+                order.subtotal = Decimal('0.00')
+                order.discount_amount = Decimal('0.00')
+                order.total_amount = Decimal('0.00')
+                order.save()
             else:
                 order.items.exclude(
                     item_status__in=['Cancelled', 'Returned', 'Return Requested']
@@ -191,6 +214,18 @@ def return_requests(request):
             Q(order__user__username__icontains=search)
         )
 
+    import re
+    from decimal import Decimal
+
+    for item in items:
+        qty_to_return = item.quantity - item.cancelled_quantity - item.returned_quantity
+        match = re.match(r'^\[Qty:\s*(\d+)\]\s*(.*)', item.reason or '')
+        if match:
+            qty_to_return = int(match.group(1))
+        
+        # Calculate accurate refund amount quantity-wise
+        item.total_price = (item.price * Decimal(qty_to_return)).quantize(Decimal('0.01'))
+
     context = {
         'orders': orders,
         'items': items,
@@ -219,52 +254,98 @@ def approve_return(request):
                     messages.error(request, 'This item is not requested for return')
                     return redirect('return_requests')
 
-                item.item_status = 'Returned'
+                import re
+                from decimal import Decimal
+                qty_to_approve = item.remaining_quantity()
+                match = re.match(r'^\[Qty:\s*(\d+)\]\s*(.*)', item.reason or '')
+                if match:
+                    qty_to_approve = int(match.group(1))
+
+                item.returned_quantity += qty_to_approve
+                remaining_qty = item.quantity - item.cancelled_quantity - item.returned_quantity
+                if remaining_qty == 0:
+                    item.item_status = 'Returned'
+                else:
+                    item.item_status = 'Partially Returned'
+
+                item.total_price = item.price * remaining_qty
                 item.save()
 
                 if item.variant:
-                    item.variant.variant_stock += item.quantity
+                    item.variant.variant_stock += qty_to_approve
                     item.variant.save()
-
-                if item.order.payment_status in ['Completed','completed']:
-                    from decimal import Decimal
-                    order = item.order
-                    refund_amount = Decimal(str(item.price * item.quantity))
-
-                    if order.discount_amount > 0 and order.subtotal > 0:
-                        item_discount = (refund_amount / order.subtotal) * order.discount_amount
-                        refund_amount = refund_amount - item_discount
-                    
-                    refund_amount = refund_amount.quantize(Decimal('0.01'))
-
-                    credit_wallet(
-                        user=item.order.user,
-                        amount=refund_amount,
-                        purpose='Return Refund',
-                        order=item.order
-                    )
 
                 order = item.order
 
-                remaining_items = order.items.exclude(item_status__in=['Returned', 'Cancelled'])
-                if remaining_items.exists():
-                    from decimal import Decimal
-                    new_subtotal = sum(i.total_price for i in remaining_items)
-                    new_discount = Decimal('0.00')
-                    if order.discount_amount > 0 and order.subtotal > 0:
-                        new_discount = (new_subtotal / order.subtotal) * order.discount_amount
-                    new_total = new_subtotal - new_discount + order.delivery_charge
-                    order.subtotal = new_subtotal
-                    order.discount_amount = new_discount
-                    order.total_amount = max(new_total, Decimal('0.00')).quantize(Decimal('0.01'))
-                else:
-                    from decimal import Decimal
+                # Check if all items in order are now inactive
+                all_inactive = True
+                for order_item in order.items.all():
+                    rem_qty = (
+                        order_item.quantity
+                        - order_item.cancelled_quantity
+                        - order_item.returned_quantity
+                    )
+                    if rem_qty > 0:
+                        all_inactive = False
+                        break
+
+                refund_amount = Decimal('0.00')
+
+                if all_inactive:
+                    if order.payment_status in ['Completed', 'completed']:
+                        refund_amount = order.total_amount.quantize(Decimal('0.01'))
+                        credit_wallet(
+                            user=order.user,
+                            amount=refund_amount,
+                            purpose='Return Refund',
+                            order=order
+                        )
+                        order.payment_status = 'Refunded'
                     order.order_status = 'Returned'
-                    order.payment_status = 'Refunded'
                     order.subtotal = Decimal('0.00')
                     order.discount_amount = Decimal('0.00')
                     order.total_amount = Decimal('0.00')
-                order.save()
+                    order.save()
+                else:
+                    returned_value = item.price * Decimal(qty_to_approve)
+                    new_subtotal = order.subtotal - returned_value
+                    
+                    new_discount = Decimal('0.00')
+                    if order.discount_amount > 0 and order.subtotal > 0:
+                        if order.coupon and new_subtotal < order.coupon.min_purchase:
+                            # Coupon is invalidated
+                            new_discount = Decimal('0.00')
+                        else:
+                            new_discount = order.discount_amount - (
+                                returned_value / order.subtotal
+                            ) * order.discount_amount
+
+                    new_total = max(
+                        new_subtotal
+                        - new_discount
+                        + order.delivery_charge,
+                        Decimal('0.00')
+                    )
+
+                    refund_amount = order.total_amount - new_total
+                    if refund_amount < 0:
+                        refund_amount = Decimal('0.00')
+                        new_total = order.total_amount
+
+                    refund_amount = refund_amount.quantize(Decimal('0.01'))
+
+                    if order.payment_status in ['Completed', 'completed'] and refund_amount > 0:
+                        credit_wallet(
+                            user=order.user,
+                            amount=refund_amount,
+                            purpose='Return Refund',
+                            order=order
+                        )
+
+                    order.subtotal = new_subtotal
+                    order.discount_amount = new_discount.quantize(Decimal('0.01'))
+                    order.total_amount = new_total.quantize(Decimal('0.01'))
+                    order.save()
 
                 messages.success(request, f'Return approved and refund processed for item: {item.product_name}')
 
@@ -278,32 +359,34 @@ def approve_return(request):
                     messages.error(request, 'This order is not requested for return')
                     return redirect('return_requests')
 
-                order.order_status = 'Returned'
-                order.save()
-
+                from decimal import Decimal
+                # Mark all items that are in 'Return Requested' status as 'Returned'
                 for item in order.items.all():
                     if item.item_status == 'Return Requested':
+                        qty_to_return = item.quantity - item.cancelled_quantity - item.returned_quantity
+                        item.returned_quantity += qty_to_return
                         item.item_status = 'Returned'
+                        item.total_price = Decimal('0.00')
                         item.save()
 
                         if item.variant:
-                            item.variant.variant_stock += item.quantity
+                            item.variant.variant_stock += qty_to_return
                             item.variant.save()
 
-                if order.payment_status == 'Completed':
-                    from decimal import Decimal
+                if order.payment_status in ['Completed', 'completed']:
                     credit_wallet(
                         user=order.user,
-                        amount=order.total_amount,
+                        amount=order.total_amount.quantize(Decimal('0.01')),
                         purpose='Return Refund',
                         order=order
                     )
-
                     order.payment_status = 'Refunded'
-                    order.subtotal = Decimal('0.00')
-                    order.discount_amount = Decimal('0.00')
-                    order.total_amount = Decimal('0.00')
-                    order.save()
+
+                order.order_status = 'Returned'
+                order.subtotal = Decimal('0.00')
+                order.discount_amount = Decimal('0.00')
+                order.total_amount = Decimal('0.00')
+                order.save()
 
                 messages.success(request, f'Return approved and refund processed for order: {order.order_number}')
 

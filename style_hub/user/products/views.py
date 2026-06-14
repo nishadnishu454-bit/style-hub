@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from admin_panel.productmanagement.models import Product, ProductVariant
+from admin_panel.productmanagement.models import Product
+from admin_panel.variantmanagement.models import ProductVariant
 from admin_panel.categorymanagement.models import Category
 from user.cart.models import Cart
 from user.whishlist.models import Wishlist

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from admin_panel.productmanagement.models import ProductVariant
+from admin_panel.variantmanagement.models import ProductVariant
 from user.cart.models import Cart
 from .models import Wishlist
 

@@ -248,207 +248,210 @@
 
                 </div>
 
-                <!-- CANCELLED ITEMS -->
-                <div class="space-y-6">
+<!-- CANCELLED ITEMS -->
+<div class="space-y-6">
 
-                    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
 
-                        <div>
-                            <h2 class="text-2xl font-bold text-white">
-                                Cancelled Items
-                            </h2>
+        <div>
+            <h2 class="text-2xl font-bold text-white">
+                Cancelled Items
+            </h2>
 
-                            <p class="text-muted text-sm mt-1">
-                                Order #{{ cancelled_order.order_number }}
+            <p class="text-muted text-sm mt-1">
+                Order #{{ cancelled_order.order_number }}
+            </p>
+        </div>
+
+        <div class="hidden md:flex items-center gap-2 text-sm text-muted">
+
+            <span class="material-symbols-outlined text-base">
+                calendar_today
+            </span>
+
+            {{ cancelled_order.updated_at|date:"F d, Y" }}
+
+        </div>
+
+    </div>
+
+    <!-- ITEMS LOOP -->
+    <div class="space-y-5">
+
+        {% for item in cancelled_order.items.all %}
+
+        {% if item.cancelled_quantity > 0 %}
+
+        <div
+            class="glass rounded-2xl border border-white/5 overflow-hidden flex flex-col md:flex-row">
+
+            <!-- IMAGE -->
+            <div class="w-full md:w-56 h-60 md:h-auto bg-[#09162d] overflow-hidden">
+
+                {% if item.variant and item.variant.images.first %}
+
+                <img src="{{ item.variant.images.first.image.url }}"
+                    alt="{{ item.product_name }}"
+                    class="w-full h-full object-cover">
+
+                {% elif item.variant and item.variant.product.images.first %}
+
+                <img src="{{ item.variant.product.images.first.image.url }}"
+                    alt="{{ item.product_name }}"
+                    class="w-full h-full object-cover">
+
+                {% else %}
+
+                <div class="w-full h-full flex items-center justify-center text-muted">
+                    No Image
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            <!-- DETAILS -->
+            <div class="flex-1 p-7">
+
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+                    <div>
+
+                        <div
+                            class="inline-flex items-center gap-2 bg-red-500/10 text-red-300 border border-red-400/10 rounded-full px-4 py-1.5 text-xs uppercase tracking-widest font-bold mb-4">
+
+                            <span class="w-2 h-2 rounded-full bg-red-400"></span>
+
+                            {% if item.item_status == 'Partially Cancelled' %}
+                            Partially Cancelled
+                            {% else %}
+                            Cancelled
+                            {% endif %}
+
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-white mb-3">
+                            {{ item.product_name }}
+                        </h3>
+
+                        <div class="flex flex-wrap gap-5 text-sm text-muted">
+
+                            {% if item.variant.size %}
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">
+                                    straighten
+                                </span>
+                                Size: {{ item.variant.size }}
+                            </div>
+                            {% endif %}
+
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">
+                                    inventory_2
+                                </span>
+                                Cancelled Qty: {{ item.cancelled_quantity }}
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">
+                                    payments
+                                </span>
+                                ₹{{ item.price }}
+                            </div>
+
+                        </div>
+
+                        {% if item.reason %}
+                        <div
+                            class="mt-5 bg-white/5 border border-white/5 rounded-xl p-4">
+
+                            <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                Cancellation Reason
                             </p>
-                        </div>
 
-                        <div class="hidden md:flex items-center gap-2 text-sm text-muted">
-
-                            <span class="material-symbols-outlined text-base">
-                                calendar_today
-                            </span>
-
-                            {{ cancelled_order.updated_at|date:"F d, Y" }}
+                            <p class="text-sm text-text leading-relaxed">
+                                {{ item.reason }}
+                            </p>
 
                         </div>
+                        {% endif %}
 
                     </div>
 
-                    <!-- ITEMS LOOP -->
-                    <div class="space-y-5">
-
-                        {% for item in cancelled_order.items.all %}
-
-                        {% if item.item_status == 'Cancelled' %}
+                    <!-- STATUS -->
+                    <div class="min-w-[220px]">
 
                         <div
-                            class="glass rounded-2xl border border-white/5 overflow-hidden flex flex-col md:flex-row">
+                            class="bg-[#101f3b] border border-white/5 rounded-2xl p-5 space-y-5">
 
-                            <!-- IMAGE -->
-                       <!-- IMAGE -->
-<div class="w-full md:w-56 h-60 md:h-auto bg-[#09162d] overflow-hidden">
+                            <div>
 
-    {% if item.variant and item.variant.images.first %}
+                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                    Refund Status
+                                </p>
 
-    <img src="{{ item.variant.images.first.image.url }}"
-        alt="{{ item.product_name }}"
-        class="w-full h-full object-cover">
+                                {% if refund_amount > 0 %}
+                                <div
+                                    class="inline-flex items-center gap-2 text-emerald-400 font-semibold text-sm">
 
-    {% elif item.variant and item.variant.product.images.first %}
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
 
-    <img src="{{ item.variant.product.images.first.image.url }}"
-        alt="{{ item.product_name }}"
-        class="w-full h-full object-cover">
-
-    {% else %}
-
-    <div class="w-full h-full flex items-center justify-center text-muted">
-        No Image
-    </div>
-
-    {% endif %}
-
-</div>
-
-                            <!-- DETAILS -->
-                            <div class="flex-1 p-7">
-
-                                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-
-                                    <div>
-
-                                        <div
-                                            class="inline-flex items-center gap-2 bg-red-500/10 text-red-300 border border-red-400/10 rounded-full px-4 py-1.5 text-xs uppercase tracking-widest font-bold mb-4">
-
-                                            <span class="w-2 h-2 rounded-full bg-red-400"></span>
-
-                                            Cancelled
-
-                                        </div>
-
-                                        <h3 class="text-2xl font-bold text-white mb-3">
-                                            {{ item.product_name }}
-                                        </h3>
-
-                                        <div class="flex flex-wrap gap-5 text-sm text-muted">
-
-                                            {% if item.variant.size %}
-                                            <div class="flex items-center gap-2">
-                                                <span class="material-symbols-outlined text-base">
-                                                    straighten
-                                                </span>
-                                                Size: {{ item.variant.size }}
-                                            </div>
-                                            {% endif %}
-
-                                            <div class="flex items-center gap-2">
-                                                <span class="material-symbols-outlined text-base">
-                                                    inventory_2
-                                                </span>
-                                                Qty: {{ item.quantity }}
-                                            </div>
-
-                                            <div class="flex items-center gap-2">
-                                                <span class="material-symbols-outlined text-base">
-                                                    payments
-                                                </span>
-                                                ₹{{ item.total_price }}
-                                            </div>
-
-                                        </div>
-
-                                        {% if item.reason %}
-                                        <div
-                                            class="mt-5 bg-white/5 border border-white/5 rounded-xl p-4">
-
-                                            <p class="text-xs uppercase tracking-widest text-muted mb-2">
-                                                Cancellation Reason
-                                            </p>
-
-                                            <p class="text-sm text-text leading-relaxed">
-                                                {{ item.reason }}
-                                            </p>
-
-                                        </div>
-                                        {% endif %}
-
-                                    </div>
-
-                                    <!-- STATUS -->
-                                    <div class="min-w-[220px]">
-
-                                        <div
-                                            class="bg-[#101f3b] border border-white/5 rounded-2xl p-5 space-y-5">
-
-                                            <div>
-
-                                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
-                                                    Refund Status
-                                                </p>
-
-                                                {% if refund_amount > 0 %}
-                                                <div
-                                                    class="inline-flex items-center gap-2 text-emerald-400 font-semibold text-sm">
-
-                                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-
-                                                    Processing
-
-                                                </div>
-                                                {% else %}
-                                                <div
-                                                    class="inline-flex items-center gap-2 text-muted font-semibold text-sm">
-
-                                                    <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-
-                                                    Not Applicable
-
-                                                </div>
-                                                {% endif %}
-
-                                            </div>
-
-                                            <div>
-
-                                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
-                                                    Payment Method
-                                                </p>
-
-                                                <p class="text-white font-semibold">
-                                                    {{ cancelled_order.payment_method }}
-                                                </p>
-
-                                            </div>
-
-                                            <div>
-
-                                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
-                                                    Order Number
-                                                </p>
-
-                                                <p class="text-accent font-semibold">
-                                                    #{{ cancelled_order.order_number }}
-                                                </p>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
+                                    Processing
 
                                 </div>
+                                {% else %}
+                                <div
+                                    class="inline-flex items-center gap-2 text-muted font-semibold text-sm">
+
+                                    <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+
+                                    Not Applicable
+
+                                </div>
+                                {% endif %}
+
+                            </div>
+
+                            <div>
+
+                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                    Payment Method
+                                </p>
+
+                                <p class="text-white font-semibold">
+                                    {{ cancelled_order.payment_method }}
+                                </p>
+
+                            </div>
+
+                            <div>
+
+                                <p class="text-xs uppercase tracking-widest text-muted mb-2">
+                                    Order Number
+                                </p>
+
+                                <p class="text-accent font-semibold">
+                                    #{{ cancelled_order.order_number }}
+                                </p>
 
                             </div>
 
                         </div>
 
-                        {% endif %}
-                        {% endfor %}
-
                     </div>
 
                 </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+        {% endfor %}
+
+    </div>
+
+</div>
 
                 <!-- ACTION BUTTONS -->
                 <div class="flex flex-col md:flex-row items-center justify-center gap-5 pt-5">
@@ -483,34 +486,17 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="border-t border-white/5 py-10 px-6">
+<footer class="border-t border-white/5 py-10 px-6">
 
-        <div
-            class="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="max-w-screen-2xl mx-auto flex justify-center items-center text-center">
 
-            <p class="text-[11px] uppercase tracking-[0.25em] text-slate-500 text-center md:text-left">
-                © 2026 STYLE-HUB DIGITAL FLAGSHIP. ALL RIGHTS RESERVED.
-            </p>
+        <p class="text-[11px] uppercase tracking-[0.25em] text-slate-500">
+            © 2026 STYLE-HUB DIGITAL FLAGSHIP. ALL RIGHTS RESERVED.
+        </p>
 
-            <div class="flex flex-wrap justify-center gap-8 text-[11px] uppercase tracking-[0.2em]">
+    </div>
 
-                <a href="#" class="text-slate-500 hover:text-white transition">
-                    Privacy Policy
-                </a>
-
-                <a href="#" class="text-slate-500 hover:text-white transition">
-                    Terms Of Service
-                </a>
-
-                <a href="#" class="text-slate-500 hover:text-white transition">
-                    Shipping & Returns
-                </a>
-
-            </div>
-
-        </div>
-
-    </footer>
+</footer>
 
 </body>
 

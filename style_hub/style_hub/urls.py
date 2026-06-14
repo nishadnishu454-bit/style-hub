@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +25,9 @@ urlpatterns = [
     path('orders/',include('user.orders.urls')),
     path('coupon_management/',include('admin_panel.couponmanagement.urls')),
     path('wallet/',include('user.wallet.urls')),
+    path('offer_management/',include('admin_panel.offermanagement.urls')),
+    path('variant_management/',include('admin_panel.variantmanagement.urls')),
+    path('review_management/',include('admin_panel.reviewmanagement.urls'))
    
 
 
@@ -32,3 +36,10 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+handler404 = 'style_hub.views.custom_404'
+handler500 = 'style_hub.views.custom_500'
+handler403 = 'style_hub.views.custom_403'
+handler400 = 'style_hub.views.custom_400'

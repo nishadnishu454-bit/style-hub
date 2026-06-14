@@ -41,13 +41,102 @@
         <a href="{% url 'admin_referrals' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'admin_referrals' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
             <i class="fas fa-gift w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Referrals</span>
         </a>
+
+        <a href="{% url 'admin_reviews' %}" class="flex items-center px-4 py-3 transition {% if url_name == 'admin_reviews' %}bg-gray-100 text-black rounded-sm border-l-4 border-black font-bold shadow-sm{% else %}text-gray-400 hover:text-black{% endif %}">
+            <i class="fas fa-star w-6 text-sm"></i><span class="text-xs uppercase font-bold tracking-wider">Reviews</span>
+        </a>
     </nav>
 
     <div class="p-4 mt-auto">
-        <a href="{% url 'admin_logout' %}" onclick="return confirm('Are you sure you want to logout?')"
+        <a href="{% url 'admin_logout' %}" data-confirm="Are you sure you want to logout?"
            class="flex items-center justify-center w-full px-4 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition font-bold text-xs uppercase tracking-wider">
             <i class="fas fa-sign-out-alt mr-2"></i> Logout
         </a>
     </div>
 </aside>
 {% endwith %}
+
+<!-- SweetAlert2 Confirmation Dialog Integration -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Intercept link clicks with data-confirm
+    document.addEventListener('click', function(e) {
+        const confirmEl = e.target.closest('a[data-confirm]');
+        if (confirmEl) {
+            e.preventDefault();
+            const message = confirmEl.getAttribute('data-confirm');
+            
+            // Determine button colors/labels based on message type
+            let confirmColor = '#1a1a1a'; // default black
+            let confirmText = 'Yes, Proceed';
+            if (message.toLowerCase().includes('delete') || message.toLowerCase().includes('deactivate') || message.toLowerCase().includes('reject') || message.toLowerCase().includes('logout')) {
+                confirmColor = '#ef4444'; // red for destructive actions
+                confirmText = 'Yes, Confirm';
+            } else if (message.toLowerCase().includes('activate') || message.toLowerCase().includes('approve')) {
+                confirmColor = '#10b981'; // emerald for positive actions
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: confirmColor,
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Cancel',
+                background: '#ffffff',
+                color: '#1a1a1a',
+                customClass: {
+                    popup: 'rounded-2xl border border-slate-100 shadow-xl font-sans'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = confirmEl.href;
+                }
+            });
+        }
+    });
+
+    // Intercept form submissions with data-confirm
+    document.addEventListener('submit', function(e) {
+        const form = e.target.closest('form[data-confirm]');
+        if (form && !form.dataset.confirmed) {
+            e.preventDefault();
+            const message = form.getAttribute('data-confirm');
+            
+            let confirmColor = '#3b71fe'; // blue for status updates
+            let confirmText = 'Yes, Update';
+            if (message.toLowerCase().includes('approve')) {
+                confirmColor = '#10b981'; // emerald
+                confirmText = 'Yes, Approve';
+            } else if (message.toLowerCase().includes('reject')) {
+                confirmColor = '#ef4444'; // red
+                confirmText = 'Yes, Reject';
+            }
+
+            Swal.fire({
+                title: 'Confirm Action',
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: confirmColor,
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Cancel',
+                background: '#ffffff',
+                color: '#1a1a1a',
+                customClass: {
+                    popup: 'rounded-2xl border border-slate-100 shadow-xl font-sans'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.dataset.confirmed = 'true';
+                    form.submit();
+                }
+            });
+        }
+    });
+});
+</script>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,7 +122,45 @@
 
             <div class="grid grid-cols-12 gap-8">
 
-               
+                <!-- LEFT : PRODUCT IMAGE -->
+                <div class="col-span-8">
+
+                    {% if variants and variants.first.images.first %}
+
+                        <div class="bg-white border border-gray-100 p-4 rounded-sm">
+
+                            <img src="{{ variants.first.images.first.image.url }}"
+                                 class="w-full h-[700px] object-cover rounded-sm">
+
+                        </div>
+
+                        <!-- THUMBNAILS -->
+                        <div class="grid grid-cols-4 gap-4 mt-4">
+
+                            {% for img in variants.first.images.all %}
+
+                                <div class="bg-white border border-gray-100 p-2 rounded-sm">
+
+                                    <img src="{{ img.image.url }}"
+                                         class="w-full h-40 object-cover rounded-sm">
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="bg-gray-100 h-[700px] flex items-center justify-center">
+
+                            <p class="text-gray-400 font-bold">No Image</p>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
 
                 <!-- RIGHT: DETAILS -->
                 <div class="col-span-4 space-y-8">
@@ -246,3 +285,4 @@
 
 </body>
 </html>
+```

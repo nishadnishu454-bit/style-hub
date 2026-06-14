@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style-Hub | Offer Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF;
+        }
+        .table-header {
+            background-color: #F9FAFB;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 10px;
+            font-weight: 700;
+            color: #9CA3AF;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    {% include 'admin_sidebar.html' %}
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-8">
+
+        {% include 'toast.html' %}
+
+        <!-- TOP NAVBAR -->
+        <header class="flex justify-between items-center mb-12">
+            <form method="GET" class="relative w-1/2">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
+                <input type="text"
+                       name="search"
+                       value="{{ search }}"
+                       placeholder="Search offers by name, product, or category..."
+                       class="block w-full pl-10 pr-24 py-2.5 bg-gray-50 border-none rounded-md text-sm outline-none">
+                {% if search %}
+                    <a href="{% url 'offer_listing' %}"
+                       class="absolute right-20 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase text-red-400">
+                        Clear
+                    </a>
+                {% endif %}
+                <button type="submit"
+                        class="absolute right-0 top-0 h-full bg-black text-white px-4 rounded-r-md text-[10px] font-bold uppercase">
+                    Search
+                </button>
+            </form>
+
+            <div class="flex items-center space-x-6 text-gray-400">
+                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=000&color=fff"
+                     class="w-8 h-8 rounded-full">
+            </div>
+        </header>
+
+        <!-- TITLE AND ACTION -->
+        <div class="flex justify-between items-end mb-6">
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                    Promotions Management
+                </p>
+                <h2 class="text-4xl font-black tracking-tighter uppercase">
+                    Offers
+                </h2>
+            </div>
+
+            <a href="{% url 'add_offer' %}"
+               class="bg-black text-white px-6 py-3 rounded-sm text-[11px] font-bold flex items-center space-x-2 hover:bg-gray-800 transition-all">
+                <i class="fa-solid fa-plus text-[10px]"></i>
+                <span>ADD NEW OFFER</span>
+            </a>
+        </div>
+
+        <!-- OFFER TABLE -->
+        <table class="w-full text-left">
+            <thead>
+                <tr class="table-header">
+                    <th class="py-4 px-4">Offer Name</th>
+                    <th class="py-4 px-4">Target Type</th>
+                    <th class="py-4 px-4">Applies To</th>
+                    <th class="py-4 px-4">Discount</th>
+                    <th class="py-4 px-4">Validity Period</th>
+                    <th class="py-4 px-4">Status</th>
+                    <th class="py-4 px-4 text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-50">
+                {% for offer in offers %}
+                <tr class="group hover:bg-gray-50/50 transition-all">
+                    <td class="py-6 px-4">
+                        <p class="text-sm font-bold text-black">{{ offer.name }}</p>
+                        <p class="text-[10px] text-gray-400 font-bold mt-1">ID: #OFF-{{ offer.id }}</p>
+                    </td>
+
+                    <td class="py-6 px-4 text-sm font-medium text-gray-600">
+                        {% if offer.product %}
+                            <span class="bg-blue-50 text-blue-600 px-2 py-0.5 text-[10px] font-bold rounded-sm">Product</span>
+                        {% elif offer.category %}
+                            <span class="bg-purple-50 text-purple-600 px-2 py-0.5 text-[10px] font-bold rounded-sm">Category</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="py-6 px-4 text-sm font-bold text-gray-800">
+                        {% if offer.product %}
+                            {{ offer.product.product_name }}
+                        {% elif offer.category %}
+                            {{ offer.category.category_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td class="py-6 px-4 text-sm font-extrabold text-black">
+                        {% if offer.discount_type == 'PERCENTAGE' %}
+                            {{ offer.discount_value }}% OFF
+                        {% else %}
+                            ₹{{ offer.discount_value }} OFF
+                        {% endif %}
+                    </td>
+
+                    <td class="py-6 px-4 text-xs font-medium text-gray-500">
+                        {{ offer.start_date|date:"d M Y" }} - {{ offer.end_date|date:"d M Y" }}
+                    </td>
+
+                    <td class="py-6 px-4">
+                        <a href="{% url 'toggle_offer_status' offer.id %}" class="inline-block">
+                            {% if offer.is_active %}
+                                <span class="bg-green-50 text-green-600 text-[9px] font-black uppercase px-2 py-1 rounded-sm border border-green-100 hover:bg-green-100 transition-all">
+                                    Active
+                                </span>
+                            {% else %}
+                                <span class="bg-red-50 text-red-500 text-[9px] font-black uppercase px-2 py-1 rounded-sm border border-red-100 hover:bg-red-100 transition-all">
+                                    Inactive
+                                </span>
+                            {% endif %}
+                        </a>
+                    </td>
+
+                    <td class="py-6 px-4 text-right space-x-3">
+                        <a href="{% url 'edit_offer' offer.id %}"
+                           class="text-[10px] font-black uppercase tracking-widest text-black hover:underline">
+                            Edit
+                        </a>
+                        <a href="{% url 'delete_offer' offer.id %}"
+                           data-confirm="Are you sure you want to delete this offer?"
+                           class="text-[10px] font-black uppercase tracking-widest text-red-500 hover:underline">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="py-12 text-center text-gray-400 text-xs font-bold uppercase tracking-widest">
+                        No Offers Found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- PAGINATION -->
+        {% if offers.paginator.num_pages > 1 %}
+        <footer class="flex justify-between items-center mt-12 border-t border-gray-100 pt-8">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Showing page {{ offers.number }} of {{ offers.paginator.num_pages }}
+            </p>
+            <div class="flex items-center space-x-3">
+                {% if offers.has_previous %}
+                    <a href="?page={{ offers.previous_page_number }}&search={{ search }}" class="text-gray-300 hover:text-black transition-all">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </a>
+                {% endif %}
+                <div class="flex items-center space-x-1">
+                    {% for num in offers.paginator.page_range %}
+                        {% if offers.number == num %}
+                            <div class="w-9 h-9 bg-black flex items-center justify-center rounded-sm">
+                                <span class="text-white font-bold text-xs">{{ num }}</span>
+                            </div>
+                        {% else %}
+                            <a href="?page={{ num }}&search={{ search }}" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-black font-bold text-xs transition-all">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% if offers.has_next %}
+                    <a href="?page={{ offers.next_page_number }}&search={{ search }}" class="text-gray-400 hover:text-black transition-all">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </footer>
+        {% endif %}
+
+    </main>
+</body>
+</html>

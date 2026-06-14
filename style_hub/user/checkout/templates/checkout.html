@@ -311,6 +311,15 @@
 
                             </p>
 
+                            <p class="text-xs text-on-surface-variant">
+
+                            <span class="text-[10px] text-white font-black block">
+                            {{ coupon.description }}.
+                            </span>
+                            
+                        </p>
+
+
                         </div>
 
                         <div class="text-right">
@@ -512,7 +521,9 @@ function copyCoupon(code) {
         input.value = code;
     }
 
-    alert(code + ' copied successfully');
+    if (window.showToast) {
+        window.showToast(code + ' copied successfully', 'success');
+    }
 }
 
 window.addEventListener('click', function(e) {

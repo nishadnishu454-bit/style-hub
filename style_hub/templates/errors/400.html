@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-[#001232] px-6">
+    <div class="max-w-3xl w-full text-center bg-[#0c1f40] border border-white/10 rounded-[2rem] p-12 shadow-2xl">
+
+        <div class="text-[7rem] md:text-[9rem] font-black text-yellow-300 leading-none">
+            400
+        </div>
+
+        <h1 class="text-4xl md:text-5xl font-black text-white mt-4">
+            Bad Request
+        </h1>
+
+        <p class="text-[#c5c6cf] text-lg mt-4 leading-relaxed">
+            The request could not be processed. Please check and try again.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+
+            <a href="{% url 'home' %}"
+               class="px-8 py-4 rounded-full bg-white text-[#001232] font-bold hover:scale-95 transition">
+                Back To Home
+            </a>
+
+            <a href="javascript:history.back()"
+               class="px-8 py-4 rounded-full border border-white/20 text-white hover:bg-white/5 transition">
+                Go Back
+            </a>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

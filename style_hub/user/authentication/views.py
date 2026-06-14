@@ -25,37 +25,18 @@ def login_page(request):
 
         old_data = request.POST
 
-        username_or_email = request.POST.get(
-            'username_or_email',
-            ''
-        ).strip()
+        username_or_email = request.POST.get('username_or_email','').strip()
+        password = request.POST.get('password','').strip()
 
-        password = request.POST.get(
-            'password',
-            ''
-        ).strip()
+        context = {'old_data': old_data}
 
-        context = {
-            'old_data': old_data
-        }
-
-        # ---------------- REQUIRED FIELD VALIDATION ---------------- #
 
         if not username_or_email or not password:
 
-            messages.error(
-                request,
-                'All fields are required'
-            )
+            messages.error( request, 'All fields are required' )
+            return render( request, 'authentication/login.html',context)
 
-            return render(
-                request,
-                'authentication/login.html',
-                context
-            )
-
-        # ---------------- USERNAME / EMAIL LENGTH VALIDATION ---------------- #
-
+       
         if len(username_or_email) < 3:
 
             messages.error(

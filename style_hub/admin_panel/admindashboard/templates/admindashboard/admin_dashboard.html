@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #ffffff; }
         .nav-text { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
         .stat-label { font-size: 10px; font-weight: 700; color: #d1d5db; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -42,7 +42,7 @@
             <p class="stat-label mb-1">Performance Analytics</p>
 
             <div class="flex justify-between items-center">
-                <h2 class="text-4xl font-extrabold tracking-tight">System Overview</h2>
+                <h2 class="text-4xl font-black tracking-tight">System Overview</h2>
 
                 <a href="{% url 'sales_report' %}"
                    class="bg-black text-white px-10 py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition">
@@ -108,21 +108,45 @@
             <div class="bg-[#e9e9e9] p-10 flex flex-col justify-between">
                 <h4 class="text-sm font-bold text-gray-400 uppercase tracking-widest">Order Status</h4>
 
-                <div class="space-y-12">
+                <div class="space-y-6">
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="font-bold text-sm">Processing</p>
-                            <p class="text-[10px] text-gray-400 font-medium">Awaiting fulfillment</p>
+                            <p class="font-bold text-sm text-gray-800">Pending</p>
+                            <p class="text-[10px] text-gray-400 font-medium">Awaiting processing</p>
                         </div>
-                        <span class="text-2xl font-bold">{{ processing_orders|default:"0" }}</span>
+                        <span class="text-xl font-bold">{{ processing_orders|default:"0" }}</span>
                     </div>
 
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="font-bold text-sm">Shipped</p>
-                            <p class="text-[10px] text-gray-400 font-medium">In transit</p>
+                            <p class="font-bold text-sm text-blue-600">Confirmed</p>
+                            <p class="text-[10px] text-blue-400 font-medium">Order accepted</p>
                         </div>
-                        <span class="text-2xl font-bold">{{ shipped_orders|default:"0" }}</span>
+                        <span class="text-xl font-bold text-blue-600">{{ confirmed_orders|default:"0" }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-sm text-orange-500">Shipped</p>
+                            <p class="text-[10px] text-orange-400 font-medium">In transit</p>
+                        </div>
+                        <span class="text-xl font-bold text-orange-500">{{ shipped_orders|default:"0" }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-sm text-purple-600">Out for Delivery</p>
+                            <p class="text-[10px] text-purple-400 font-medium">Arriving today</p>
+                        </div>
+                        <span class="text-xl font-bold text-purple-600">{{ out_for_delivery_orders|default:"0" }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-sm text-emerald-600">Delivered</p>
+                            <p class="text-[10px] text-emerald-500 font-medium">Completed</p>
+                        </div>
+                        <span class="text-xl font-bold text-emerald-600">{{ delivered_orders|default:"0" }}</span>
                     </div>
 
                     <div class="flex justify-between items-start">
@@ -130,7 +154,15 @@
                             <p class="font-bold text-red-600 text-sm">Returns</p>
                             <p class="text-[10px] text-red-400 font-medium">Return requests</p>
                         </div>
-                        <span class="text-2xl font-bold text-red-600">{{ return_orders|default:"0" }}</span>
+                        <span class="text-xl font-bold text-red-600">{{ return_orders|default:"0" }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-rose-800 text-sm">Cancelled</p>
+                            <p class="text-[10px] text-rose-500 font-medium">Order voided</p>
+                        </div>
+                        <span class="text-xl font-bold text-rose-800">{{ cancelled_orders|default:"0" }}</span>
                     </div>
                 </div>
             </div>
@@ -222,7 +254,7 @@
                         <th class="py-4 px-6 border-b border-gray-100">User</th>
                         <th class="py-4 px-6 border-b border-gray-100">Total</th>
                         <th class="py-4 px-6 border-b border-gray-100 text-center">Status</th>
-                        <th class="py-4 px-6 border-b border-gray-100 text-right">Action</th>
+                        
                     </tr>
                 </thead>
 
@@ -250,11 +282,7 @@
                             </span>
                         </td>
 
-                        <td class="py-6 px-6 text-right text-gray-300">
-                            <a href="#">
-                                <i class="fas fa-ellipsis-h cursor-pointer hover:text-black"></i>
-                            </a>
-                        </td>
+                        
                     </tr>
                     {% empty %}
                     <tr>

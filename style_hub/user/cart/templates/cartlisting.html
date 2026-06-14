@@ -32,7 +32,7 @@
 
 {% include 'user_navbar.html' %}
 
-<main class="pt-32 pb-20 px-6 md:px-10 max-w-7xl mx-auto">
+<main class="pt-32 pb-32 md:pb-20 px-6 md:px-10 max-w-7xl mx-auto">
     <!-- Messages Section -->
     {% include 'toast.html' %}
 
@@ -245,55 +245,13 @@
     </div>
 </main>
 
-<footer class="w-full py-16 px-10 grid grid-cols-1 md:grid-cols-4 gap-12 bg-[#0c1f40] border-t border-[#44474e]/20">
+<footer class="w-full py-10 px-10 mb-20 md:mb-0 flex justify-center items-center bg-[#0c1f40] border-t border-[#44474e]/20 text-center">
 
-    <div class="col-span-1">
+    <div class="flex flex-col items-center">
         <div class="text-xl font-bold text-white mb-4 uppercase">STYLE-HUB</div>
         <p class="text-sm text-[#c5c6cf] max-w-xs">
             Elevating modern menswear through intentional asymmetry and tonal depth.
         </p>
-    </div>
-
-    <div>
-        <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">About</h4>
-
-        <ul class="space-y-3">
-            <li><a class="text-sm text-[#c5c6cf] hover:text-white transition-colors" href="#">Our Story</a></li>
-            <li><a class="text-sm text-[#c5c6cf] hover:text-white transition-colors" href="#">Artisanry</a></li>
-            <li><a class="text-sm text-[#c5c6cf] hover:text-white transition-colors" href="#">Careers</a></li>
-        </ul>
-    </div>
-
-    <div>
-        <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Customer Support</h4>
-
-        <ul class="space-y-3">
-            <li><a class="text-sm text-[#c5c6cf] hover:text-white transition-colors" href="#">Shipping & Returns</a></li>
-            <li><a class="text-sm text-[#c5c6cf] hover:text-white transition-colors" href="#">Size Guide</a></li>
-            <li><a class="text-sm text-[#c5c6cf] hover:text-white transition-colors" href="#">Contact Us</a></li>
-        </ul>
-    </div>
-
-    <div>
-        <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Social Media</h4>
-
-        <div class="flex gap-4">
-            <a class="w-10 h-10 rounded-full border border-[#44474e]/40 flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity" href="#">
-                <span class="material-symbols-outlined text-sm">public</span>
-            </a>
-
-            <a class="w-10 h-10 rounded-full border border-[#44474e]/40 flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity" href="#">
-                <span class="material-symbols-outlined text-sm">alternate_email</span>
-            </a>
-
-            <a class="w-10 h-10 rounded-full border border-[#44474e]/40 flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity" href="#">
-                <span class="material-symbols-outlined text-sm">share</span>
-            </a>
-        </div>
-
-        <div class="mt-8 text-[10px] text-[#c5c6cf] uppercase tracking-[0.2em]">
-            © 2026 STYLE-HUB.
-        </div>
     </div>
 
 </footer>
@@ -336,6 +294,29 @@
 
     </div>
 
+</div>
+
+<!-- Mobile Navigation -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#001232]/80 backdrop-blur-xl border-t border-white/5 px-6 py-4 flex justify-between items-center h-20">
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'home' %}">
+        <span class="material-symbols-outlined">home</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Home</span>
+    </a>
+
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'product_page' %}">
+        <span class="material-symbols-outlined">search</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Shop</span>
+    </a>
+
+  <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'cart_page' %}">
+    <span class="material-symbols-outlined">shopping_cart</span>
+    <span class="text-[10px] font-bold tracking-widest uppercase">Cart</span>
+</a>
+
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'profile' %}">
+        <span class="material-symbols-outlined">person</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Me</span>
+    </a>
 </div>
 
 <script>

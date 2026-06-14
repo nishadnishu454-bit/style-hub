@@ -98,32 +98,7 @@
 
 <body class="bg-surface font-body text-on-surface">
 
-<nav class="fixed top-0 w-full z-50 bg-[#001232] shadow-xl flex justify-between items-center px-12 py-6">
-    <div class="flex items-center gap-12">
-        <a href="{% url 'home' %}" class="text-2xl font-black tracking-tighter text-[#e2e2e2]">
-            STYLE-HUB
-        </a>
-
-        <div class="hidden md:flex gap-8 items-center">
-            <a class="text-sm text-[#c5c6cf] hover:text-[#e2e2e2]" href="{% url 'home' %}">
-                Home
-            </a>
-
-            <a class="text-sm text-[#e2e2e2] border-b-2 border-[#e2e2e2] pb-1" href="{% url 'product_page' %}">
-                Products
-            </a>
-
-            <a class="text-sm text-[#c5c6cf] hover:text-[#e2e2e2]" href="{% url 'category_page' %}">
-                Category
-            </a>
-
-            <a class="text-sm text-[#e2e2e2] border-b-2 border-[#e2e2e2] pb-1" href="{% url 'about_page' %}">
-                About
-            </a>
-        </div>
-    </div>
-</nav>
-
+{% include "user_navbar.html" %}
 {% include 'toast.html' %}
 
 <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 flex flex-col items-center">

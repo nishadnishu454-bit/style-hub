@@ -1,5 +1,11 @@
 {% with url_name=request.resolver_match.url_name %}
+{% with url_name=request.resolver_match.url_name %}
 <nav class="sticky top-0 w-full z-50 bg-[#001232]/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 max-w-full no-border shadow-[0_20px_40px_rgba(0,13,40,0.4)]">
+    <button id="mobile-menu-btn" class="md:hidden text-white flex items-center justify-center">
+    <span class="material-symbols-outlined text-2xl leading-none">
+        menu
+    </span>
+</button>
     <div class="text-2xl font-black tracking-tighter text-white font-manrope">STYLE-HUB</div>
     <div class="hidden md:flex items-center space-x-8 font-manrope tracking-tight">
         <a class="transition-colors {% if url_name == 'home' %}text-white border-b-2 border-white/20 pb-1{% else %}text-slate-400 hover:text-white{% endif %}" href="{% url 'home' %}">Home</a>
@@ -48,4 +54,96 @@
         {% endif %}
     </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu"
+     class="hidden md:hidden flex-col bg-[#071b3b] border-t border-white/10 px-6 py-6 space-y-5">
+
+    <a href="{% url 'home' %}"
+       class="text-white text-lg font-semibold">
+        Home
+    </a>
+
+    <a href="{% url 'product_page' %}"
+       class="text-white text-lg font-semibold">
+        Products
+    </a>
+
+    <a href="{% url 'category_page' %}"
+       class="text-white text-lg font-semibold">
+        Categories
+    </a>
+
+    <a href="{% url 'about_page' %}"
+       class="text-white text-lg font-semibold">
+        About
+    </a>
+
+</div>
+
+<script>
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuBtn.addEventListener('click', () => {
+
+        if (mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.add('flex');
+        } else {
+            mobileMenu.classList.remove('flex');
+            mobileMenu.classList.add('hidden');
+        }
+
+    });
+</script>
+
+
+{% endwith %}
+
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu"
+     class="hidden md:hidden flex-col bg-[#071b3b] border-t border-white/10 px-6 py-6 space-y-5">
+
+    <a href="{% url 'home' %}"
+       class="text-white text-lg font-semibold">
+        Home
+    </a>
+
+    <a href="{% url 'product_page' %}"
+       class="text-white text-lg font-semibold">
+        Products
+    </a>
+
+    <a href="{% url 'category_page' %}"
+       class="text-white text-lg font-semibold">
+        Categories
+    </a>
+
+    <a href="{% url 'about_page' %}"
+       class="text-white text-lg font-semibold">
+        About
+    </a>
+
+</div>
+
+<script>
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuBtn.addEventListener('click', () => {
+
+        if (mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.add('flex');
+        } else {
+            mobileMenu.classList.remove('flex');
+            mobileMenu.classList.add('hidden');
+        }
+
+    });
+</script>
+
+
 {% endwith %}

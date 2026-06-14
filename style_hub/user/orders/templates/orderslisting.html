@@ -96,39 +96,7 @@
 <main class="max-w-7xl mx-auto px-6 py-12 lg:py-20">
 <div class="flex flex-col lg:flex-row gap-10 items-start">
 <!-- Left Sidebar -->
-<aside class="w-full lg:w-72 shrink-0">
-<div class="glass-card rounded-xl p-6 shadow-2xl">
-<a class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors mb-8 group" href="#">
-<span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
-<span class="text-sm font-medium">Go Back</span>
-</a>
-<nav class="space-y-2">
-<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="{% url "profile" %}">
-<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
-<span class="font-medium">Profile</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="{% url "address_page" %}">
-<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
-<span class="font-medium">Address</span>
-</a>
-<!-- Active State -->
-<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-secondary-container text-on-surface border border-primary/20 shadow-[0_0_15px_rgba(198,198,199,0.15)] transition-all duration-300" href="{% url "user_orders_listing" %}">
-<span class="material-symbols-outlined" data-icon="shopping_cart" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
-<span class="font-bold">My Orders</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="{% url "wishlist_page" %}">
-<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
-<span class="font-medium">Wishlist</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300" href="{% url "wallet_page" %}">
-<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
-<span class="font-medium">Wallet</span>
-</a>
-</nav>
-<div class="mt-12 pt-6 border-t border-outline-variant/20">
-</div>
-</div>
-</aside>
+{% include "user_sidebar.html" %}
 <!-- Right Content Area -->
 <section class="flex-1 w-full space-y-8">
 <header>
@@ -250,16 +218,35 @@
 </section>
 </div>
 </main>
-<!-- Footer Section -->
-<footer class="w-full mt-auto py-12 bg-[#001232] border-t border-slate-800/20">
-<div class="flex flex-col md:flex-row justify-between items-center px-12 gap-6 font-manrope text-sm tracking-wide text-slate-400">
-<div class="text-lg font-bold text-slate-200 uppercase">STYLE-HUB</div>
-<div class="flex gap-8">
-<a class="hover:text-slate-100 transition-all" href="#">Privacy Policy</a>
-<a class="hover:text-slate-100 transition-all" href="#">Terms of Service</a>
-<a class="hover:text-slate-100 transition-all" href="#">Contact</a>
+
+<!-- Mobile Navigation -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#001232]/80 backdrop-blur-xl border-t border-white/5 px-6 py-4 flex justify-between items-center">
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'home' %}">
+        <span class="material-symbols-outlined">home</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Home</span>
+    </a>
+
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'product_page' %}">
+        <span class="material-symbols-outlined">search</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Shop</span>
+    </a>
+
+    <a class="flex flex-col items-center gap-1 text-white" href="{% url 'user_orders_listing' %}">
+    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">
+        package_2
+    </span>
+
+    <span class="text-[10px] font-bold tracking-widest uppercase">
+        My Orders
+    </span>
+</a>
+
+ 
+
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'profile' %}">
+        <span class="material-symbols-outlined">person</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Me</span>
+    </a>
 </div>
-<div class="text-slate-500">© 2024 STYLE-HUB. THE MIDNIGHT ATELIER.</div>
-</div>
-</footer>
+
 </body></html>

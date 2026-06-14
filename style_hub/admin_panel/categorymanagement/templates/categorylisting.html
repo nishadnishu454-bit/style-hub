@@ -7,7 +7,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -109,7 +109,7 @@
                 Inventory Hub
             </p>
 
-            <h2 class="text-5xl font-extrabold tracking-tighter uppercase">
+            <h2 class="text-5xl font-black tracking-tighter uppercase">
                 Category Management
             </h2>
 
@@ -180,20 +180,20 @@
 
                      {% if category.is_active %}
                         <a href="{% url 'deactivate_category' category.id %}"
-                           onclick="return confirm('Are you sure you want to deactivate this category?')"
+                           data-confirm="Are you sure you want to deactivate this category?"
                            class="text-[10px] font-black uppercase tracking-widest text-yellow-500 hover:text-yellow-600 transition-all">
                             Deactivate
                         </a>
                     {% else %}
                         <a href="{% url 'activate_category' category.id %}"
-                           onclick="return confirm('Are you sure you want to activate this category?')"
+                           data-confirm="Are you sure you want to activate this category?"
                            class="text-[10px] font-black uppercase tracking-widest text-green-500 hover:text-green-600 transition-all">
                             Activate
                         </a>
                     {% endif %}
                     <button type="button"
-                            onclick="openDeleteModal('{{ category.id }}','{{ category.category_name|escapejs }}')"
-                            class="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-600 transition-all">
+                             onclick="openDeleteModal('{{ category.id }}','{{ category.category_name|escapejs }}')"
+                             class="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-600 transition-all">
                         Delete
                     </button>
 

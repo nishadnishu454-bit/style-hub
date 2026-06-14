@@ -7,7 +7,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -39,10 +39,10 @@
 
     <!-- SIDEBAR -->
     {% include 'admin_sidebar.html' %}
-
+    
     <!-- MAIN CONTENT -->
     <main class="flex-1 p-8">
-
+        <!-- Messages -->
         {% include 'toast.html' %}
 
         <!-- TOP NAVBAR -->
@@ -71,12 +71,7 @@
                 </button>
             </form>
 
-            <div class="flex items-center space-x-6 text-gray-400">
-                <i class="fa-regular fa-bell cursor-pointer hover:text-black"></i>
-                <i class="fa-solid fa-gear cursor-pointer hover:text-black"></i>
-                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=000&color=fff"
-                     class="w-8 h-8 rounded-full">
-            </div>
+          
         </header>
 
         <!-- TITLE AND ACTION -->

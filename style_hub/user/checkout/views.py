@@ -11,19 +11,23 @@ from user.addresses.models import Address
 from user.cart.models import Cart
 from user.orders.models import Order, OrderItem
 from admin_panel.couponmanagement.models import Coupon
-from user.wallet.models import Wallet, WalletTransaction
 from user.wallet.utils import debit_wallet
 from user.authentication.models import Referral
 from user.wallet.utils import credit_wallet
 from user.orders.models import Order
 import traceback
 from decimal import Decimal, InvalidOperation
+from django.db.models import F
+
 
 client = razorpay.Client(
     auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
 )
 
 
+from django.views.decorators.cache import never_cache
+
+@never_cache
 @login_required(login_url='login')
 def checkout_page(request):
 
@@ -152,6 +156,8 @@ def checkout_page(request):
                 if discount_amount > subtotal:
                     discount_amount = subtotal
 
+                discount_amount = discount_amount.quantize(Decimal('0.01'))
+
                 request.session['discount_amount'] = str(
                     discount_amount
                 )
@@ -182,6 +188,8 @@ def checkout_page(request):
     if total_amount < 0:
         total_amount = Decimal('0.00')
 
+    total_amount = total_amount.quantize(Decimal('0.01'))
+
 
 
     available_coupons = Coupon.objects.filter(
@@ -198,13 +206,13 @@ def checkout_page(request):
         payment_method = request.POST.get('payment_method')
 
         # ADDRESS VALIDATION
+
+        if not address_id and payment_method:
+            messages.error(request,'Please select both delivery address and payment method')
+            return redirect('checkout')
+
         if not address_id:
-
-            messages.error(
-                request,
-                'Please select a delivery address'
-            )
-
+            messages.error(request,'Please select a delivery address')
             return redirect('checkout')
 
         # PAYMENT VALIDATION
@@ -356,8 +364,9 @@ def checkout_page(request):
                     )
 
                     # STOCK REDUCE
-                    item.variant.variant_stock -= item.quantity
+                    item.variant.variant_stock = F('variant_stock')-item.quantity
                     item.variant.save()
+                    item.variant.refresh_from_db
 
                 # REFERRAL
                 process_referral_reward(request.user, order)
@@ -456,7 +465,7 @@ def verify_razorpay_payment(request):
             })
 
             # Check if there is an existing failed/pending order for this razorpay_order_id
-            existing_order = Order.objects.filter(razorpay_order_id=razorpay_order_id, user=request.user).first()
+            existing_order = Order.objects.filter(razorpay_order_id=razorpay_order_id, user=request.user,payment_status='Failed').first()
             if existing_order:
                 with transaction.atomic():
                     # Stock validation
@@ -547,10 +556,13 @@ def verify_razorpay_payment(request):
                             
                             if discount_amount > subtotal:
                                 discount_amount = subtotal
+                                
+                    discount_amount = discount_amount.quantize(Decimal('0.01'))
 
                 delivery_charge = Decimal('0.00') if subtotal >= 500 else Decimal('50.00')
                 total_amount = subtotal - discount_amount + delivery_charge
                 if total_amount < 0: total_amount = Decimal('0.00')
+                total_amount = total_amount.quantize(Decimal('0.01'))
 
                 order = Order.objects.create(
                     user=request.user,
@@ -1057,10 +1069,12 @@ def create_failed_order(request):
                     discount_amount = applied_coupon.max_discount
                 if discount_amount > subtotal:
                     discount_amount = subtotal
+                discount_amount = discount_amount.quantize(Decimal('0.01'))
                     
         delivery_charge = Decimal('0.00') if subtotal >= 500 else Decimal('50.00')
         total_amount = subtotal - discount_amount + delivery_charge
         if total_amount < 0: total_amount = Decimal('0.00')
+        total_amount = total_amount.quantize(Decimal('0.01'))
         
         razorpay_order_id = request.POST.get('razorpay_order_id', '')
         

@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from admin_panel.productmanagement.models import ProductVariant
+from admin_panel.variantmanagement.models import ProductVariant
 from user.addresses.models import Address
 
 

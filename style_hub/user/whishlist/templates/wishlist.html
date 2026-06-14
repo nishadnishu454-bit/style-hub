@@ -56,91 +56,8 @@
 <body class="min-h-screen flex flex-col">
 
 <header class="sticky top-0 z-50 bg-[#0c1f40] shadow-xl">
-    <nav class="flex justify-between items-center px-8 py-4">
-
-        <div class="text-2xl font-black tracking-tighter text-white uppercase">
-            STYLE-HUB
-        </div>
-
-        <div class="hidden md:flex items-center space-x-8">
-            <a href="{% url 'home' %}" class="text-slate-400 hover:text-white transition-colors">Home</a>
-
-            <a href="{% url 'product_page' %}" class="text-slate-400 hover:text-white transition-colors">
-                Products
-            </a>
-
-            <a href="{% url 'category_page' %}" class="text-slate-400 hover:text-white transition-colors">
-                Categories
-            </a>
-
-            <a href="{% url 'about_page' %}" class="text-slate-400 hover:text-white transition-colors">
-                About
-            </a>
-        </div>
-
-<div class="hidden lg:flex items-center flex-1 max-w-sm mx-8 relative group">
-    <form method="GET" action="{% url 'product_page' %}" class="w-full">
-
-     
-        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 
-                     text-slate-500 group-focus-within:text-white 
-                     transition-colors duration-400 text-sm z-10">
-            search
-        </span>
-
-     
-        <input
-            name="search"
-            type="text"
-            placeholder="Search collections..."
-            class="w-full bg-white/5 border border-white/10
-                   group-focus-within:bg-white/10
-                   group-focus-within:border-white/30
-                   text-white placeholder:text-slate-500
-                   rounded-full py-2.5 pl-11 pr-12
-                   text-sm focus:ring-0 focus:outline-none
-                   transition-all duration-300"
-        />
-
-        <button type="submit"
-                class="absolute right-3 top-1/2 -translate-y-1/2
-                       w-7 h-7 rounded-full
-                       bg-transparent group-focus-within:bg-white/20
-                       flex items-center justify-center
-                       text-slate-500 group-focus-within:text-white
-                       hover:bg-white/20 hover:text-white
-                       transition-all duration-300">
-            <span class="material-symbols-outlined text-sm">arrow_forward</span>
-        </button>
-
-    </form>
-</div>
-        <div class="flex items-center space-x-6">
-
-            <a href="{% url 'wishlist_page' %}" class="hover:bg-white/10 rounded-full transition-all p-2">
-                <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">
-                    favorite
-                </span>
-            </a>
-
-            <a href="{% url 'cart_page' %}"
-               class="relative p-2 text-slate-200 hover:bg-white/5 rounded-full transition-all duration-200">
-                <span class="material-symbols-outlined">shopping_bag</span>
-
-                {% if cart_count > 0 %}
-                    <span class="absolute -top-1 -right-1 bg-white text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                        {{ cart_count }}
-                    </span>
-                {% endif %}
-            </a>
-
-            <a href="{% url 'profile' %}" class="hover:bg-white/10 rounded-full transition-all p-2">
-                <span class="material-symbols-outlined text-slate-200">person</span>
-            </a>
-
-        </div>
-
-    </nav>
+   
+    {% include "user_navbar.html" %}
 </header>
 
 <main class="flex-grow pt-32 pb-24 px-8 max-w-7xl mx-auto w-full">
@@ -212,11 +129,13 @@
 
                 {% include 'toast.html' %}
 
-                <a href="{% url 'cart_page' %}"
-                   class="bg-primary-fixed text-on-primary-fixed px-8 py-4 rounded-full font-bold text-sm tracking-tight hover:bg-primary transition-all flex items-center gap-3 active:scale-95 shadow-xl shadow-primary/10">
-                    <span class="material-symbols-outlined">shopping_bag</span>
-                    VIEW CART
-                </a>
+              <a href="{% url 'cart_page' %}"
+   class="bg-primary-fixed text-on-primary-fixed px-10 py-4 rounded-full font-bold text-sm tracking-tight hover:bg-primary transition-all flex items-center gap-3 active:scale-95 shadow-xl shadow-primary/10 w-fit mx-auto">
+    
+    <span class="material-symbols-outlined">shopping_bag</span>
+
+    VIEW CART
+</a>
 
             </div>
 
@@ -381,6 +300,30 @@
 
 </main>
 
+<!-- Mobile Navigation -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#001232]/80 backdrop-blur-xl border-t border-white/5 px-6 py-4 flex justify-between items-center">
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'home' %}">
+        <span class="material-symbols-outlined">home</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Home</span>
+    </a>
+
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'product_page' %}">
+        <span class="material-symbols-outlined">search</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Shop</span>
+    </a>
+
+    <a class="flex flex-col items-center gap-1 text-white" href="{% url 'wishlist_page' %}">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Whishlist</span>
+    </a>
+
+
+    <a class="flex flex-col items-center gap-1 text-[#c5c6cf]" href="{% url 'profile' %}">
+        <span class="material-symbols-outlined">person</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Me</span>
+    </a>
+</div>
+
 <footer class="w-full py-16 px-8 mt-auto bg-[#0c1f40] border-t border-white/5">
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-12 w-full max-w-7xl mx-auto">
@@ -394,65 +337,74 @@
                 A digital flagship sanctuary crafted for modern menswear collections.
             </p>
 
-            <div class="flex gap-4">
-                <a class="text-slate-500 hover:text-white transition-colors" href="#">
-                    <span class="material-symbols-outlined">share</span>
-                </a>
-
-                <a class="text-slate-500 hover:text-white transition-colors" href="#">
-                    <span class="material-symbols-outlined">public</span>
-                </a>
-
-                <a class="text-slate-500 hover:text-white transition-colors" href="#">
-                    <span class="material-symbols-outlined">mail</span>
-                </a>
-            </div>
+            
         </div>
 
-        <div class="space-y-4">
-            <h4 class="text-white font-medium text-sm">Navigation</h4>
+ 
 
-            <div class="flex flex-col gap-2">
-                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="{% url 'home' %}">Home</a>
-                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="{% url 'product_page' %}">Products</a>
-                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="{% url 'category_page' %}">Categories</a>
-                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="{% url 'about_page' %}">About</a>
-            </div>
-        </div>
-
-        <div class="space-y-4">
-            <h4 class="text-white font-medium text-sm">Services</h4>
-
-            <div class="flex flex-col gap-2">
-                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="#">Privacy Policy</a>
-                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="#">Terms of Service</a>
-                <a class="text-slate-500 hover:text-white transition-colors text-sm" href="#">Shipping & Returns</a>
-            </div>
-        </div>
-
-        <div class="space-y-4">
-            <h4 class="text-white font-medium text-sm">Join STYLE-HUB</h4>
-
-            <p class="text-slate-500 text-sm">
-                Receive seasonal lookbooks and private collection invitations.
-            </p>
-
-            <div class="flex bg-white/5 rounded-full p-1 border border-white/10 overflow-hidden">
-                <input class="bg-transparent border-none focus:ring-0 text-sm text-white px-4 py-2 w-full"
-                       placeholder="Email address"
-                       type="email"/>
-
-                <button class="bg-primary-fixed text-on-primary-fixed px-4 rounded-full font-bold text-xs uppercase tracking-tighter hover:bg-white transition-colors">
-                    Join
-                </button>
-            </div>
-        </div>
+    
 
     </div>
 
 </footer>
 
+<div id="deleteModal"
+     class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-[999]">
+
+    <div class="bg-[#071b3b] w-full max-w-md rounded-2xl p-8 border border-[#44474e]/20 shadow-2xl">
+
+        <div class="flex justify-center mb-6">
+            <div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-red-400 text-4xl">
+                    delete
+                </span>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-white text-center mb-3">
+            Remove Item?
+        </h2>
+
+        <p class="text-[#c5c6cf] text-center mb-8">
+            Are you sure you want to remove this item from your wishlist?
+        </p>
+
+        <div class="flex gap-4">
+
+            <button onclick="closeDeleteModal()"
+                    class="flex-1 py-4 rounded-full border border-[#44474e] text-white font-bold uppercase tracking-widest text-xs hover:bg-[#233456] transition-all">
+                Cancel
+            </button>
+
+            <button id="confirmDeleteBtn"
+               class="flex-1 py-4 rounded-full bg-red-500 text-white text-center font-bold uppercase tracking-widest text-xs hover:bg-red-600 transition-all">
+                Delete
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 <script>
+    let itemToRemoveId = null;
+    let removeUrl = null;
+
+    function openDeleteModal(itemId, url) {
+        itemToRemoveId = itemId;
+        removeUrl = url;
+        document.getElementById('deleteModal').classList.remove('hidden');
+        document.getElementById('deleteModal').classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('flex');
+        document.getElementById('deleteModal').classList.add('hidden');
+        itemToRemoveId = null;
+        removeUrl = null;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const removeButtons = document.querySelectorAll('[data-remove-wishlist]');
         removeButtons.forEach(btn => {
@@ -460,9 +412,17 @@
                 e.preventDefault();
                 const itemId = this.getAttribute('data-remove-wishlist');
                 const url = this.getAttribute('href');
-                const card = document.getElementById('wishlist-item-' + itemId);
+                openDeleteModal(itemId, url);
+            });
+        });
 
-                fetch(url, {
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (itemToRemoveId && removeUrl) {
+                const card = document.getElementById('wishlist-item-' + itemToRemoveId);
+                const currentUrl = removeUrl; // Store locally before clearing
+                closeDeleteModal(); // Close immediately
+
+                fetch(currentUrl, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
@@ -498,7 +458,7 @@
                 .catch(err => {
                     console.error('Error removing wishlist item:', err);
                 });
-            });
+            }
         });
     });
 </script>

@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings
 from user.addresses.models import Address
-from admin_panel.productmanagement.models import Product, ProductVariant
+from admin_panel.productmanagement.models import Product
+from admin_panel.variantmanagement.models import ProductVariant
 
 
 class Order(models.Model):
@@ -62,22 +63,33 @@ class OrderItem(models.Model):
         ('Shipped', 'Shipped'),
         ('Out for Delivery', 'Out for Delivery'),
         ('Delivered', 'Delivered'),
+
+        ('Partially Cancelled', 'Partially Cancelled'),
         ('Cancelled', 'Cancelled'),
+
         ('Return Requested', 'Return Requested'),
+        ('Partially Returned', 'Partially Returned'),
         ('Returned', 'Returned'),
+
         ('Return Rejected', 'Return Rejected'),
     )
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    variant = models.ForeignKey(ProductVariant, on_delete=models.SET_NULL, null=True, blank=True)
+    order = models.ForeignKey(Order,on_delete=models.CASCADE,related_name='items')
+    variant = models.ForeignKey( ProductVariant, on_delete=models.SET_NULL,null=True,blank=True )
     product_name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
+    cancelled_quantity = models.PositiveIntegerField(default=0)
+    returned_quantity = models.PositiveIntegerField(default=0)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    item_status = models.CharField(max_length=20, choices=ITEM_STATUS, default='Pending')
+    item_status = models.CharField(max_length=30,choices=ITEM_STATUS,default='Pending')
     reason = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def remaining_quantity(self):
+        return (
+            self.quantity - self.cancelled_quantity - self.returned_quantity)
 
     def __str__(self):
         return self.product_name

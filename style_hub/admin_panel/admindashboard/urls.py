@@ -7,4 +7,5 @@ urlpatterns = [
     path('sales-report/pdf/', views.download_sales_report_pdf, name='download_sales_report_pdf'),
     path('sales-report/excel/', views.download_sales_report_excel, name='download_sales_report_excel'),
     path('referrals/', views.admin_referrals, name='admin_referrals'),
+    
 ]

@@ -3,7 +3,8 @@ from .models import Cart
 from user.whishlist.models import Wishlist
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from admin_panel.productmanagement.models import ProductVariant, Product
+from admin_panel.productmanagement.models import Product
+from admin_panel.variantmanagement.models import ProductVariant
 from django.http import JsonResponse
 import json
 
@@ -68,6 +69,8 @@ def cart_page(request):
 
 @login_required(login_url='login')
 def add_cart(request, id):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
     product = get_object_or_404(
         Product,
         id=id,
@@ -77,12 +80,26 @@ def add_cart(request, id):
         category__is_active=True
     )
 
-    variant_id = request.POST.get('variant_id')
-    quantity = int(request.POST.get('quantity', 1))
+    referer = request.META.get('HTTP_REFERER')
+    default_redirect = lambda: redirect('product_detail', id=product.id)
+
+    if request.content_type == 'application/json':
+        try:
+            data = json.loads(request.body)
+            variant_id = data.get('variant_id')
+            quantity = int(data.get('quantity', 1))
+        except Exception:
+            variant_id = None
+            quantity = 1
+    else:
+        variant_id = request.POST.get('variant_id')
+        quantity = int(request.POST.get('quantity', 1))
 
     if not variant_id:
+        if is_ajax:
+            return JsonResponse({'success': False, 'message': 'Please select a size'})
         messages.error(request, 'Please select a size')
-        return redirect('product_detail', id=product.id)
+        return redirect(referer) if referer else default_redirect()
 
     variant = get_object_or_404(
         ProductVariant,
@@ -93,16 +110,22 @@ def add_cart(request, id):
     )
 
     if variant.variant_stock <= 0:
+        if is_ajax:
+            return JsonResponse({'success': False, 'message': 'This product is out of stock'})
         messages.error(request, 'This product is out of stock')
-        return redirect('product_detail', id=product.id)
+        return redirect(referer) if referer else default_redirect()
 
     if quantity > variant.variant_stock:
+        if is_ajax:
+            return JsonResponse({'success': False, 'message': 'Selected quantity is more than available stock'})
         messages.error(request, 'Selected quantity is more than available stock')
-        return redirect('product_detail', id=product.id)
+        return redirect(referer) if referer else default_redirect()
 
     if quantity > 5:
+        if is_ajax:
+            return JsonResponse({'success': False, 'message': 'Maximum 5 quantity allowed'})
         messages.error(request, 'Maximum 5 quantity allowed')
-        return redirect('product_detail', id=product.id)
+        return redirect(referer) if referer else default_redirect()
 
     cart_item, created = Cart.objects.get_or_create(
         user=request.user,
@@ -114,12 +137,16 @@ def add_cart(request, id):
         new_quantity = cart_item.quantity + quantity
 
         if new_quantity > variant.variant_stock:
+            if is_ajax:
+                return JsonResponse({'success': False, 'message': 'Not enough stock available'})
             messages.error(request, 'Not enough stock available')
-            return redirect('product_detail', id=product.id)
+            return redirect(referer) if referer else default_redirect()
 
         if new_quantity > 5:
+            if is_ajax:
+                return JsonResponse({'success': False, 'message': 'Maximum 5 quantity allowed'})
             messages.error(request, 'Maximum 5 quantity allowed')
-            return redirect('product_detail', id=product.id)
+            return redirect(referer) if referer else default_redirect()
 
         cart_item.quantity = new_quantity
         cart_item.save()
@@ -129,8 +156,24 @@ def add_cart(request, id):
         variant=variant
     ).delete()
 
+    if is_ajax:
+        cart_count = Cart.objects.filter(
+            user=request.user,
+            variant__is_deleted=False,
+            variant__is_active=True,
+            variant__product__is_deleted=False,
+            variant__product__is_active=True,
+            variant__product__category__is_deleted=False,
+            variant__product__category__is_active=True
+        ).count()
+        return JsonResponse({
+            'success': True,
+            'message': 'Product added to cart',
+            'cart_count': cart_count
+        })
+
     messages.success(request, 'Product added to cart')
-    return redirect('cart_page')
+    return redirect(referer) if referer else redirect('product_detail', id=id)
 
 
 @login_required(login_url='login')

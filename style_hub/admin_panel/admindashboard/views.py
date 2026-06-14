@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -15,7 +15,6 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from user.orders.models import Order, OrderItem
 from admin_panel.productmanagement.models import Product
-from admin_panel.categorymanagement.models import Category
 from django.core.paginator import Paginator
 from user.authentication.models import Referral
 
@@ -72,9 +71,16 @@ def admin_dashboard(request):
     
     total_revenue_val = active_orders.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
     
-    processing_orders = Order.objects.filter(order_status__in=['Pending', 'Confirmed']).count()
-    shipped_orders = Order.objects.filter(order_status__in=['Shipped', 'Out for Delivery']).count()
-    return_orders = Order.objects.filter(order_status='Return Requested').count()
+    processing_orders = Order.objects.filter(order_status='Pending').count()
+    confirmed_orders = Order.objects.filter(order_status='Confirmed').count()
+    shipped_orders = Order.objects.filter(order_status='Shipped').count()
+    out_for_delivery_orders = Order.objects.filter(order_status='Out for Delivery').count()
+    delivered_orders = Order.objects.filter(order_status='Delivered').count()
+    cancelled_orders = Order.objects.filter(order_status='Cancelled').count()
+    
+    full_returns = Order.objects.filter(order_status='Return Requested').count()
+    partial_returns = OrderItem.objects.filter(item_status='Return Requested').exclude(order__order_status='Return Requested').values('order').distinct().count()
+    return_orders = full_returns + partial_returns
     
     recent_orders = Order.objects.all().select_related('user').order_by('-ordered_at')[:5]
     
@@ -145,7 +151,11 @@ def admin_dashboard(request):
         'blocked_users': blocked_users,
         'total_products': total_products,
         'processing_orders': processing_orders,
+        'confirmed_orders': confirmed_orders,
         'shipped_orders': shipped_orders,
+        'out_for_delivery_orders': out_for_delivery_orders,
+        'delivered_orders': delivered_orders,
+        'cancelled_orders': cancelled_orders,
         'return_orders': return_orders,
         'recent_orders': recent_orders,
         'sales_chart': sales_chart,
@@ -513,3 +523,5 @@ def admin_referrals(request):
         'search': search,
     }
     return render(request, 'admindashboard/referral_management.html', context)
+
+
