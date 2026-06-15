@@ -244,168 +244,232 @@ def order_cancel_success(request):
     if request.method == 'POST':
 
         item_id = request.POST.get('item_id')
+        order_id = request.POST.get('order_id')
         reason = request.POST.get('reason', '').strip()
 
         if not reason:
             messages.error(request, 'Cancellation reason is required')
             return redirect('user_orders_listing')
 
-        item = get_object_or_404(
-            OrderItem,
-            id=item_id,
-            order__user=request.user
-        )
-
-        cancel_quantity = int(request.POST.get('cancel_quantity', request.POST.get('quantity', 0)))
-
-        if cancel_quantity <= 0:
-            messages.error(request, 'Invalid cancel quantity')
-            return redirect(
-                f"{reverse('orders_view')}?order_id={item.order.id}"
+        if item_id:
+            item = get_object_or_404(
+                OrderItem,
+                id=item_id,
+                order__user=request.user
             )
 
-        if item.item_status not in [
-            'Pending',
-            'Confirmed',
-            'Shipped',
-            'Partially Cancelled'
-        ]:
-            messages.error(
-                request,
-                f"Item cannot be cancelled: {item.item_status}"
-            )
-            return redirect(
-                f"{reverse('orders_view')}?order_id={item.order.id}"
-            )
+            cancel_quantity = int(request.POST.get('cancel_quantity', request.POST.get('quantity', 0)))
 
-        available_quantity = (
-            item.quantity
-            - item.cancelled_quantity
-            - item.returned_quantity
-        )
+            if cancel_quantity <= 0:
+                messages.error(request, 'Invalid cancel quantity')
+                return redirect(
+                    f"{reverse('orders_view')}?order_id={item.order.id}"
+                )
 
-        if cancel_quantity > available_quantity:
-            messages.error(
-                request,
-                'Cancel quantity exceeds available quantity'
-            )
-            return redirect(
-                f"{reverse('orders_view')}?order_id={item.order.id}"
-            )
+            if item.item_status not in [
+                'Pending',
+                'Confirmed',
+                'Shipped',
+                'Partially Cancelled'
+            ]:
+                messages.error(
+                    request,
+                    f"Item cannot be cancelled: {item.item_status}"
+                )
+                return redirect(
+                    f"{reverse('orders_view')}?order_id={item.order.id}"
+                )
 
-        with transaction.atomic():
-
-            # UPDATE CANCELLED QTY
-            item.cancelled_quantity += cancel_quantity
-            item.reason = reason
-
-            remaining_quantity = (
+            available_quantity = (
                 item.quantity
                 - item.cancelled_quantity
                 - item.returned_quantity
             )
 
-            # STATUS UPDATE
-            if remaining_quantity == 0:
-                item.item_status = 'Cancelled'
-            else:
-                item.item_status = f'Partially Cancelled ({item.cancelled_quantity})'
-
-            item.total_price = item.price * remaining_quantity
-            item.save()
-
-            # STOCK RETURN
-            if item.variant:
-                item.variant.variant_stock += cancel_quantity
-                item.variant.save()
-
-            order = item.order
-
-            # FULL ORDER CANCEL CHECK
-            all_cancelled = True
-            for order_item in order.items.all():
-                rem_qty = (
-                    order_item.quantity
-                    - order_item.cancelled_quantity
-                    - order_item.returned_quantity
+            if cancel_quantity > available_quantity:
+                messages.error(
+                    request,
+                    'Cancel quantity exceeds available quantity'
                 )
-                if rem_qty > 0:
-                    all_cancelled = False
-                    break
+                return redirect(
+                    f"{reverse('orders_view')}?order_id={item.order.id}"
+                )
 
+            with transaction.atomic():
+
+                # UPDATE CANCELLED QTY
+                item.cancelled_quantity += cancel_quantity
+                item.reason = reason
+
+                remaining_quantity = (
+                    item.quantity
+                    - item.cancelled_quantity
+                    - item.returned_quantity
+                )
+
+                # STATUS UPDATE
+                if remaining_quantity == 0:
+                    item.item_status = 'Cancelled'
+                else:
+                    item.item_status = f'Partially Cancelled ({item.cancelled_quantity})'
+
+                item.total_price = item.price * remaining_quantity
+                item.save()
+
+                # STOCK RETURN
+                if item.variant:
+                    item.variant.variant_stock += cancel_quantity
+                    item.variant.save()
+
+                order = item.order
+
+                # FULL ORDER CANCEL CHECK
+                all_cancelled = True
+                for order_item in order.items.all():
+                    rem_qty = (
+                        order_item.quantity
+                        - order_item.cancelled_quantity
+                        - order_item.returned_quantity
+                    )
+                    if rem_qty > 0:
+                        all_cancelled = False
+                        break
+
+                refund_amount = Decimal('0.00')
+
+                if all_cancelled:
+                    # Refund the remaining total amount of the order (including delivery charge)
+                    if order.payment_status == 'Completed':
+                        refund_amount = order.total_amount.quantize(Decimal('0.01'))
+                        credit_wallet(
+                            user=request.user,
+                            amount=refund_amount,
+                            purpose='Item Cancellation Refund',
+                            order=order
+                        )
+                        order.payment_status = 'Refunded'
+
+                    order.order_status = 'Cancelled'
+                    order.subtotal = Decimal('0.00')
+                    order.discount_amount = Decimal('0.00')
+                    order.total_amount = Decimal('0.00')
+                    order.save()
+                else:
+                    cancelled_total = item.price * Decimal(cancel_quantity)
+                    new_subtotal = order.subtotal - cancelled_total
+                    
+                    new_discount = Decimal('0.00')
+                    if order.discount_amount > 0 and order.subtotal > 0:
+                        if order.coupon and new_subtotal < order.coupon.min_purchase:
+                            # Coupon is invalidated
+                            new_discount = Decimal('0.00')
+                        else:
+                            new_discount = order.discount_amount - (
+                                cancelled_total / order.subtotal
+                            ) * order.discount_amount
+
+                    new_total = max(
+                        new_subtotal
+                        - new_discount
+                        + order.delivery_charge,
+                        Decimal('0.00')
+                    )
+
+                    refund_amount = order.total_amount - new_total
+                    if refund_amount < 0:
+                        refund_amount = Decimal('0.00')
+                        new_total = order.total_amount
+
+                    refund_amount = refund_amount.quantize(Decimal('0.01'))
+
+                    if order.payment_status == 'Completed' and refund_amount > 0:
+                        credit_wallet(
+                            user=request.user,
+                            amount=refund_amount,
+                            purpose='Item Cancellation Refund',
+                            order=order
+                        )
+
+                    order.subtotal = new_subtotal
+                    order.discount_amount = new_discount.quantize(Decimal('0.01'))
+                    order.total_amount = new_total.quantize(Decimal('0.01'))
+                    order.save()
+
+            context = {
+                'cancelled_item': [item],
+                'cancelled_order': order,
+                'refund_amount': refund_amount,
+                'cancel_quantity': cancel_quantity,
+                'cancel_type': 'item',
+            }
+
+            return render(
+                request,
+                'order_cancel_success.html',
+                context
+            )
+            
+        elif order_id:
+            order = get_object_or_404(
+                Order,
+                id=order_id,
+                user=request.user
+            )
+
+            if order.order_status in ['Cancelled', 'Delivered', 'Returned']:
+                messages.error(request, 'This order cannot be cancelled')
+                return redirect(f"{reverse('orders_view')}?order_id={order.id}")
+                
             refund_amount = Decimal('0.00')
 
-            if all_cancelled:
-                # Refund the remaining total amount of the order (including delivery charge)
+            with transaction.atomic():
+                for order_item in order.items.all():
+                    available_quantity = (
+                        order_item.quantity
+                        - order_item.cancelled_quantity
+                        - order_item.returned_quantity
+                    )
+                    
+                    if available_quantity > 0 and order_item.item_status not in ['Cancelled', 'Returned', 'Return Requested']:
+                        order_item.cancelled_quantity += available_quantity
+                        order_item.reason = reason
+                        order_item.item_status = 'Cancelled'
+                        order_item.total_price = Decimal('0.00')
+                        order_item.save()
+                        
+                        if order_item.variant:
+                            order_item.variant.variant_stock += available_quantity
+                            order_item.variant.save()
+                
                 if order.payment_status == 'Completed':
                     refund_amount = order.total_amount.quantize(Decimal('0.01'))
-                    credit_wallet(
-                        user=request.user,
-                        amount=refund_amount,
-                        purpose='Item Cancellation Refund',
-                        order=order
-                    )
+                    if refund_amount > 0:
+                        credit_wallet(
+                            user=request.user,
+                            amount=refund_amount,
+                            purpose='Order Cancellation Refund',
+                            order=order
+                        )
                     order.payment_status = 'Refunded'
 
                 order.order_status = 'Cancelled'
+                order.reason = reason
                 order.subtotal = Decimal('0.00')
                 order.discount_amount = Decimal('0.00')
                 order.total_amount = Decimal('0.00')
                 order.save()
-            else:
-                cancelled_total = item.price * Decimal(cancel_quantity)
-                new_subtotal = order.subtotal - cancelled_total
-                
-                new_discount = Decimal('0.00')
-                if order.discount_amount > 0 and order.subtotal > 0:
-                    if order.coupon and new_subtotal < order.coupon.min_purchase:
-                        # Coupon is invalidated
-                        new_discount = Decimal('0.00')
-                    else:
-                        new_discount = order.discount_amount - (
-                            cancelled_total / order.subtotal
-                        ) * order.discount_amount
 
-                new_total = max(
-                    new_subtotal
-                    - new_discount
-                    + order.delivery_charge,
-                    Decimal('0.00')
-                )
+            context = {
+                'cancelled_order': order,
+                'refund_amount': refund_amount,
+                'cancel_type': 'order',
+            }
 
-                refund_amount = order.total_amount - new_total
-                if refund_amount < 0:
-                    refund_amount = Decimal('0.00')
-                    new_total = order.total_amount
-
-                refund_amount = refund_amount.quantize(Decimal('0.01'))
-
-                if order.payment_status == 'Completed' and refund_amount > 0:
-                    credit_wallet(
-                        user=request.user,
-                        amount=refund_amount,
-                        purpose='Item Cancellation Refund',
-                        order=order
-                    )
-
-                order.subtotal = new_subtotal
-                order.discount_amount = new_discount.quantize(Decimal('0.01'))
-                order.total_amount = new_total.quantize(Decimal('0.01'))
-                order.save()
-
-        context = {
-            'cancelled_item': [item],
-            'cancelled_order': order,
-            'refund_amount': refund_amount,
-            'cancel_quantity': cancel_quantity,
-            'cancel_type': 'item',
-        }
-
-        return render(
-            request,
-            'order_cancel_success.html',
-            context
-        )
+            return render(
+                request,
+                'order_cancel_success.html',
+                context
+            )
 
     return redirect('user_orders_listing')
 
