@@ -421,9 +421,11 @@
                             if (data.action === 'added') {
                                 icon.classList.add('text-red-500');
                                 icon.style.fontVariationSettings = "'FILL' 1";
+                                window.showToast(data.message || 'Added to wishlist', 'success');
                             } else {
                                 icon.classList.remove('text-red-500');
                                 icon.style.fontVariationSettings = "'FILL' 0";
+                                window.showToast(data.message || 'Removed from wishlist', 'info');
                             }
 
                             // Update wishlist count in navbar if element exists

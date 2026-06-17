@@ -437,10 +437,45 @@ body { font-family: 'Manrope', sans-serif; }
         wishlistIcon.classList.remove('text-red-500');
     }
 
-       wishlistBtn.setAttribute(
-    'onclick',
-    `window.location.href='/whislist/add/${variant.id}/'`
-);
+        wishlistBtn.onclick = function(e) {
+            e.preventDefault();
+            fetch(`/whislist/add/${variant.id}/`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.action === 'added') {
+                        wishlistIcon.classList.add('text-red-500');
+                        wishlistIcon.style.fontVariationSettings = "'FILL' 1";
+                        window.showToast(data.message || 'Added to wishlist', 'success');
+                        variant.is_wishlisted = true;
+                    } else {
+                        wishlistIcon.classList.remove('text-red-500');
+                        wishlistIcon.style.fontVariationSettings = "'FILL' 0";
+                        window.showToast(data.message || 'Removed from wishlist', 'info');
+                        variant.is_wishlisted = false;
+                    }
+                    const wishlistCountEl = document.getElementById('wishlist-count');
+                    if (wishlistCountEl) {
+                        wishlistCountEl.textContent = data.wishlist_count;
+                        if (data.wishlist_count > 0) {
+                            wishlistCountEl.classList.remove('hidden');
+                        } else {
+                            wishlistCountEl.classList.add('hidden');
+                        }
+                    }
+                } else {
+                    window.location.href = '/login/';
+                }
+            })
+            .catch(err => {
+                console.error('Error toggling wishlist:', err);
+                window.location.href = '/login/';
+            });
+        };
 
         updateGallery(variant.images);
     }
