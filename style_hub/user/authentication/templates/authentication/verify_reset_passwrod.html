@@ -279,9 +279,15 @@
     const resendBtn = document.getElementById('resendBtn');
     const timerElement = document.getElementById('timer');
 
-    let timeLeft = 30;
-    let countdown;
+    const TIMER_DURATION = 30;
+    let endTime = localStorage.getItem('otpEndTime_passwordReset');
 
+    if (!endTime) {
+        endTime = new Date().getTime() + TIMER_DURATION * 1000;
+        localStorage.setItem('otpEndTime_passwordReset', endTime);
+    }
+
+    let countdown;
 
     // disable initially
     resendBtn.disabled = true;
@@ -291,16 +297,16 @@
         'cursor-not-allowed'
     );
 
-
     // =========================
     // START TIMER
     // =========================
 
     function startTimer() {
-
         clearInterval(countdown);
-
         countdown = setInterval(() => {
+            let now = new Date().getTime();
+            let timeLeft = Math.max(0, Math.ceil((endTime - now) / 1000));
+
 
             let seconds =
                 timeLeft < 10
@@ -327,8 +333,6 @@
                     'cursor-pointer'
                 );
             }
-
-            timeLeft--;
 
         }, 1000);
     }
@@ -402,7 +406,8 @@
     // =========================
 
     resendBtn.addEventListener('click', function () {
-
+        let now = new Date().getTime();
+        let timeLeft = Math.max(0, Math.ceil((endTime - now) / 1000));
         if (timeLeft > 0) return;
 
         fetch("{% url 'resend_password_reset_otp' %}", {
@@ -431,7 +436,8 @@
 
 
             // RESET TIMER
-            timeLeft = 30;
+            endTime = new Date().getTime() + TIMER_DURATION * 1000;
+            localStorage.setItem('otpEndTime_passwordReset', endTime);
 
             resendBtn.disabled = true;
 

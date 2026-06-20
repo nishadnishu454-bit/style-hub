@@ -245,56 +245,64 @@
         });
 
         // 30 second timer UI only
-       const resendBtn = document.getElementById('resendBtn');
-const timerElement = document.getElementById('timer');
+        const resendBtn = document.getElementById('resendBtn');
+        const timerElement = document.getElementById('timer');
 
-let timeLeft = 30;
+        const TIMER_DURATION = 30;
+        let endTime = localStorage.getItem('otpEndTime_adminSignup');
 
-// start timer
-let countdown = setInterval(updateTimer, 1000);
-
-function updateTimer() {
-    let seconds = timeLeft < 10 ? '0' + timeLeft : timeLeft;
-    timerElement.textContent = `00:${seconds}`;
-
-    if (timeLeft <= 0) {
-        clearInterval(countdown);
-        timerElement.textContent = '00:00';
-
-        // ✅ enable button
-        resendBtn.disabled = false;
-        resendBtn.classList.remove('text-gray-400', 'cursor-not-allowed');
-        resendBtn.classList.add('text-white', 'cursor-pointer');
-    }
-
-    timeLeft--;
-}
-
-// 🔥 RESEND CLICK
-resendBtn.addEventListener('click', function () {
-
-    if (timeLeft > 0) return; // safety
-
-    fetch("{% url 'resend_otp' %}", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}"
+        if (!endTime) {
+            endTime = new Date().getTime() + TIMER_DURATION * 1000;
+            localStorage.setItem('otpEndTime_adminSignup', endTime);
         }
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert("New OTP Sent ✅");
 
-        // 🔁 restart timer
-        timeLeft = 30;
-        resendBtn.disabled = true;
+        let countdown = setInterval(updateTimer, 1000);
+        let timeLeft = 0;
+        updateTimer();
 
-        resendBtn.classList.add('text-gray-400', 'cursor-not-allowed');
-        resendBtn.classList.remove('text-white');
+        function updateTimer() {
+            let now = new Date().getTime();
+            let timeLeft = Math.max(0, Math.ceil((endTime - now) / 1000));
 
-        countdown = setInterval(updateTimer, 1000);
-    });
-});
+            let seconds = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+            timerElement.textContent = `00:${seconds}`;
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerElement.textContent = '00:00';
+                resendBtn.disabled = false;
+                resendBtn.classList.remove('text-gray-400', 'cursor-not-allowed');
+                resendBtn.classList.add('text-white', 'cursor-pointer');
+            }
+        }
+
+        resendBtn.addEventListener('click', function () {
+            let now = new Date().getTime();
+            let timeLeft = Math.max(0, Math.ceil((endTime - now) / 1000));
+            if (timeLeft > 0) return;
+
+            fetch("{% url 'resend_otp' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert("New OTP Sent ✅");
+
+                endTime = new Date().getTime() + TIMER_DURATION * 1000;
+                localStorage.setItem('otpEndTime_adminSignup', endTime);
+
+                resendBtn.disabled = true;
+                resendBtn.classList.add('text-gray-400', 'cursor-not-allowed');
+                resendBtn.classList.remove('text-white', 'cursor-pointer');
+
+                clearInterval(countdown);
+                countdown = setInterval(updateTimer, 1000);
+                updateTimer();
+            });
+        });
     </script>
 </body>
 </html>

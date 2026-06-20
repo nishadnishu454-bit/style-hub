@@ -204,7 +204,7 @@
 
         <div class="relative w-full max-w-2xl bg-surface-container-highest border border-outline-variant/30 rounded-3xl shadow-[0px_40px_80px_rgba(0,0,0,0.6)] overflow-hidden">
 
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" onsubmit="localStorage.removeItem('otpEndTime_emailChange')">
                 {% csrf_token %}
 
                 <!-- Modal Header -->

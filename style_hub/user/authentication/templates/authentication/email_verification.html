@@ -264,7 +264,7 @@
         const TIMER_DURATION = 30;
         let endTime = localStorage.getItem('otpEndTime_signup');
 
-        if (!endTime || new Date().getTime() > endTime) {
+        if (!endTime) {
             endTime = new Date().getTime() + TIMER_DURATION * 1000;
             localStorage.setItem('otpEndTime_signup', endTime);
         }
