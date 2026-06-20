@@ -164,7 +164,7 @@ def editprofile_page(request):
                 user.profile_photo.save(
                     file_name,
                     ContentFile(image_data),
-                    save=False
+                    save=True
                 )
 
             except Exception:
@@ -174,11 +174,9 @@ def editprofile_page(request):
                 )
                 return render(request, 'editprofile.html', {'old_data': request.POST})
 
-        remove_photo = request.POST.get('remove_photo')
-
-        if remove_photo == 'true':
+        elif request.POST.get('remove_photo') == 'true':
             if user.profile_photo:
-                user.profile_photo.delete(save=False)
+                user.profile_photo.delete(save=True)
 
         old_email = user.email
 
