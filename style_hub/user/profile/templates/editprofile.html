@@ -247,6 +247,11 @@
                                         Change Photo
                                         <input type="file" id="imageInput" accept="image/*" class="hidden">
                                     </label>
+                                    {% if request.user.profile_photo %}
+                                    <button type="button" onclick="document.getElementById('removePhotoInput').value='true'; this.closest('form').submit();" class="bg-error-container text-on-error-container px-6 py-2 rounded-full text-xs font-bold hover:bg-error hover:text-on-error transition-colors cursor-pointer">
+                                        Remove Photo
+                                    </button>
+                                    {% endif %}
                                 </div>
                                 <p class="text-[10px] text-on-surface-variant ml-1">JPG or PNG. Max size 2MB.</p>
                             </div>
@@ -254,6 +259,7 @@
                     </div>
 
                     <input type="hidden" name="cropped_image" id="croppedImageInput">
+                    <input type="hidden" name="remove_photo" id="removePhotoInput" value="false">
 
                     <!-- Form Fields -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
