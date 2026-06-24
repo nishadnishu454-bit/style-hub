@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from admin_panel.categorymanagement.models import Category
-from django.http import HttpResponseForbidden, HttpResponseBadRequest
-from django.core.exceptions import PermissionDenied
+
 
 
 # Create your views here.
