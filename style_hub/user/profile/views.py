@@ -17,11 +17,6 @@ from django.http import JsonResponse
 
 @login_required(login_url='login')
 def profile_page(request):
-    return render(request, 'profile.html')
-
-
-@login_required(login_url='login')
-def editprofile_page(request):
 
     user = request.user
 
@@ -35,7 +30,7 @@ def editprofile_page(request):
         # REQUIRED FIELD VALIDATION
         if not username or not new_email or not phone_number:
             messages.error(request, 'All fields are required')
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # USERNAME LENGTH VALIDATION
         if len(username) < 3:
@@ -43,14 +38,14 @@ def editprofile_page(request):
                 request,
                 'Username must contain at least 3 characters'
             )
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         if len(username) > 30:
             messages.error(
                 request,
                 'Username cannot exceed 30 characters'
             )
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # USERNAME SPACE VALIDATION
         if "  " in username:
@@ -58,7 +53,7 @@ def editprofile_page(request):
                 request,
                 'Username contains invalid spaces'
             )
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # USERNAME CHARACTER VALIDATION
         if not re.match(r'^[A-Za-z0-9_]+$', username):
@@ -66,7 +61,7 @@ def editprofile_page(request):
                 request,
                 'Username can contain only letters, numbers and underscore'
             )
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # USERNAME CANNOT BE ONLY NUMBERS
         if username.isdigit():
@@ -74,7 +69,7 @@ def editprofile_page(request):
                 request,
                 'Username cannot contain only numbers'
             )
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # USERNAME DUPLICATE CHECK
         if User.objects.filter(
@@ -82,14 +77,14 @@ def editprofile_page(request):
         ).exclude(id=user.id).exists():
 
             messages.error(request, "Username already taken")
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # EMAIL FORMAT VALIDATION
         email_pattern = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
 
         if not re.match(email_pattern, new_email):
             messages.error(request, 'Invalid email address')
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # EMAIL LENGTH VALIDATION
         if len(new_email) > 254:
@@ -97,7 +92,7 @@ def editprofile_page(request):
                 request,
                 'Email address is too long'
             )
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # EMAIL DUPLICATE CHECK
         if User.objects.filter(
@@ -105,7 +100,7 @@ def editprofile_page(request):
         ).exclude(id=user.id).exists():
 
             messages.error(request, 'Email already exists')
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # PHONE NUMBER VALIDATION
         if not phone_number.isdigit():
@@ -113,14 +108,14 @@ def editprofile_page(request):
                 request,
                 'Phone number must contain only digits'
             )
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         if len(phone_number) != 10:
             messages.error(
                 request,
                 'Phone number must contain 10 digits'
             )
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # INDIAN PHONE NUMBER VALIDATION
         if phone_number[0] not in ['6', '7', '8', '9']:
@@ -128,7 +123,7 @@ def editprofile_page(request):
                 request,
                 'Invalid phone number'
             )
-            return render(request, 'editprofile.html', {'old_data': request.POST})
+            return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # PROFILE IMAGE VALIDATION
         if cropped_image:
@@ -146,7 +141,7 @@ def editprofile_page(request):
                         request,
                         'Only JPG, JPEG, PNG and WEBP images are allowed'
                     )
-                    return render(request, 'editprofile.html', {'old_data': request.POST})
+                    return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
                 # DECODE IMAGE
                 image_data = base64.b64decode(imgstr)
@@ -157,7 +152,7 @@ def editprofile_page(request):
                         request,
                         'Profile image size must be less than 5MB'
                     )
-                    return render(request, 'editprofile.html', {'old_data': request.POST})
+                    return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
                 file_name = f"{uuid.uuid4()}.{ext}"
 
@@ -172,7 +167,7 @@ def editprofile_page(request):
                     request,
                     'Invalid profile image'
                 )
-                return render(request, 'editprofile.html', {'old_data': request.POST})
+                return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         elif request.POST.get('remove_photo') == 'true':
             if user.profile_photo:
@@ -239,7 +234,7 @@ STYLE-HUB Team
                     request,
                     'Failed to send OTP email. Please try again.'
                 )
-                return render(request, 'editprofile.html', {'old_data': request.POST})
+                return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
             messages.success(
                 request,
@@ -258,7 +253,8 @@ STYLE-HUB Team
 
         return redirect('profile')
 
-    return render(request, 'editprofile.html')
+    return render(request, 'profile.html')
+
 
 
 @login_required(login_url='login')
