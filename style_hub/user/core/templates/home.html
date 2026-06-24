@@ -103,14 +103,14 @@
                         Discover premium men's fashion collections curated for the modern gentleman who values intentional design.
                     </p>
 <div class="flex flex-col sm:flex-row gap-4">
-<a href="{% url "product_page" %}" class="px-10 py-5 bg-primary-fixed text-on-primary-fixed rounded-full font-bold text-lg hover:bg-primary transition-all duration-300 shadow-xl shadow-primary/10 inline-block text-center">
+<a href="{% url 'product_page' %}" class="px-10 py-5 bg-primary-fixed text-on-primary-fixed rounded-full font-bold text-lg hover:bg-primary transition-all duration-300 shadow-xl shadow-primary/10 inline-block text-center">
     Shop Now
 </a>
-
 </div>
 </div>
 </div>
 </section>
+
 <!-- Categories Bento Section -->
 <section class="py-24 px-8 bg-surface">
 <div class="max-w-7xl mx-auto">
@@ -119,74 +119,65 @@
 <h2 class="text-4xl md:text-5xl font-bold text-white tracking-tight">Shop by Categories</h2>
 <div class="h-1 w-20 bg-primary-fixed mt-4"></div>
 </div>
-<a class="text-primary font-semibold border-b border-primary/30 pb-1 hover:text-white transition-colors" href="{% url "category_page" %}">Explore All</a>
+<a class="text-primary font-semibold border-b border-primary/30 pb-1 hover:text-white transition-colors" href="{% url 'category_page' %}">Explore All</a>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-[800px] md:h-[600px]">
+
 <!-- Shirts -->
-<a href="{% if category_map.shirts %}{% url 'product_page' %}?category={{ category_map.shirts }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
-<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="close-up of a crisp white linen shirt on a hanger with clean shadows and high-end retail aesthetic" src="https://images.squarespace-cdn.com/content/v1/67c446f1faaf6d5dabbbd29c/c147c204-4fb5-4f01-8d15-6bf692a08c5c/closeup-photo-fashionable-clothes-hangers-shop.jpg"/>
+<a href="{% if category_map.shirts %}{% url 'product_page' %}?category={{ category_map.shirts }}{% else %}{% url 'product_page' %}?category=0{% endif %}" class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://images.squarespace-cdn.com/content/v1/67c446f1faaf6d5dabbbd29c/c147c204-4fb5-4f01-8d15-6bf692a08c5c/closeup-photo-fashionable-clothes-hangers-shop.jpg" alt="Shirts"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
 <h3 class="text-2xl font-bold text-white">Shirts</h3>
 <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Premium Cotton &amp; Silk</p>
 </div>
 </a>
+
 <!-- T-Shirts -->
-<a href="{% if category_map.t_shirts %}{% url 'product_page' %}?category={{ category_map.t_shirts }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
-<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="minimalist studio shot of high-quality oversized t-shirts in earth tones draped elegantly" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDL9XF0RA5E3NY1T4jjhY3uBioiiurJb8Croyxj7cr9iu6jgwtakx4kfhvBvuz7SC3XQwQBC7Gpy5ea97v1aMfDQEBKl7_N-R8eFI9NXF8uiMwsaHAH2HH_cOTB_TIb2eNj7EsRaBdVAO54lPhxWZTykyf3CeCqq8Kz8BIyt8gfkUdaKLEiY1t8RQ8i1m-dmURBE6k-5RegGk9kaRT1xuCbNS7ulGGK0IWox4iDlecj_fNPaDk3xdUomoAY4twzFCGOqIqG6cfbBZLV"/>
+<a href="{% if category_map.t_shirts %}{% url 'product_page' %}?category={{ category_map.t_shirts }}{% else %}{% url 'product_page' %}?category=0{% endif %}" class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDL9XF0RA5E3NY1T4jjhY3uBioiiurJb8Croyxj7cr9iu6jgwtakx4kfhvBvuz7SC3XQwQBC7Gpy5ea97v1aMfDQEBKl7_N-R8eFI9NXF8uiMwsaHAH2HH_cOTB_TIb2eNj7EsRaBdVAO54lPhxWZTykyf3CeCqq8Kz8BIyt8gfkUdaKLEiY1t8RQ8i1m-dmURBE6k-5RegGk9kaRT1xuCbNS7ulGGK0IWox4iDlecj_fNPaDk3xdUomoAY4twzFCGOqIqG6cfbBZLV" alt="T-Shirts"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
 <h3 class="text-2xl font-bold text-white">T-Shirts</h3>
 <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Essentials Reimagined</p>
 </div>
 </a>
-<!-- Jeans -->
-<a href="{% if category_map.pants %}{% url 'product_page' %}?category={{ category_map.pants }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
-<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="stack of high-quality raw indigo denim jeans showing texture and stitching details in moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkdDPZ3fK9ZRRALu6AoC4h64CW-6iYX8qvkWQtHs0yP6wlH8Ummr-exzfn97qk5NJ3xrSE1oFq960o86l1qzNC4MUQjeSYdsidqGcCBeFtMg8xE2yGUcfpo8CU3ebcvSPH4lwmI-F36vQP_tATIrxlOvleia1w4s-yORFBPr3V1XqAKS29uOrQvhk3Dt0nGqjRImxrtVJCCm7Ayw9MXM05y6ozoJwToFw1Xgb-0q5GFWtz-OOCO3SXz6eOWBxAMltVkmGffi5y5DF3"/>
+
+<!-- Pants -->
+<a href="{% if category_map.pants %}{% url 'product_page' %}?category={{ category_map.pants }}{% else %}{% url 'product_page' %}?category=0{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkdDPZ3fK9ZRRALu6AoC4h64CW-6iYX8qvkWQtHs0yP6wlH8Ummr-exzfn97qk5NJ3xrSE1oFq960o86l1qzNC4MUQjeSYdsidqGcCBeFtMg8xE2yGUcfpo8CU3ebcvSPH4lwmI-F36vQP_tATIrxlOvleia1w4s-yORFBPr3V1XqAKS29uOrQvhk3Dt0nGqjRImxrtVJCCm7Ayw9MXM05y6ozoJwToFw1Xgb-0q5GFWtz-OOCO3SXz6eOWBxAMltVkmGffi5y5DF3" alt="Pants"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
 <h3 class="text-2xl font-bold text-white">Pants</h3>
 <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Japanese Raw Denim</p>
 </div>
 </a>
+
 <!-- Jerseys -->
-<a href="{% if category_map.jerseys %}{% url 'product_page' %}?category={{ category_map.jerseys }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
-    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-        src="https://c8.alamy.com/comp/2KFK5W7/calcutta-india-november-15-2022-soccer-jerseys-of-various-country-are-hanging-in-a-retail-shop-to-sell-2KFK5W7.jpg"
-        alt="football jerseys hanging in store"/>
-    
-    <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
-        <h3 class="text-2xl font-bold text-white">Jerseys</h3>
-        <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            Sporty & Stylish Wear
-        </p>
-    </div>
+<a href="{% if category_map.jerseys %}{% url 'product_page' %}?category={{ category_map.jerseys }}{% else %}{% url 'product_page' %}?category=0{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://c8.alamy.com/comp/2KFK5W7/calcutta-india-november-15-2022-soccer-jerseys-of-various-country-are-hanging-in-a-retail-shop-to-sell-2KFK5W7.jpg" alt="Jerseys"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
+<h3 class="text-2xl font-bold text-white">Jerseys</h3>
+<p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Sporty &amp; Stylish Wear</p>
+</div>
 </a>
 
 <!-- Hoodies -->
-<a href="{% if category_map.hoodies %}{% url 'product_page' %}?category={{ category_map.hoodies }}{% else %}{% url 'product_page' %}{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
-    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-        src="https://img.freepik.com/free-photo/fashionable-men-jacket-hanging-clothing-store-generated-by-ai_188544-40066.jpg?semt=ais_hybrid&w=740&q=80"
-        alt="man wearing stylish hoodie"/>
-    
-    <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
-        <h3 class="text-2xl font-bold text-white">Hoodies</h3>
-        <p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            Comfort Meets Style
-        </p>
-    </div>
+<a href="{% if category_map.hoodies %}{% url 'product_page' %}?category={{ category_map.hoodies }}{% else %}{% url 'product_page' %}?category=0{% endif %}" class="md:col-span-4 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container shadow-2xl block">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://img.freepik.com/free-photo/fashionable-men-jacket-hanging-clothing-store-generated-by-ai_188544-40066.jpg?semt=ais_hybrid&w=740&q=80" alt="Hoodies"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-8">
+<h3 class="text-2xl font-bold text-white">Hoodies</h3>
+<p class="text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Comfort Meets Style</p>
+</div>
 </a>
+
 </div>
 </div>
 </section>
-
-
-
-
 
 <!-- Featured Split Layout -->
 <section class="py-24 px-8 bg-surface">
 <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 <div class="relative group">
 <div class="absolute -top-6 -left-6 w-full h-full border border-primary/20 rounded-xl -z-10 group-hover:top-0 group-hover:left-0 transition-all duration-500"></div>
-<img class="w-full aspect-[4/5] object-cover rounded-xl shadow-2xl" data-alt="portrait of a man in a premium leather jacket leaning against a concrete wall with dramatic chiaroscuro lighting" src="https://img.magnific.com/free-photo/portrait-young-handsome-bearded-man_1303-19639.jpg?semt=ais_hybrid&w=740&q=80"/>
+<img class="w-full aspect-[4/5] object-cover rounded-xl shadow-2xl" src="https://img.magnific.com/free-photo/portrait-young-handsome-bearded-man_1303-19639.jpg?semt=ais_hybrid&w=740&q=80" alt="Featured"/>
 </div>
 <div>
 <span class="text-primary font-bold tracking-widest uppercase text-xs">The Signature Collection</span>
@@ -208,7 +199,7 @@
                             Lifetime Quality Guarantee
                         </li>
 </ul>
-<a href="{% url "product_page" %}" class="flex items-center text-white font-bold group">
+<a href="{% url 'product_page' %}" class="flex items-center text-white font-bold group">
     Explore the Collection
     <span class="material-symbols-outlined ml-2 group-hover:translate-x-2 transition-transform">
         arrow_forward
@@ -217,9 +208,9 @@
 </div>
 </div>
 </section>
-<!-- Community Newsletter -->
 
 </main>
+
 <!-- Footer -->
 <footer class="bg-[#0c1f40] w-full py-16 px-8 tonal-shift-bg font-manrope text-sm">
 <div class="grid grid-cols-1 md:grid-cols-4 gap-12 max-w-7xl mx-auto">
@@ -228,18 +219,16 @@
 <p class="text-slate-400 leading-relaxed mb-6">
                     Redefining contemporary men's fashion through the lens of minimalism and high-craftsmanship since 2024.
                 </p>
-
 </div>
 <div>
 <h4 class="text-white font-bold mb-6">Quick Links</h4>
 <ul class="space-y-3">
-<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url "home" %}">Home</a></li>
-<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url "product_page" %}">Products</a></li>
-<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url "category_page" %}">Categories</a></li>
-<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url "about_page" %}">About</a></li>
+<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url 'home' %}">Home</a></li>
+<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url 'product_page' %}">Products</a></li>
+<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url 'category_page' %}">Categories</a></li>
+<li><a class="text-slate-400 hover:text-white transition-colors" href="{% url 'about_page' %}">About</a></li>
 </ul>
 </div>
-
 <div>
 <h4 class="text-white font-bold mb-6">Our Place</h4>
 <p class="text-slate-400 mb-2">124 Fashion Avenue</p>
