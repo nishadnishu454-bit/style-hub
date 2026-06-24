@@ -199,7 +199,7 @@
     </main>
 
     <!-- Modal Overlay -->
-    <div class="fixed inset-0 z-[100] flex items-center justify-center p-6">
+    <div class="fixed inset-0 z-[100] hidden items-center justify-center p-6">
         <div class="absolute inset-0 bg-surface/80 backdrop-blur-md"></div>
 
         <div class="relative w-full max-w-2xl bg-surface-container-highest border border-outline-variant/30 rounded-3xl shadow-[0px_40px_80px_rgba(0,0,0,0.6)] overflow-hidden">
@@ -258,7 +258,7 @@
                         </div>
                     </div>
 
-                    <input type="hidden" name="cropped_image" id="croppedImageInput">
+                    <input name="cropped_image" id="croppedImageInput">
                     <input type="hidden" name="remove_photo" id="removePhotoInput" value="false">
 
                     <!-- Form Fields -->
@@ -397,26 +397,38 @@
         });
 
         applyCrop.addEventListener('click', function () {
-            if (!cropper) return;
+    if (!cropper) return;
 
-            const canvas = cropper.getCroppedCanvas({
-                width: 300,
-                height: 300,
-                imageSmoothingQuality: 'high',
-            });
+    const canvas = cropper.getCroppedCanvas({
+        width: 300,
+        height: 300,
+        imageSmoothingQuality: 'high',
+    });
 
-            const croppedDataUrl = canvas.toDataURL('image/png');
+    const croppedDataUrl = canvas.toDataURL('image/png');
+    croppedImageInput.value = croppedDataUrl;
 
-            profilePreview.src = croppedDataUrl;
-            croppedImageInput.value = croppedDataUrl;
+    profilePreview.src = croppedDataUrl;
 
+    fetch(croppedDataUrl)
+        .then(res => res.blob())
+        .then(blob => {
+            const file = new File([blob], "profile.png", { type: "image/png" });
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+
+            const input = document.getElementById("imageInput");
+            input.files = dataTransfer.files;
+
+            // ONLY AFTER FILE SET → close modal
             cropModal.classList.add('hidden');
             cropModal.classList.remove('flex');
 
             cropper.destroy();
             cropper = null;
         });
-    }
+});
 
 </script>
 </body>

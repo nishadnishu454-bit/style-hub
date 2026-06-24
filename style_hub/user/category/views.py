@@ -19,4 +19,4 @@ def category_page(request):
         'category': category,
     }
 
-    return render(request, 'category_page.html', context)
+    return render(request, 'category_page.html', context)   
