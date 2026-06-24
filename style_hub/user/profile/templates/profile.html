@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
           darkMode: "class",
@@ -227,14 +229,14 @@
                     <h3 class="text-xl font-bold text-white tracking-tight px-2">Quick Actions</h3>
 
                     <!-- Edit Profile -->
-                    <a href="{% url 'editprofile' %}"
+                    <button type="button" onclick="openEditProfileModal()"
                        class="group w-full flex items-center justify-between p-6 rounded-2xl bg-primary-fixed hover:bg-primary transition-all duration-300">
                         <div class="flex items-center gap-4">
                             <span class="material-symbols-outlined text-on-primary-fixed bg-black/10 p-2 rounded-lg">edit_note</span>
                             <span class="text-on-primary-fixed font-bold tracking-tight">Edit Profile</span>
                         </div>
                         <span class="material-symbols-outlined text-on-primary-fixed group-hover:translate-x-1 transition-transform">chevron_right</span>
-                    </a>
+                    </button>
 
                     <!-- Change Password -->
                     <a href="{% url 'changepassword' %}"
@@ -274,6 +276,128 @@
            
         </div>
     </footer>
+
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="{% if show_edit_modal %}flex{% else %}hidden{% endif %} fixed inset-0 z-[100] items-center justify-center p-6">
+    <div class="absolute inset-0 bg-surface/80 backdrop-blur-md"></div>
+
+    <div class="relative w-full max-w-2xl bg-surface-container-highest border border-outline-variant/30 rounded-3xl shadow-[0px_40px_80px_rgba(0,0,0,0.6)] overflow-hidden">
+
+        <form method="POST" enctype="multipart/form-data" onsubmit="localStorage.removeItem('otpEndTime_emailChange')">
+            {% csrf_token %}
+
+            <!-- Modal Header -->
+            <div class="px-8 py-6 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-on-surface">Edit Profile</h2>
+                    <p class="text-on-surface-variant text-sm">Update your personal information</p>
+                </div>
+
+                <button type="button" onclick="closeEditProfileModal()" class="w-10 h-10 rounded-full hover:bg-surface-variant flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined text-on-surface-variant">close</span>
+                </button>
+            </div>
+
+            <!-- Modal Form Body -->
+            <div class="p-8 space-y-8 max-h-[716px] overflow-y-auto no-scrollbar">
+                <!-- Change Photo -->
+                <div class="flex items-center gap-6">
+                    <div class="relative w-24 h-24">
+                        {% if request.user.profile_photo %}
+                            <img id="profilePreview"
+                                 src="{{ request.user.profile_photo.url }}"
+                                 alt="Avatar Preview"
+                                 class="w-full h-full object-cover rounded-full">
+                        {% else %}
+                            <img id="profilePreview"
+                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_qu3JW0a-dABmcg5u1tUL_tWFzvBw9gOf6z8ka2lJpUyui3cNZfn878s5XU-Ft8MrMlsGdGwhX5ZLyXSBvETIVILj3sEK2fbsjlTCm_H1FjsLeX9EkOPv83o6GXWxwUwDmKKnfNeVOSDA8nOADWdag--PRpjyrdQ2GcIaL13T-3LhtWf4z1zj_hesYVI-N79eHguteCs8fyykDxZafH84We-_FF55bPo3MdZrN1mGLE-uPmxddcsys2XOD3Y3K2TOrDwgPjcFiaA1"
+                                 alt="Avatar Preview"
+                                 class="w-full h-full object-cover rounded-full">
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <div class="flex flex-col gap-3">
+                            <div class="flex gap-3">
+                                <label class="bg-secondary-container text-on-secondary-container px-6 py-2 rounded-full text-xs font-bold hover:bg-secondary transition-colors cursor-pointer">
+                                    Change Photo
+                                    <input type="file" id="imageInput" accept="image/*" class="hidden">
+                                </label>
+                                {% if request.user.profile_photo %}
+                                <button type="button" onclick="document.getElementById('removePhotoInput').value='true'; this.closest('form').submit();" class="bg-error-container text-on-error-container px-6 py-2 rounded-full text-xs font-bold hover:bg-error hover:text-on-error transition-colors cursor-pointer">
+                                    Remove Photo
+                                </button>
+                                {% endif %}
+                            </div>
+                            <p class="text-[10px] text-on-surface-variant ml-1">JPG or PNG. Max size 2MB.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="cropped_image" id="croppedImageInput">
+                <input type="hidden" name="remove_photo" id="removePhotoInput" value="false">
+
+                <!-- Form Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Username</label>
+                        <input class="bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-transparent outline-none transition-all"
+                               type="text"
+                               value="{{ old_data.username|default:request.user.username }}"
+                               name="username">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Email Address</label>
+                        <input class="bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-transparent outline-none transition-all"
+                               type="email"
+                               value="{{ old_data.email|default:request.user.email }}"
+                               name="email">
+                    </div>
+
+                    <div class="flex flex-col gap-2 md:col-span-2">
+                        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Phone Number</label>
+                        <input class="bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-transparent outline-none transition-all"
+                               type="tel"
+                               value="{{ old_data.phone_number|default:request.user.phone_number }}"
+                               name="phone_number">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-8 py-6 bg-surface-container border-t border-outline-variant/10 flex gap-4 justify-end">
+                <button type="button" onclick="closeEditProfileModal()"
+                   class="px-8 py-3 rounded-full border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors font-bold text-sm inline-block text-center">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="px-8 py-3 rounded-full bg-primary-fixed text-on-primary-fixed hover:bg-primary transition-all shadow-lg font-bold text-sm">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Image Crop Modal -->
+<div id="cropModal" class="hidden fixed inset-0 z-[110] items-center justify-center p-6 bg-black/90 backdrop-blur-sm">
+    <div class="bg-surface-container-highest rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-outline-variant/20">
+        <h3 class="text-xl font-bold text-on-surface mb-6">Adjust Photo</h3>
+        <div class="w-full h-80 bg-black/50 rounded-2xl overflow-hidden mb-6">
+            <img id="cropImage" src="" alt="To crop" class="max-w-full h-auto">
+        </div>
+        <div class="flex justify-end gap-4">
+            <button id="cancelCrop" type="button" class="px-6 py-2.5 rounded-full border border-outline-variant text-on-surface hover:bg-surface-variant font-bold text-sm transition-colors">
+                Cancel
+            </button>
+            <button id="applyCrop" type="button" class="px-6 py-2.5 rounded-full bg-primary-fixed text-on-primary-fixed hover:bg-primary font-bold text-sm transition-colors">
+                Crop & Use
+            </button>
+        </div>
+    </div>
+</div>
 
 <div id="logoutModal" class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/70 backdrop-blur-sm px-4">
 
@@ -357,6 +481,92 @@ function closeLogoutModal() {
     modal.classList.add("hidden");
     modal.classList.remove("flex");
 }
+
+function openEditProfileModal() {
+    const modal = document.getElementById("editProfileModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+}
+
+function closeEditProfileModal() {
+    const modal = document.getElementById("editProfileModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('imageInput');
+    const cropModal = document.getElementById('cropModal');
+    const cropImage = document.getElementById('cropImage');
+    const profilePreview = document.getElementById('profilePreview');
+    const croppedImageInput = document.getElementById('croppedImageInput');
+    const cancelCrop = document.getElementById('cancelCrop');
+    const applyCrop = document.getElementById('applyCrop');
+
+    let cropper;
+
+    if (imageInput && cropModal && cropImage && profilePreview && croppedImageInput && cancelCrop && applyCrop) {
+        imageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                cropImage.src = event.target.result;
+                cropModal.classList.remove('hidden');
+                cropModal.classList.add('flex');
+
+                if (cropper) {
+                    cropper.destroy();
+                }
+
+                cropper = new Cropper(cropImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    responsive: true,
+                    background: false,
+                });
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        cancelCrop.addEventListener('click', function () {
+            cropModal.classList.add('hidden');
+            cropModal.classList.remove('flex');
+            imageInput.value = '';
+
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+        });
+
+        applyCrop.addEventListener('click', function () {
+            if (!cropper) return;
+
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+                imageSmoothingQuality: 'high',
+            });
+
+            const croppedDataUrl = canvas.toDataURL('image/png');
+
+            profilePreview.src = croppedDataUrl;
+            croppedImageInput.value = croppedDataUrl;
+
+            cropModal.classList.add('hidden');
+            cropModal.classList.remove('flex');
+
+            cropper.destroy();
+            cropper = null;
+        });
+    }
+});
 </script>
 
 </body>
