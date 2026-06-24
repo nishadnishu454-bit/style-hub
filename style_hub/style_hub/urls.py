@@ -2,12 +2,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from . import views
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-     path('',include('user.core.urls')),
+    path('', include('user.core.urls')),
     path('authentication/', include('user.authentication.urls')),
+    path('login/', RedirectView.as_view(url='/authentication/', permanent=False)),
     path('profile/', include('user.profile.urls')),
     path('accounts/', include('allauth.urls')),
     path('address/',include('user.addresses.urls')),
