@@ -195,9 +195,10 @@ def decrease_cart_quantity(request, id):
 
     if cart_item.quantity > 0:
         cart_item.quantity -= 1
-    else:
         cart_item.delete()
         messages.warning(request, 'item deleted from the cart')
+    else:
+        cart_item.save()
 
     return redirect('cart_page')
 
@@ -234,9 +235,10 @@ def update_cart_quantity_ajax(request):
             elif action == 'decrease':
                 if cart_item.quantity > 0:
                     cart_item.quantity -= 1
-                else:
                     cart_item.delete()
                     message = "Item removed from the cart"
+                else:
+                    cart_item.save()
             
             # Recalculate totals
             cart_items = Cart.objects.filter(
