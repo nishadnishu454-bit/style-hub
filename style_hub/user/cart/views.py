@@ -193,12 +193,14 @@ def increase_cart_quantity(request, id):
 def decrease_cart_quantity(request, id):
     cart_item = get_object_or_404(Cart, id=id, user=request.user)
 
-    if cart_item.quantity > 0:
+    if cart_item.quantity > 1:
         cart_item.quantity -= 1
+        cart_item.save()
+        
+    else:
         cart_item.delete()
         messages.warning(request, 'item deleted from the cart')
-    else:
-        cart_item.save()
+        
 
     return redirect('cart_page')
 
@@ -233,12 +235,13 @@ def update_cart_quantity_ajax(request):
                     message = "Stock limit reached"
                     
             elif action == 'decrease':
-                if cart_item.quantity > 0:
+                if cart_item.quantity > 1:
                     cart_item.quantity -= 1
+                    cart_item.save()
+                else:
                     cart_item.delete()
                     message = "Item removed from the cart"
-                else:
-                    cart_item.save()
+                    
             
             # Recalculate totals
             cart_items = Cart.objects.filter(
@@ -289,7 +292,7 @@ def update_cart_quantity_ajax(request):
                 'status': status,
                 'message': message,
                 'coupon_removed': coupon_removed,
-                'quantity': cart_item.quantity,
+                'quantity': 0 if deleted else cart_item.quantity,
                 'item_total': item_total,
                 'sub_total': sub_total,
                 'subtotal': sub_total,
