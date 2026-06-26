@@ -240,6 +240,7 @@ def update_cart_quantity_ajax(request):
                     cart_item.save()
                 else:
                     cart_item.delete()
+                    deleted = True
                     message = "Item removed from the cart"
                     
             
@@ -293,7 +294,7 @@ def update_cart_quantity_ajax(request):
                 'message': message,
                 'coupon_removed': coupon_removed,
                 'quantity': 0 if deleted else cart_item.quantity,
-                'item_total': item_total,
+                'item_total': 0 if deleted else cart_item.variant.offer_price * cart_item.quantity,
                 'sub_total': sub_total,
                 'subtotal': sub_total,
                 'original_subtotal': original_subtotal,
