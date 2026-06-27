@@ -264,7 +264,7 @@ def verify_changed_email(request):
 
     if not user_id or not pending_new_email:
         messages.error(request, 'Session expired')
-        return redirect('editprofile')
+        return redirect('profile')
 
     user = request.user
 
