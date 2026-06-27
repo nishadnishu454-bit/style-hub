@@ -255,6 +255,7 @@ def update_cart_quantity_ajax(request):
                     cart_item.save()
 
                 else:
+                    cart_item.delete()
                     deleted = True
                     message = 'Item removed from the cart'
                     
