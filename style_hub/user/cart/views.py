@@ -256,7 +256,7 @@ def update_cart_quantity_ajax(request):
 
                 else:
                     cart_item.delete()
-                    deleted = True
+                    status = True
                     message = 'Item removed from the cart'
                     
             # elif action == 'decrease':
