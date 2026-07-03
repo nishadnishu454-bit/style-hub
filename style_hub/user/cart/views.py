@@ -199,10 +199,8 @@ def decrease_cart_quantity(request, id):
         cart_item.save()
         
     else:
-        # messages.warning(request, 'Minimum quanity allowed is 1')
-        cart_item.delete()
-        messages.warning(request,'item removed from the cart')
-        
+        messages.warning(request, 'Minimum quanity allowed is 1')
+
 
     return redirect('cart_page')
 
@@ -221,7 +219,7 @@ def update_cart_quantity_ajax(request):
             variant = cart_item.variant
             
             deleted = False
-            message = "item removed from the cart"
+            message = ""
             status = True
             
             if action == 'increase':
@@ -241,11 +239,8 @@ def update_cart_quantity_ajax(request):
                     cart_item.quantity -= 1
                     cart_item.save()
                 else:
-                    cart_item.delete()
-                    deleted = True
-                    message = 'item removed from the cart'
-                    # status = False
-                    # message = "Minimum quantity allowed is 1"
+                    status = False
+                    message = "Minimum quantity allowed is 1"
                     
             
             # Recalculate totals
