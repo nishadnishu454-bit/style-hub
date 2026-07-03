@@ -14,6 +14,7 @@ import uuid
 import random
 import re
 from django.http import JsonResponse
+from admin_panel.couponmanagement.models import Coupon
 
 @login_required(login_url='login')
 def profile_page(request):

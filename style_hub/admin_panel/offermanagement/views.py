@@ -25,7 +25,7 @@ def offer_listing(request):
     if search:
         offers = offers.filter(Q(name__icontains=search) | Q(product__product_name__icontains=search) | Q(category__category_name__icontains=search))
     
-    paginator = Paginator(offers, 10)
+    paginator = Paginator(offers,5)
     page_number = request.GET.get('page')
     offers_page = paginator.get_page(page_number)
     
