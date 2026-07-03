@@ -20,18 +20,18 @@ def admin_login(request):
 
         if not username or not password:
             messages.error(request,'All fields are required')
-            return redirect('admin_login')
+            return render(request,'adminauth/admin_login.html')
             
         user=authenticate(request,username=username,password=password)
 
 
         if user is None:
             messages.error(request,'Invalid username or password')
-            return redirect('admin_login')
+            return render(request,'adminauth/admin_login.html')
         
         if not user.is_staff:
             messages.error(request,'You are not allowed to access admin panel')
-            return redirect('admin_login')
+            return render(request,'adminauth/admin_login.html')
         
         login(request, user)
         messages.success(request, 'Admin login successful')
