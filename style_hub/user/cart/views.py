@@ -242,7 +242,7 @@ def update_cart_quantity_ajax(request):
                     cart_item.save()
                 else:
                     cart_item.delete()
-                    deleted = False
+                    deleted = True
                     message = 'item removed from the cart'
                     # status = False
                     # message = "Minimum quantity allowed is 1"
