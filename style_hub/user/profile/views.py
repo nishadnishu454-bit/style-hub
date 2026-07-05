@@ -14,7 +14,8 @@ import uuid
 import random
 import re
 from django.http import JsonResponse
-from admin_panel.couponmanagement.models import Coupon
+from user.orders.models import Order
+from django.db.models import Sum
 
 @login_required(login_url='login')
 def profile_page(request):
@@ -253,8 +254,20 @@ STYLE-HUB Team
         )
 
         return redirect('profile')
+    
+    discount = Order.objects.filter(
+        user=request.user
+        ).aggregate(
+           total_discount = Sum('discount_amount')
+        )
+    context = {
+        'discount':discount['total_discount'] or 0
+        }
 
-    return render(request, 'profile.html')
+    
+
+
+    return render(request, 'profile.html',context)
 
 
 
