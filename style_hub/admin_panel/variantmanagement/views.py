@@ -40,9 +40,14 @@ def variant_management(request):
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
 
+    add_form_data = request.session.pop('add_variant_form_data', None)
+    edit_form_data = request.session.pop('edit_variant_form_data', None)
+
     context = {
         'products': products,
         'search': search,
+        'add_form_data': add_form_data,
+        'edit_form_data': edit_form_data,
     }
 
     return render(request, 'variant_management.html', context)
@@ -99,6 +104,13 @@ def add_variant(request, product_id):
                 'All variant details are required'
             )
             return redirect('variant_management')
+        
+        request.session['add_variant_form_data'] = {
+            'size': size,
+            'color': color,
+            'variant_price': price,
+            'variant_stock': stock,
+        }
 
         # ---------------- SIZE VALIDATIONS ---------------- #
 
@@ -372,6 +384,14 @@ def edit_variant(request, variant_id):
                 'All variant details are required'
             )
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
+        
+
+        request.session['edit_variant_form_data'] = {
+            'size': size,
+            'color': color,
+            'variant_price': price,
+            'variant_stock': stock,
+        }
 
         # ---------------- SIZE VALIDATIONS ---------------- #
         if variant.product.category.category_name.lower() in ['pant','pants', 'jeans', 'trouser']:

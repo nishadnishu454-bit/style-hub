@@ -6,9 +6,11 @@ from admin_panel.variantmanagement.models import ProductVariant
 from admin_panel.categorymanagement.models import Category
 from user.cart.models import Cart
 from user.whishlist.models import Wishlist
-from django.db.models import Q,Min
+from django.db.models import Q,Min,Count,Avg
 from django.contrib import messages
 from decimal import Decimal
+
+
 
 def product_page(request):
     sort = request.GET.get('sort', '')
@@ -27,7 +29,9 @@ def product_page(request):
     ).select_related(
         'category'
     ).annotate(
-        display_price=Min('variants__variant_price')
+        display_price=Min('variants__variant_price'),
+        review_count=Count('reviews', distinct=True),
+        avg_rating=Avg('reviews__rating')
     ).prefetch_related(
         'variants',
         'variants__images'
@@ -89,9 +93,12 @@ def product_page(request):
     if request.user.is_authenticated:
         wishlist_variant_ids = list(Wishlist.objects.filter(user=request.user).values_list('variant_id', flat=True))
 
+   
+
     paginator = Paginator(products, 6)
     page_number = request.GET.get('page')
     products_page = paginator.get_page(page_number)
+  
 
     context = {
         'products': products_page,
@@ -103,7 +110,7 @@ def product_page(request):
         'max_price': max_price,
         'wishlist_variant_ids': wishlist_variant_ids,
     }
-
+   
     return render(request, 'product_page.html', context)
 
 

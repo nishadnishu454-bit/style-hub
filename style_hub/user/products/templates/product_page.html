@@ -164,7 +164,7 @@
                         </span>
                         Items Found
                     </div>
-
+                    
                     <form method="GET" class="flex items-center gap-3">
                         <input type="hidden" name="search" value="{{ request.GET.search }}">
                         <input type="hidden" name="category" value="{{ request.GET.category }}">
@@ -257,9 +257,15 @@
                                             star
                                         </span>
 
-                                        <span class="text-[10px] text-slate-400 ml-1">
-                                            (4.8)
-                                        </span>
+                                        {% if product.review_count > 0 %}
+                                            <span class="text-[10px] text-slate-400 ml-1">
+                                                {{ product.rounded_avg_rating }} ({{ product.review_count }})
+                                            </span>
+                                        {% else %}
+                                            <span class="text-[10px] text-slate-400 ml-1">
+                                                0
+                                            </span>
+                                        {% endif %}
                                     </div>
 
                                 </div>

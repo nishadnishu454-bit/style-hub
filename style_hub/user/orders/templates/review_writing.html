@@ -136,9 +136,7 @@
                 </div>
 
                 <div>
-                    <span class="text-primary text-[10px] font-bold tracking-[0.2em] uppercase mb-1 block">
-                        The Midnight Atelier
-                    </span>
+                    
 
                     <h3 class="text-xl font-bold text-on-surface tracking-tight">
                         {{ product.product_name }}
@@ -164,16 +162,15 @@
                     </p>
 
                     <div class="flex justify-center gap-2 text-primary" id="star-container">
-                        {% for i in "12345" %}
+                    {% for i in "12345" %}
                         <input
                             type="radio"
                             name="rating"
                             value="{{ forloop.counter }}"
                             id="star{{ forloop.counter }}"
                             class="hidden"
-                            required
+                            {% if request.POST.rating == forloop.counter|stringformat:"s" %}checked{% endif %}  
                         >
-
                         <label
                             for="star{{ forloop.counter }}"
                             class="material-symbols-outlined text-4xl cursor-pointer hover:scale-110 transition-transform"
@@ -191,11 +188,12 @@
 
                     <input
                         name="title"
+                        value="{{request.POST.title}}"
                         required
                         class="w-full bg-surface-container-low/50 border-b border-outline-variant/30 focus:border-primary border-t-0 border-x-0 px-4 py-4 text-on-surface outline-none"
                         placeholder="Summarize your experience..."
                         type="text"
-                    />
+                        />
                 </div>
 
                 <div class="space-y-2">
@@ -210,7 +208,7 @@
                         class="w-full bg-surface-container-low/50 border border-outline-variant/20 rounded-xl px-4 py-4 text-on-surface focus:ring-1 focus:ring-primary outline-none resize-none"
                         rows="6"
                         maxlength="1000"
-                    ></textarea>
+                    >{{request.POST.content}}</textarea>
 
                     <div class="flex justify-end">
                         <span id="char-count" class="text-[10px] font-medium text-on-surface-variant tracking-wider uppercase">
@@ -287,26 +285,35 @@
 </main>
 
 <script>
-    const stars = document.querySelectorAll('#star-container label');
-    const textarea = document.getElementById('review-text');
-    const charCount = document.getElementById('char-count');
+const reviewText = document.getElementById("review-text");
+const charCount = document.getElementById("char-count");
+const stars = document.querySelectorAll("#star-container label");
+const radios = document.querySelectorAll("#star-container input[type=radio]");
 
-    stars.forEach((star, index) => {
-        star.addEventListener('click', () => {
-            stars.forEach((s, i) => {
-                if (i <= index) {
-                    s.classList.add('star-active');
-                } else {
-                    s.classList.remove('star-active');
-                }
-            });
-        });
-    });
+function updateCharCount() {
+    charCount.textContent = `${reviewText.value.length} / 1000 Characters`;
+}
+updateCharCount();
+reviewText.addEventListener("input", updateCharCount);
 
-    textarea.addEventListener('input', () => {
-        charCount.innerText = `${textarea.value.length} / 1000 Characters`;
+function highlightUpTo(index) {
+    stars.forEach((s, i) => {
+        if (i <= index) {
+            s.classList.add("star-active");
+        } else {
+            s.classList.remove("star-active");
+        }
     });
+}
+
+
+radios.forEach((radio, index) => {
+    if (radio.checked) highlightUpTo(index);
+});
+
+stars.forEach((star, index) => {
+    star.addEventListener("click", () => highlightUpTo(index));
+});
 </script>
-
 </body>
 </html>

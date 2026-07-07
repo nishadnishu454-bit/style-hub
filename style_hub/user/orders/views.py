@@ -339,7 +339,7 @@ def order_cancel_success(request):
 
                 if all_cancelled:
                     # Refund the remaining total amount of the order (including delivery charge)
-                    if order.payment_status == 'Completed':
+                    if order.payment_status in ['Completed', 'completed']:
                         refund_amount = order.total_amount.quantize(Decimal('0.01'))
                         credit_wallet(
                             user=request.user,
@@ -382,7 +382,7 @@ def order_cancel_success(request):
 
                     refund_amount = refund_amount.quantize(Decimal('0.01'))
 
-                    if order.payment_status == 'Completed' and refund_amount > 0:
+                    if order.payment_status in ['Completed', 'completed'] and refund_amount > 0:
                         credit_wallet(
                             user=request.user,
                             amount=refund_amount,
@@ -441,7 +441,7 @@ def order_cancel_success(request):
                             order_item.variant.variant_stock += available_quantity
                             order_item.variant.save()
                 
-                if order.payment_status == 'Completed':
+                if order.payment_status in ['Completed', 'completed']:
                     refund_amount = order.total_amount.quantize(Decimal('0.01'))
                     if refund_amount > 0:
                         credit_wallet(
@@ -530,6 +530,11 @@ def review_writing(request):
         return redirect(
             f"{reverse('orders_view')}?order_id={order_item.order.id}"
         )
+    
+    context = {
+        'product': product,
+        'order_item': order_item,
+    }
 
     if request.method == 'POST':
 
@@ -540,9 +545,25 @@ def review_writing(request):
         images = request.FILES.getlist('images')
 
         # REQUIRED FIELD VALIDATION
+
+
+        if not title :
+            messages.error(request,'Pls write the title' )
+            return render(request, 'review_writing.html',context)
+        
+        if not content :
+            messages.error(request,'Pls write the content' )
+            return render(request, 'review_writing.html',context)
+        
+        if not rating :
+            messages.error(request,'Pls rate the product' )
+            return render(request, 'review_writing.html',context)
+        
         if not rating or not title or not content:
             messages.error(request, 'Please fill all fields')
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+            return render(request, 'review_writing.html',context)
+        
+        
 
         # RATING VALIDATION
         try:
@@ -550,11 +571,11 @@ def review_writing(request):
 
             if rating < 1 or rating > 5:
                 messages.error(request, 'Rating must be between 1 and 5')
-                return redirect(f'/orders/review_writing/?item_id={item_id}')
+                return render(request, 'review_writing.html',context)
 
         except ValueError:
             messages.error(request, 'Invalid rating')
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+            return render(request, 'review_writing.html',context)
 
         # TITLE LENGTH VALIDATION
         if len(title) < 3:
@@ -562,14 +583,14 @@ def review_writing(request):
                 request,
                 'Review title must contain at least 3 characters'
             )
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+            return render(request, 'review_writing.html',context)
 
         if len(title) > 100:
             messages.error(
                 request,
                 'Review title cannot exceed 100 characters'
             )
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+            return render(request, 'review_writing.html',context)
 
         # CONTENT LENGTH VALIDATION
         if len(content) < 10:
@@ -577,14 +598,14 @@ def review_writing(request):
                 request,
                 'Review content must contain at least 10 characters'
             )
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+            return render(request, 'review_writing.html',context)
 
         if len(content) > 1000:
             messages.error(
                 request,
                 'Review content cannot exceed 1000 characters'
             )
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+            return render(request, 'review_writing.html',context)
 
         # INVALID SPACES
         if "  " in title:
@@ -592,7 +613,7 @@ def review_writing(request):
                 request,
                 'Review title contains invalid spaces'
             )
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+            return render(request, 'review_writing.html',context)
 
         # TITLE CHARACTER VALIDATION
         if not re.match(r'^[A-Za-z0-9\s.,!?&()\'"-]+$', title):
@@ -600,7 +621,7 @@ def review_writing(request):
                 request,
                 'Review title contains invalid characters'
             )
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+            return render(request, 'review_writing.html',context)
 
         # IMAGE LIMIT VALIDATION
         if len(images) > 3:
@@ -608,7 +629,7 @@ def review_writing(request):
                 request,
                 'Maximum 3 review images are allowed'
             )
-            return redirect(f'/orders/review_writing/?item_id={item_id}')
+            return render(request, 'review_writing.html',context)
 
         # IMAGE VALIDATION
         allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
@@ -621,7 +642,7 @@ def review_writing(request):
                     request,
                     'Each image must be less than 5MB'
                 )
-                return redirect(f'/orders/review_writing/?item_id={item_id}')
+                return render(request, 'review_writing.html',context)
 
             # EXTENSION VALIDATION
             extension = image.name.split('.')[-1].lower()
@@ -631,7 +652,7 @@ def review_writing(request):
                     request,
                     'Only JPG, JPEG, PNG and WEBP images are allowed'
                 )
-                return redirect(f'/orders/review_writing/?item_id={item_id}')
+                return render(request, 'review_writing.html',context)
 
         # CREATE REVIEW
         review = Review.objects.create(

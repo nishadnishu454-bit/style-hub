@@ -180,21 +180,21 @@
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Size</label>
-                            <input type="text" name="size" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                            <input type="text" value="{{ add_form_data.size|default:'' }}" name="size" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Color</label>
-                            <input type="text" name="color" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                            <input type="text"value="{{ add_form_data.color|default:'' }}" name="color" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Price (₹)</label>
-                            <input type="number" step="0.01" name="variant_price" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                            <input type="number" value="{{ add_form_data.variant_price|default:'' }}" step="0.01" name="variant_price" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Stock</label>
-                            <input type="number" name="variant_stock" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                            <input type="number" value="{{ add_form_data.variant_stock|default:'' }}" name="variant_stock" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
                         </div>
                     </div>
 
@@ -241,24 +241,24 @@
                 <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Size</label>
-                        <input type="text" name="size" id="edit_size" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                        <input type="text" name="size" id="edit_size" value="{{ edit_form_data.size|default:'' }}" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Color</label>
-                        <input type="text" name="color" id="edit_color" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                        <input type="text" name="color" id="edit_color" value="{{ edit_form_data.color|default:'' }}" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Price (₹)</label>
-                        <input type="number" step="0.01" name="variant_price" id="edit_price" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                        <input type="number" step="0.01" name="variant_price" id="edit_price" value="{{ edit_form_data.variant_price|default:'' }}" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-bold uppercase text-gray-400 mb-2">Stock</label>
-                        <input type="number" name="variant_stock" id="edit_stock" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
+                        <input type="number" name="variant_stock" id="edit_stock" value="{{ edit_form_data.variant_stock|default:'' }}" required class="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none">
                     </div>
                 </div>
 
@@ -408,6 +408,14 @@
 
             if (editBtn) {
                 openEditVariantModalFromBtn(editBtn);
+
+                {% if edit_form_data %}
+                // OVERRIDE WITH SUBMITTED (INVALID) VALUES INSTEAD OF DB VALUES
+                document.getElementById('edit_size').value = "{{ edit_form_data.size|escapejs }}";
+                document.getElementById('edit_color').value = "{{ edit_form_data.color|escapejs }}";
+                document.getElementById('edit_price').value = "{{ edit_form_data.variant_price|escapejs }}";
+                document.getElementById('edit_stock').value = "{{ edit_form_data.variant_stock|escapejs }}";
+                {% endif %}
             }
         }
     });
