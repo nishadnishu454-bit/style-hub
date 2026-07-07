@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
@@ -38,8 +38,8 @@ if not DEBUG:
 
 
 ALLOWED_HOSTS = [
-    "nishad.site",
-    "www.nishad.site"
+    # "nishad.site",
+    # "www.nishad.site"
                  
 ]
 

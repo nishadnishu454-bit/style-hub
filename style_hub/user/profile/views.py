@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
 from django.contrib import messages
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail
@@ -16,6 +15,8 @@ import re
 from django.http import JsonResponse
 from user.orders.models import Order
 from django.db.models import Sum
+
+
 
 @login_required(login_url='login')
 def profile_page(request):
@@ -254,20 +255,7 @@ STYLE-HUB Team
         )
 
         return redirect('profile')
-    
-    discount = Order.objects.filter(
-        user=request.user
-        ).aggregate(
-           total_discount = Sum('discount_amount')
-        )
-    context = {
-        'discount':discount['total_discount'] or 0
-        }
-
-    
-
-
-    return render(request, 'profile.html',context)
+    return render(request, 'profile.html')
 
 
 

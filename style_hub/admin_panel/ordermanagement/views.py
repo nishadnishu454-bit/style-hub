@@ -138,6 +138,10 @@ def update_status(request, id):
 
         with transaction.atomic():
             order.order_status = new_status
+            
+            if new_status == 'Delivered' and order.payment_method == 'COD' and order.payment_status == 'Pending':
+                order.payment_status = 'Completed'
+                
             order.save()
 
             if new_status in ['Cancelled', 'Returned'] and old_status not in ['Cancelled', 'Returned', 'Return Requested']:
@@ -223,7 +227,7 @@ def return_requests(request):
         if match:
             qty_to_return = int(match.group(1))
         
-        # Calculate accurate refund amount quantity-wise
+  
         item.total_price = (item.price * Decimal(qty_to_return)).quantize(Decimal('0.01'))
 
     context = {
@@ -277,7 +281,7 @@ def approve_return(request):
 
                 order = item.order
 
-                # Check if all items in order are now inactive
+                
                 all_inactive = True
                 for order_item in order.items.all():
                     rem_qty = (
@@ -292,7 +296,7 @@ def approve_return(request):
                 refund_amount = Decimal('0.00')
 
                 if all_inactive:
-                    if order.payment_status in ['Completed', 'completed']:
+                    if order.payment_status in ['Completed', 'completed'] or (order.payment_method == 'COD' and order.payment_status == 'Pending'):
                         refund_amount = order.total_amount.quantize(Decimal('0.01'))
                         credit_wallet(
                             user=order.user,
@@ -334,7 +338,7 @@ def approve_return(request):
 
                     refund_amount = refund_amount.quantize(Decimal('0.01'))
 
-                    if order.payment_status in ['Completed', 'completed'] and refund_amount > 0:
+                    if (order.payment_status in ['Completed', 'completed'] or (order.payment_method == 'COD' and order.payment_status == 'Pending')) and refund_amount > 0:
                         credit_wallet(
                             user=order.user,
                             amount=refund_amount,
@@ -360,7 +364,7 @@ def approve_return(request):
                     return redirect('return_requests')
 
                 from decimal import Decimal
-                # Mark all items that are in 'Return Requested' status as 'Returned'
+                
                 for item in order.items.all():
                     if item.item_status == 'Return Requested':
                         qty_to_return = item.quantity - item.cancelled_quantity - item.returned_quantity
@@ -373,7 +377,7 @@ def approve_return(request):
                             item.variant.variant_stock += qty_to_return
                             item.variant.save()
 
-                if order.payment_status in ['Completed', 'completed']:
+                if order.payment_status in ['Completed', 'completed'] or (order.payment_method == 'COD' and order.payment_status == 'Pending'):
                     credit_wallet(
                         user=order.user,
                         amount=order.total_amount.quantize(Decimal('0.01')),
