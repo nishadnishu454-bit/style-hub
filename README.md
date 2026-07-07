@@ -77,35 +77,35 @@ ________________________
 
 Installation:
 
-Clone the repository
+Clone the repository:
 git clone https://github.com/nishadnishu454-bit/style-hub.git
 
 
-Move into the project directory
+Move into the project directory:
 cd STYLE-HUB
 
 
-Create a virtual environment
+Create a virtual environment:
 python -m venv svenv
 
 
-Activate the virtual environment
+Activate the virtual environment:
 svenv\Scripts\activate
 
 
 
-Install the dependencies
+Install the dependencies:
 pip install -r requirements.txt
 
 
-Apply migrations
+Apply migrations:
 python manage.py migrate
 
 
-Create a superuser
+Create a superuser:
 python manage.py createsuperuser
 
-Run the development server
+Run the development server:
 python manage.py runserver
 
 
@@ -127,6 +127,10 @@ STYLE-HUB/
 │   ├── usermanagement
 │   └── variantmanagement
 │
+
+
+
+
 ├── user/
 │   ├── addresses
 │   ├── authentication
