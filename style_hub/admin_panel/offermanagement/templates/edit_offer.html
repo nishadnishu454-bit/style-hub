@@ -37,7 +37,7 @@
                 <div class="p-12 space-y-8">
                     <div>
                         <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Offer Name</label>
-                        <input type="text" name="name" value="{{ offer.name }}" placeholder="Summer Season Sale" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                        <input type="text" name="name" value="{% if form_data %}{{ form_data.name }}{% else %}{{ offer.name }}{% endif %}" placeholder="Summer Season Sale" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -45,8 +45,8 @@
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Discount Type</label>
                             <div class="relative">
                                 <select name="discount_type" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none appearance-none focus:border-black transition-all shadow-sm" required>
-                                    <option value="PERCENTAGE" {% if offer.discount_type == 'PERCENTAGE' %}selected{% endif %}>Percentage (%)</option>
-                                    <option value="FIXED" {% if offer.discount_type == 'FIXED' %}selected{% endif %}>Fixed Amount (₹)</option>
+                                    <option value="PERCENTAGE" {% if form_data %}{% if form_data.discount_type == 'PERCENTAGE' %}selected{% endif %}{% elif offer.discount_type == 'PERCENTAGE' %}selected{% endif %}>Percentage (%)</option>
+                                    <option value="FIXED" {% if form_data %}{% if form_data.discount_type == 'FIXED' %}selected{% endif %}{% elif offer.discount_type == 'FIXED' %}selected{% endif %}>Fixed Amount (₹)</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-6 flex items-center text-gray-400">
                                     <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -56,19 +56,19 @@
 
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Discount Value</label>
-                            <input type="number" step="0.01" min="0.01" name="discount_value" value="{{ offer.discount_value }}" placeholder="10.00" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                            <input type="number" step="0.01" min="0.01" name="discount_value" value="{% if form_data %}{{ form_data.discount_value }}{% else %}{{ offer.discount_value }}{% endif %}" placeholder="10.00" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Start Date</label>
-                            <input type="date" name="start_date" value="{{ offer.start_date|date:'Y-m-d' }}" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                            <input type="date" name="start_date" value="{% if form_data %}{{ form_data.start_date }}{% else %}{{ offer.start_date|date:'Y-m-d' }}{% endif %}" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                         </div>
 
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">End Date</label>
-                            <input type="date" name="end_date" value="{{ offer.end_date|date:'Y-m-d' }}" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                            <input type="date" name="end_date" value="{% if form_data %}{{ form_data.end_date }}{% else %}{{ offer.end_date|date:'Y-m-d' }}{% endif %}" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                         </div>
                     </div>
 
@@ -76,11 +76,11 @@
                         <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Offer Target</label>
                         <div class="flex items-center space-x-8 py-2">
                             <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="radio" name="offer_target" value="product" {% if offer.product %}checked{% endif %} class="w-4 h-4 text-black focus:ring-black border-gray-300" onchange="toggleTargetFields()">
+                                <input type="radio" name="offer_target" value="product" {% if form_data %}{% if form_data.offer_target == 'product' %}checked{% endif %}{% elif offer.product %}checked{% endif %} class="w-4 h-4 text-black focus:ring-black border-gray-300" onchange="toggleTargetFields()">
                                 <span class="text-sm font-semibold text-gray-700">Product Specific</span>
                             </label>
                             <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="radio" name="offer_target" value="category" {% if offer.category %}checked{% endif %} class="w-4 h-4 text-black focus:ring-black border-gray-300" onchange="toggleTargetFields()">
+                                <input type="radio" name="offer_target" value="category" {% if form_data %}{% if form_data.offer_target == 'category' %}checked{% endif %}{% elif offer.category %}checked{% endif %} class="w-4 h-4 text-black focus:ring-black border-gray-300" onchange="toggleTargetFields()">
                                 <span class="text-sm font-semibold text-gray-700">Category Specific</span>
                             </label>
                         </div>
@@ -92,7 +92,11 @@
                             <select name="product" id="productSelect" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none appearance-none focus:border-black transition-all shadow-sm">
                                 <option value="">Select a Product</option>
                                 {% for product in products %}
-                                    <option value="{{ product.id }}" {% if offer.product.id == product.id %}selected{% endif %}>{{ product.product_name }}</option>
+                                    <option value="{{ product.id }}"
+                                        {% if form_data %}
+                                            {% if form_data.product_id == product.id|stringformat:"s" %}selected{% endif %}
+                                        {% elif offer.product.id == product.id %}selected{% endif %}>
+                                        {{ product.product_name }}</option>
                                 {% endfor %}
                             </select>
                             <div class="absolute inset-y-0 right-6 flex items-center text-gray-400">
@@ -107,7 +111,12 @@
                             <select name="category" id="categorySelect" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none appearance-none focus:border-black transition-all shadow-sm">
                                 <option value="">Select a Category</option>
                                 {% for category in categories %}
-                                    <option value="{{ category.id }}" {% if offer.category.id == category.id %}selected{% endif %}>{{ category.category_name }}</option>
+                                    <option value="{{ category.id }}"
+                                    {% if form_data %} 
+                                         {% if form_data.category_id == category.id|stringformat:"s" %}selected{% endif %}
+                                    {% elif offer.category.id == category.id %}selected{% endif %}>
+                                         {{ category.category_name }}
+                                    {{ category.category_name }}</option>
                                 {% endfor %}
                             </select>
                             <div class="absolute inset-y-0 right-6 flex items-center text-gray-400">

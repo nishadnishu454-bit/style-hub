@@ -40,7 +40,7 @@ if not DEBUG:
 ALLOWED_HOSTS = [
     "nishad.site",
     "www.nishad.site"
-                 
+                    
 ]
 
 
