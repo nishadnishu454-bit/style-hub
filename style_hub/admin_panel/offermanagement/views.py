@@ -86,6 +86,18 @@ def add_offer(request):
 
         category_id = request.POST.get('category')
 
+
+        request.session['add_offer_form_data'] = {
+            'name': name,
+            'discount_type': discount_type,
+            'discount_value': discount_value,
+            'start_date': start_date,
+            'end_date': end_date,
+            'offer_target': offer_target,
+            'product_id': product_id,
+            'category_id': category_id,
+        }
+
         # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
 
         if (
@@ -346,13 +358,10 @@ def add_offer(request):
     context = {
         'products': products,
         'categories': categories,
+        'form_data': request.session.pop('add_offer_form_data', None),
     }
 
-    return render(
-        request,
-        'add_offer.html',
-        context
-    )
+    return render( request,'add_offer.html',context)
 
 
 @login_required(login_url='admin_login')
@@ -410,6 +419,19 @@ def edit_offer(request, id):
         product_id = request.POST.get('product')
 
         category_id = request.POST.get('category')
+
+
+
+        request.session['edit_offer_form_data'] = {
+            'name': name,
+            'discount_type': discount_type,
+            'discount_value': discount_value,
+            'start_date': start_date,
+            'end_date': end_date,
+            'offer_target': offer_target,
+            'product_id': product_id,
+            'category_id': category_id,
+        }
 
         # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
 
@@ -677,13 +699,15 @@ def edit_offer(request, id):
         'offer': offer,
         'products': products,
         'categories': categories,
+        'form_data': request.session.pop('edit_offer_form_data', None),
     }
 
-    return render(
-        request,
-        'edit_offer.html',
-        context
-    )
+    return render(request,'edit_offer.html',context)
+
+
+
+
+
 
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
