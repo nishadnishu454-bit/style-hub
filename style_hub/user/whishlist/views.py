@@ -4,6 +4,7 @@ from django.contrib import messages
 from admin_panel.variantmanagement.models import ProductVariant
 from user.cart.models import Cart
 from .models import Wishlist
+ from django.http import JsonResponse
 
 
 @login_required(login_url='login')
@@ -50,6 +51,7 @@ def wishlist_page(request):
     return render(request, 'wishlist.html', context)
 
 
+
 @login_required(login_url='login')
 def add_to_wishlist(request, id):
     variant = get_object_or_404(
@@ -81,12 +83,20 @@ def add_to_wishlist(request, id):
         msg = 'Added to wishlist'
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        from django.http import JsonResponse
+       
         return JsonResponse({
             'success': True,
             'action': action,
             'message': msg,
-            'wishlist_count': Wishlist.objects.filter(user=request.user).count()
+            'wishlist_count': Wishlist.objects.filter(
+                user=request.user,
+                variant__is_deleted=False,
+                variant__is_active=True,
+                variant__product__is_deleted=False,
+                variant__product__is_active=True,
+                variant__product__category__is_deleted=False,
+                variant__product__category__is_active=True
+            ).count()
         })
 
     if action == 'added':
@@ -111,7 +121,15 @@ def remove_wishlist_item(request, id):
         return JsonResponse({
             'success': True,
             'message': 'Item removed from wishlist',
-            'wishlist_count': Wishlist.objects.filter(user=request.user).count()
+            'wishlist_count': Wishlist.objects.filter(
+                user=request.user,
+                variant__is_deleted=False,
+                variant__is_active=True,
+                variant__product__is_deleted=False,
+                variant__product__is_active=True,
+                variant__product__category__is_deleted=False,
+                variant__product__category__is_active=True
+            ).count()
         })
 
     messages.success(request, 'Item removed from wishlist')
