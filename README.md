@@ -114,41 +114,37 @@ ______________________
 Project Structure :
 
 STYLE-HUB/
-│
-├── admin_panel/
-│   ├── adminauth
-│   ├── admindashboard
-│   ├── categorymanagement
-│   ├── couponmanagement
-│   ├── offermanagement
-│   ├── ordermanagement
-│   ├── productmanagement
-│   ├── reviewmanagement
-│   ├── usermanagement
-│   └── variantmanagement
-│
 
+admin_panel/
+    adminauth
+    admindashboard
+    categorymanagement
+    couponmanagement
+    offermanagement
+    ordermanagement
+    productmanagement
+    reviewmanagement
+    usermanagement
+    variantmanagement
 
+user/
+  addresses
+  authentication
+  cart
+  category
+  checkout
+  core
+  orders
+  products
+  profile
+  wallet
+  wishlist
 
-
-├── user/
-│   ├── addresses
-│   ├── authentication
-│   ├── cart
-│   ├── category
-│   ├── checkout
-│   ├── core
-│   ├── orders
-│   ├── products
-│   ├── profile
-│   ├── wallet
-│   └── wishlist
-│
-├── media/
-├── static/
-├── templates/
-├── manage.py
-└── requirements.txt
+media/
+static/
+templates/
+manage.py
+requirements.txt
 
 
 _________________________
