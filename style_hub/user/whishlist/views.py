@@ -4,7 +4,7 @@ from django.contrib import messages
 from admin_panel.variantmanagement.models import ProductVariant
 from user.cart.models import Cart
 from .models import Wishlist
- from django.http import JsonResponse
+from django.http import JsonResponse
 
 
 @login_required(login_url='login')
