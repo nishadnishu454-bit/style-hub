@@ -116,6 +116,7 @@ Project Structure :
 STYLE-HUB/
 
 admin_panel/
+
     adminauth
     admindashboard
     categorymanagement
@@ -128,22 +129,27 @@ admin_panel/
     variantmanagement
 
 user/
-  addresses
-  authentication
-  cart
-  category
-  checkout
-  core
-  orders
-  products
-  profile
-  wallet
-  wishlist
+
+    addresses
+    authentication
+    cart
+    category
+    checkout
+    core
+    orders
+    products
+    profile
+    wallet
+    wishlist
 
 media/
+
 static/
+
 templates/
+
 manage.py
+
 requirements.txt
 
 
