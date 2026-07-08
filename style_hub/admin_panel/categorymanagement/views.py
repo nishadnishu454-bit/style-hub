@@ -41,8 +41,9 @@ def category_listing(request):
         'page_obj':categories,
        'categories':categories,
        'search':search,
+       
     }
-
+    
     return render(request,'categorylisting.html',context)
 
 
@@ -375,6 +376,5 @@ def delete_category(request,id):
     
     Product.objects.filter(category=category).update(is_deleted=True,is_active=False)
     messages.success(request,'Category AND related products deleted successfully')
-
     return redirect('category_listing')
 

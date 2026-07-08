@@ -12,6 +12,7 @@ from decimal import Decimal
 
 
 
+
 def product_page(request):
     sort = request.GET.get('sort', '')
     search = request.GET.get('search', '')
@@ -89,6 +90,7 @@ def product_page(request):
             product.display_image = None
             product.display_price = Decimal('0.00')
 
+
     wishlist_variant_ids = []
     if request.user.is_authenticated:
         wishlist_variant_ids = list(Wishlist.objects.filter(user=request.user).values_list('variant_id', flat=True))
@@ -109,6 +111,7 @@ def product_page(request):
         'min_price': min_price,
         'max_price': max_price,
         'wishlist_variant_ids': wishlist_variant_ids,
+        
     }
    
     return render(request, 'product_page.html', context)
