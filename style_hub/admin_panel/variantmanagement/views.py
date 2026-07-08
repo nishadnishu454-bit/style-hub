@@ -91,7 +91,15 @@ def add_variant(request, product_id):
             request.POST.get('variant_cropped_image_3')
         ]
 
-        # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
+        request.session['add_variant_form_data'] = {
+            'size': size,
+            'color': color,
+            'variant_price': price,
+            'variant_stock': stock,
+            'images': cropped_images,  
+        }
+
+        # REQUIRED FIELD VALIDATIONS
 
         if (
             not size or
@@ -105,16 +113,9 @@ def add_variant(request, product_id):
             )
             return redirect('variant_management')
         
-        request.session['add_variant_form_data'] = {
-            'size': size,
-            'color': color,
-            'variant_price': price,
-            'variant_stock': stock,
-        }
-
-        # ---------------- SIZE VALIDATIONS ---------------- #
 
 
+        #  SIZE VALIDATIONS 
 
         if product.category.category_name.lower()in ['pant','pants', 'jeans', 'trouser']:
 
@@ -371,6 +372,15 @@ def edit_variant(request, variant_id):
             request.POST.get('variant_cropped_image_3')
         ]
 
+
+        request.session['edit_variant_form_data'] = {
+            'size': size,
+            'color': color,
+            'variant_price': price,
+            'variant_stock': stock,
+            'images': cropped_images, 
+        }
+
         # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
 
         if (
@@ -385,13 +395,6 @@ def edit_variant(request, variant_id):
             )
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
         
-
-        request.session['edit_variant_form_data'] = {
-            'size': size,
-            'color': color,
-            'variant_price': price,
-            'variant_stock': stock,
-        }
 
         # ---------------- SIZE VALIDATIONS ---------------- #
         if variant.product.category.category_name.lower() in ['pant','pants', 'jeans', 'trouser']:
