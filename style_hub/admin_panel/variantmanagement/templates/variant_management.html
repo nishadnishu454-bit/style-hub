@@ -346,7 +346,17 @@
         </div>
     </div>
 
-    <script>
+    {% if add_form_data %}
+        {{ add_form_data|json_script:"add-variant-form-data" }}
+    {% endif %}
+
+    {% if edit_form_data %}
+        {{ edit_form_data|json_script:"edit-variant-form-data" }}
+    {% endif %}
+
+    
+
+<script>
 
     let v_cropper;
     let v_currentIdx;
@@ -391,6 +401,29 @@
                     addVariantError,
                     productName
                 );
+
+                // RESTORE IMAGES FROM SESSION (ADD FORM)
+                const addDataEl = document.getElementById('add-variant-form-data');
+
+                if (addDataEl) {
+                    const formData = JSON.parse(addDataEl.textContent);
+
+                    (formData.images || []).forEach((imgData, idx) => {
+                        if (!imgData) return;
+
+                        const i = idx + 1;
+                        const hidden = document.getElementById('v_croppedImage' + i);
+                        const preview = document.getElementById('v_preview' + i);
+                        const content = document.getElementById('v_content' + i);
+
+                        if (hidden && preview && content) {
+                            hidden.value = imgData;
+                            preview.src = imgData;
+                            preview.classList.remove('hidden');
+                            content.classList.add('hidden');
+                        }
+                    });
+                }
             }
         }
 
@@ -409,13 +442,34 @@
             if (editBtn) {
                 openEditVariantModalFromBtn(editBtn);
 
-                {% if edit_form_data %}
-                // OVERRIDE WITH SUBMITTED (INVALID) VALUES INSTEAD OF DB VALUES
-                document.getElementById('edit_size').value = "{{ edit_form_data.size|escapejs }}";
-                document.getElementById('edit_color').value = "{{ edit_form_data.color|escapejs }}";
-                document.getElementById('edit_price').value = "{{ edit_form_data.variant_price|escapejs }}";
-                document.getElementById('edit_stock').value = "{{ edit_form_data.variant_stock|escapejs }}";
-                {% endif %}
+                // OVERRIDE WITH SUBMITTED (INVALID) VALUES + IMAGES FROM SESSION
+                const editDataEl = document.getElementById('edit-variant-form-data');
+
+                if (editDataEl) {
+                    const formData = JSON.parse(editDataEl.textContent);
+
+                    document.getElementById('edit_size').value = formData.size || '';
+                    document.getElementById('edit_color').value = formData.color || '';
+                    document.getElementById('edit_price').value = formData.variant_price || '';
+                    document.getElementById('edit_stock').value = formData.variant_stock || '';
+
+                    // RESTORE IMAGES (OVERRIDE EXISTING DB IMAGES SHOWN BY openEditVariantModalFromBtn)
+                    (formData.images || []).forEach((imgData, idx) => {
+                        if (!imgData) return;
+
+                        const i = idx + 1;
+                        const hidden = document.getElementById('edit_v_croppedImage' + i);
+                        const preview = document.getElementById('edit_v_preview' + i);
+                        const content = document.getElementById('edit_v_content' + i);
+
+                        if (hidden && preview && content) {
+                            hidden.value = imgData;
+                            preview.src = imgData;
+                            preview.classList.remove('hidden');
+                            content.classList.add('hidden');
+                        }
+                    });
+                }
             }
         }
     });
@@ -704,5 +758,8 @@
     }
 
 </script>
+
+
+
 </body>
 </html>
