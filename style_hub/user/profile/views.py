@@ -59,11 +59,8 @@ def profile_page(request):
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # USERNAME CHARACTER VALIDATION
-        if not re.match(r'^[A-Za-z0-9_]+$', username):
-            messages.error(
-                request,
-                'Username can contain only letters, numbers and underscore'
-            )
+        if not re.match(r'^[A-Za-z][A-Za-z0-9_]*$', username):
+            messages.error(request, 'Username must start with a letter and can only contain letters, numbers, and underscore')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         # USERNAME CANNOT BE ONLY NUMBERS
