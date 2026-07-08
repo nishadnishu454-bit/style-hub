@@ -7,7 +7,7 @@ from admin_panel.productmanagement.models import Product
 from admin_panel.variantmanagement.models import ProductVariant
 from django.http import JsonResponse
 import json
-
+from admin_panel.couponmanagement.models import Coupon
 
 @login_required(login_url='login')
 def cart_page(request):
@@ -260,14 +260,13 @@ def update_cart_quantity_ajax(request):
             coupon_id = request.session.get('coupon_id')
             coupon_removed = False
             if coupon_id:
-                from admin_panel.couponmanagement.models import Coupon
                 coupon = Coupon.objects.filter(id=coupon_id, is_active=True, is_deleted=False).first()
                 if coupon:
                     if sub_total < coupon.min_purchase:
                         request.session.pop('coupon_id', None)
                         request.session.pop('discount_amount', None)
                         coupon_removed = True
-                        message = f"Coupon '{coupon.coupon_code}' removed: minimum purchase of ₹{coupon.min_purchase} not met."
+                        message = f"Coupon '{coupon.code}' removed: minimum purchase of ₹{coupon.min_purchase} not met."
                 else:
                     request.session.pop('coupon_id', None)
                     request.session.pop('discount_amount', None)
