@@ -531,21 +531,11 @@ def email_verification(request):
 
         if otp_obj.code != otp:
 
-            # OPTIONAL SECURITY FEATURE
-            # Track failed attempts in session
+            otp_obj.attempts += 1
+            otp_obj.save()
+            
 
-            failed_attempts = request.session.get(
-                'otp_failed_attempts',
-                0
-            )
-
-            failed_attempts += 1
-
-            request.session[
-                'otp_failed_attempts'
-            ] = failed_attempts
-
-            if failed_attempts >= 5:
+            if otp_obj.attempts >= 5:
 
                 otp_obj.delete()
 
@@ -556,7 +546,7 @@ def email_verification(request):
 
                 return redirect('email_verification')
 
-            remaining_attempts = 5 - failed_attempts
+            remaining_attempts = 5 - otp_obj.attempts
 
             messages.error(
                 request,
@@ -788,6 +778,7 @@ def verify_changed_password(request):
 
     try:
         user = User.objects.get(id=user_id)
+
     except User.DoesNotExist:
         messages.error(request, 'User not found')
         return redirect('auth_forgott_password')
@@ -806,24 +797,49 @@ def verify_changed_password(request):
             user=user,
             purpose='password_reset'
         ).order_by('-created_at').first()
-
+        
+        
         if not otp_obj:
-            messages.error(request, 'OTP not found')
-            return redirect('auth_verify_changed_password')
-
-        if otp_obj.created_at < timezone.now() - timedelta(minutes=5):
-            messages.error(request, 'OTP expired')
+            messages.error(request, 'OTP not found. Please request again.')
             return redirect('auth_forgott_password')
 
-        if otp_obj.code == otp:
-            request.session['otp_verified'] = True
+
+        if otp_obj.is_expired():
+
             otp_obj.delete()
 
-            messages.success(request, 'OTP verified successfully')
-            return redirect('auth_reset_password')
+            messages.error(request, 'OTP expired')
+            return redirect('auth_forgott_password')
+        
 
-        messages.error(request, 'Invalid OTP')
-        return redirect('auth_verify_changed_password')
+
+        if otp_obj.code != otp:
+
+            otp_obj.attempts += 1
+            otp_obj.save()
+
+            if otp_obj.attempts >= 5:
+                otp_obj.delete()
+
+                messages.error(request,'Too many invalid attempts. Please request a new OTP.')
+                return redirect('auth_verify_changed_password')
+
+            remaining = 5 - otp_obj.attempts
+            messages.error(request,f'Invalid OTP. {remaining} attempts remaining.')
+            return redirect('auth_verify_changed_password')
+    
+
+        otp_obj.delete()
+
+        request.session['otp_verified'] = True
+        request.session['otp_verified_at'] = timezone.now().timestamp()
+
+        messages.success(
+            request,
+            'OTP verified successfully'
+        )
+        return redirect('auth_reset_password')
+
 
     return render(request, 'authentication/verify_changed_password.html')
 
