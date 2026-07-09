@@ -1,174 +1,202 @@
-STYLE-HUB
+# STYLE-HUB
 
-STYLE-HUB is a full-featured e-commerce web application developed using Python and Django. The platform provides a complete online shopping experience with secure authentication, product browsing, shopping cart, wishlist, online payments, coupon management, wallet system, order management, product reviews, and an admin dashboard.
+STYLE-HUB is a full-featured e-commerce web application developed using **Python and Django**. The platform provides a complete online shopping experience with secure authentication, product browsing, shopping cart, wishlist, online payments, coupon management, wallet system, order management, product reviews, and an admin dashboard.
 
-The application is deployed on AWS EC2 using Gunicorn and Nginx with PostgreSQL as the production database and is accessible through a custom domain.
+The application is deployed on **AWS EC2** using **Gunicorn and Nginx**, with **PostgreSQL** as the production database. The website is accessible through a custom domain.
 
-Live Website
+## Live Website
 
-https://nishad.site
+🔗 https://nishad.site
 
-_____________________
+---
 
-Features:
+# Features
 
- User Features
+## User Features
 
-- User Registration and Authentication
-- Product Listing
-- Product Search
-- Category Filtering
-- Product Variants (Size & Color)
-- Product Images Gallery
-- Shopping Cart
-- Wishlist
-- Coupon System
-- Wallet System
-- Razorpay Payment Integration
-- Cash on Delivery
-- Order Placement
-- Order Tracking
-- Order Cancellation
-- Product Return
-- Product Reviews and Ratings
-- User Profile Management
-- Address Management
+* User Registration and Authentication
+* Product Listing
+* Product Search
+* Category Filtering
+* Product Variants (Size & Color)
+* Product Image Gallery
+* Shopping Cart Management
+* Wishlist Management
+* Coupon System
+* Wallet System
+* Razorpay Payment Integration
+* Cash on Delivery
+* Order Placement
+* Order Tracking
+* Order Cancellation
+* Product Return
+* Product Reviews and Ratings
+* User Profile Management
+* Address Management
 
- ________________________
- 
- Admin Features
+---
 
-- Admin Authentication
-- Admin Dashboard
-- Product Management
-- Category Management
-- Variant Management
-- Order Management
-- User Management
-- Coupon Management
-- Sales Reports
-- Offer Management
-- Review Management
+## Admin Features
 
-________________________
+* Admin Authentication
+* Admin Dashboard
+* Product Management
+* Category Management
+* Product Variant Management
+* Order Management
+* User Management
+* Coupon Management
+* Sales Reports
+* Offer Management
+* Review Management
 
-Technologies Used
+---
 
-Backend
+# Technologies Used
 
-- Python
-- Django
+## Backend
 
-Database
+* Python
+* Django
 
-- PostgreSQL
+## Database
 
-Frontend
+* PostgreSQL
 
-- HTML
-- CSS
-- JavaScript
+## Frontend
 
-Payment Gateway
+* HTML
+* CSS
+* JavaScript
 
-- Razorpay API
+## Payment Gateway
 
-________________________
+* Razorpay API
 
-Installation:
+---
 
-Clone the repository:
+# Installation
+
+## Clone the Repository
+
+```bash
 git clone https://github.com/nishadnishu454-bit/style-hub.git
+```
 
+## Move into the Project Directory
 
-Move into the project directory:
+```bash
 cd STYLE-HUB
+```
 
+## Create Virtual Environment
 
-Create a virtual environment:
+```bash
 python -m venv svenv
+```
 
+## Activate Virtual Environment
 
-Activate the virtual environment:
+### Windows
+
+```bash
 svenv\Scripts\activate
+```
 
+### Linux / Mac
 
+```bash
+source svenv/bin/activate
+```
 
-Install the dependencies:
+## Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
+## Apply Database Migrations
 
-Apply migrations:
+```bash
 python manage.py migrate
+```
 
+## Create Superuser
 
-Create a superuser:
+```bash
 python manage.py createsuperuser
+```
 
-Run the development server:
+## Run Development Server
+
+```bash
 python manage.py runserver
+```
 
+---
 
-______________________
+# Project Structure
 
-Project Structure :
-
+```
 STYLE-HUB/
 
-admin_panel/
+│
+├── admin_panel/
+│   ├── adminauth
+│   ├── admindashboard
+│   ├── categorymanagement
+│   ├── couponmanagement
+│   ├── offermanagement
+│   ├── ordermanagement
+│   ├── productmanagement
+│   ├── reviewmanagement
+│   ├── usermanagement
+│   └── variantmanagement
+│
+├── user/
+│   ├── addresses
+│   ├── authentication
+│   ├── cart
+│   ├── category
+│   ├── checkout
+│   ├── core
+│   ├── orders
+│   ├── products
+│   ├── profile
+│   ├── wallet
+│   └── wishlist
+│
+├── media/
+│
+├── static/
+│
+├── templates/
+│
+├── manage.py
+│
+└── requirements.txt
+```
 
-    adminauth
-    admindashboard
-    categorymanagement
-    couponmanagement
-    offermanagement
-    ordermanagement
-    productmanagement
-    reviewmanagement
-    usermanagement
-    variantmanagement
+---
 
-user/
+# Deployment
 
-    addresses
-    authentication
-    cart
-    category
-    checkout
-    core
-    orders
-    products
-    profile
-    wallet
-    wishlist
+The application is deployed on **AWS EC2** using:
 
-media/
+* AWS EC2
+* Gunicorn
+* Nginx
+* PostgreSQL
+* Custom Domain
 
-static/
+Live URL:
 
-templates/
+🔗 https://nishad.site
 
-manage.py
+---
 
-requirements.txt
+# Author
 
-
-_________________________
-
-Deployment
-
-The application is deployed on AWS EC2 using:
-
-- Gunicorn
-- Nginx
-- PostgreSQL
-- Custom Domain (https://nishad.site)
-
-
-___________________________
-
-
-Author
-Muhammed Nishad K
+**Muhammed Nishad K**
 
 Python Django Full Stack Developer
