@@ -39,6 +39,7 @@ class OTP(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     code = models.CharField(max_length=6)
     purpose = models.CharField(max_length=20)
+    attempts = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def is_expired(self):

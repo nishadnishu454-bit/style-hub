@@ -13,8 +13,7 @@ import uuid
 import random
 import re
 from django.http import JsonResponse
-from user.orders.models import Order
-from django.db.models import Sum
+
 
 
 
@@ -287,7 +286,8 @@ def verify_changed_email(request):
             return redirect('verify_changed_email')
 
         if otp_obj.created_at < timezone.now() - timedelta(minutes=5):
-            messages.error(request, 'OTP expired')
+            otp_obj.delete()
+            messages.error(request, 'OTP expired. Please request a new OTP.')
             return redirect('editprofile')
 
         if otp_obj.code == otp:
@@ -295,15 +295,25 @@ def verify_changed_email(request):
             user.save()
 
             otp_obj.delete()
-            if 'email_change_user_id' in request.session:
-                del request.session['email_change_user_id']
-            if 'pending_new_email' in request.session:
-                del request.session['pending_new_email']
+
+            request.session.pop('email_change_user_id', None)
+            request.session.pop('pending_new_email', None)
 
             messages.success(request, 'Email updated successfully')
             return redirect('profile')
+        
 
-        messages.error(request, 'Invalid OTP')
+        otp_obj.attempts += 1
+        otp_obj.save()
+
+        if otp_obj.attempts >= 5:
+            otp_obj.delete()
+            messages.error(request,'Too many invalid attempts. Please request a new OTP.')
+            return redirect('verify_changed_email')
+        
+        remaining = 5 - otp_obj.attempts
+
+        messages.error(request,f'Invalid OTP. {remaining} attempts remaining.')
         return redirect('verify_changed_email')
 
     return render(request, 'verify_changed_email.html')
@@ -323,11 +333,22 @@ def resend_email_change_otp(request):
             'message': 'Session expired'
         }, status=400)
 
-    # delete old otp
+   
+    last_otp = OTP.objects.filter(
+        user=user,
+        purpose='email_change'
+    ).order_by('-created_at').first()
+
+    if last_otp:
+        if timezone.now() < last_otp.created_at + timedelta(seconds=30):
+            return JsonResponse({'success':False,'message':'Please wait 30 seconds before requesting another OTP'})
+        
+
     OTP.objects.filter(
         user=user,
         purpose='email_change'
-    ).delete()
+        ).delete()
+
 
     # create new otp
     otp = str(random.randint(100000, 999999))
