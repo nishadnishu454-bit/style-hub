@@ -8,7 +8,7 @@ import re
 from .models import Product,Offer
 from admin_panel.categorymanagement.models import Category
 from datetime import datetime,date
-
+from admin_panel.variantmanagement.models import ProductVariant
 
 
 def is_admin(user):
@@ -320,6 +320,26 @@ def add_offer(request):
                 is_deleted=False,
                 is_active=True
             )
+
+            if discount_type == 'FIXED':
+
+                variants = ProductVariant.objects.filter(
+                    product__category=cat,
+                    product__is_deleted=False,
+                    product__is_active=True,
+                    is_deleted=False,
+                    is_active=True
+                )
+
+                for variant in variants:
+
+                    if discount_value >= variant.variant_price:
+
+                        messages.error(
+                            request,
+                            f'Offer value cannot be greater than or equal to product price ({variant.product.product_name})'
+                        )
+                        return redirect('add_offer')
 
             # duplicate active offer validation
             existing_offer = Offer.objects.filter(
@@ -658,6 +678,26 @@ def edit_offer(request, id):
                 is_active=True
             )
 
+            if discount_type == 'FIXED':
+
+                variants = ProductVariant.objects.filter(
+                    product__category=cat,
+                    product__is_deleted=False,
+                    product__is_active=True,
+                    is_deleted=False,
+                    is_active=True
+                )
+
+                for variant in variants:
+
+                    if discount_value >= variant.variant_price:
+
+                        messages.error(
+                            request,
+                            f'Offer value cannot be greater than or equal to product price ({variant.product.product_name})'
+                        )
+
+                        return redirect('edit_offer', id=id)
             # prevent duplicate active category offers
             existing_offer = Offer.objects.filter(
                 category=cat,
@@ -703,9 +743,6 @@ def edit_offer(request, id):
     }
 
     return render(request,'edit_offer.html',context)
-
-
-
 
 
 
