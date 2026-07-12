@@ -113,58 +113,24 @@ def login_page(request):
         # LOGIN USING EMAIL
         if '@' in username_or_email:
 
-            if not re.match(
-                r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
-                username_or_email
-            ):
+            if not re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',username_or_email):
+                messages.error(request,'Invalid email format')
+                return render(request,'authentication/login.html',context)
+            
 
-                messages.error(
-                    request,
-                    'Invalid email format'
-                )
-
-                return render(
-                    request,
-                    'authentication/login.html',
-                    context
-                )
-
-            user_object = User.objects.filter(
-                email__iexact=username_or_email
-            ).first()
+            user_object = User.objects.filter(email__iexact=username_or_email).first()
 
             if user_object:
-
-                user = authenticate(
-                    request,
-                    username=user_object.username,
-                    password=password
-                )
+                user = authenticate(request,username=user_object.username,password=password)
 
         # LOGIN USING USERNAME
         else:
 
-            if not re.match(
-                r'^[A-Za-z0-9_]+$',
-                username_or_email
-            ):
+            if not re.match(r'^[A-Za-z0-9_]+$', username_or_email):
+                messages.error( request, 'Username should contain only letters, numbers and underscore' )
+                return render(request,'authentication/login.html',context)
 
-                messages.error(
-                    request,
-                    'Username should contain only letters, numbers and underscore'
-                )
-
-                return render(
-                    request,
-                    'authentication/login.html',
-                    context
-                )
-
-            user = authenticate(
-                request,
-                username=username_or_email,
-                password=password
-            )
+            user = authenticate( request, username=username_or_email,password=password)
 
         # ---------------- INVALID CREDENTIALS ---------------- #
 

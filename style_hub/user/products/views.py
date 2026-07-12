@@ -112,6 +112,7 @@ def product_page(request):
         'max_price': max_price,
         'wishlist_variant_ids': wishlist_variant_ids,
         
+        
     }
    
     return render(request, 'product_page.html', context)
@@ -128,7 +129,6 @@ def product_detail(request, id):
         category__is_active=True,
     )
 
-    # Prefetch variants and their images
     variants = product.variants.filter(
         is_deleted=False,
         is_active=True
