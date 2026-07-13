@@ -29,117 +29,78 @@ def profile_page(request):
         phone_number = request.POST.get('phone_number', '').strip()
         cropped_image = request.POST.get('cropped_image')
 
-        # REQUIRED FIELD VALIDATION
+      
         if not username or not new_email or not phone_number:
             messages.error(request, 'All fields are required')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # USERNAME LENGTH VALIDATION
         if len(username) < 3:
-            messages.error(
-                request,
-                'Username must contain at least 3 characters'
-            )
+            messages.error(request,'Username must contain at least 3 characters')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         if len(username) > 30:
-            messages.error(
-                request,
-                'Username cannot exceed 30 characters'
-            )
+            messages.error(request,'Username cannot exceed 30 characters')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # USERNAME SPACE VALIDATION
         if "  " in username:
-            messages.error(
-                request,
-                'Username contains invalid spaces'
-            )
+            messages.error(request,'Username contains invalid spaces')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # USERNAME CHARACTER VALIDATION
         if not re.match(r'^[A-Za-z][A-Za-z0-9_]*$', username):
             messages.error(request, 'Username must start with a letter and can only contain letters, numbers, and underscore')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # USERNAME CANNOT BE ONLY NUMBERS
         if username.isdigit():
-            messages.error(
-                request,
-                'Username cannot contain only numbers'
-            )
+            messages.error(request,'Username cannot contain only numbers')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # USERNAME DUPLICATE CHECK
-        if User.objects.filter(
-            username__iexact=username
-        ).exclude(id=user.id).exists():
-
+        if User.objects.filter(username__iexact=username).exclude(id=user.id).exists():
             messages.error(request, "Username already taken")
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # EMAIL FORMAT VALIDATION
+    
         email_pattern = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
 
         if not re.match(email_pattern, new_email):
             messages.error(request, 'Invalid email address')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # EMAIL LENGTH VALIDATION
+        
         if len(new_email) > 254:
-            messages.error(
-                request,
-                'Email address is too long'
-            )
+            messages.error(request,'Email address is too long')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # EMAIL DUPLICATE CHECK
-        if User.objects.filter(
-            email__iexact=new_email
-        ).exclude(id=user.id).exists():
-
+    
+        if User.objects.filter( email__iexact=new_email).exclude(id=user.id).exists():
             messages.error(request, 'Email already exists')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # PHONE NUMBER VALIDATION
+
         if not phone_number.isdigit():
-            messages.error(
-                request,
-                'Phone number must contain only digits'
-            )
+            messages.error(request,'Phone number must contain only digits')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
         if len(phone_number) != 10:
-            messages.error(
-                request,
-                'Phone number must contain 10 digits'
-            )
+            messages.error( request,'Phone number must contain 10 digits')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # INDIAN PHONE NUMBER VALIDATION
         if phone_number[0] not in ['6', '7', '8', '9']:
-            messages.error(
-                request,
-                'Invalid phone number'
-            )
+            messages.error(request,'Invalid phone number')
             return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-        # PROFILE IMAGE VALIDATION
+        
         if cropped_image:
 
             try:
                 format_data, imgstr = cropped_image.split(';base64,')
 
-                # IMAGE TYPE VALIDATION
+                
                 allowed_formats = ['jpeg', 'jpg', 'png', 'webp']
 
                 ext = format_data.split('/')[-1].lower()
 
                 if ext not in allowed_formats:
-                    messages.error(
-                        request,
-                        'Only JPG, JPEG, PNG and WEBP images are allowed'
-                    )
+                    messages.error( request, 'Only JPG, JPEG, PNG and WEBP images are allowed' )
                     return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
                 # DECODE IMAGE
@@ -147,10 +108,7 @@ def profile_page(request):
 
                 # IMAGE SIZE VALIDATION (5MB)
                 if len(image_data) > 5 * 1024 * 1024:
-                    messages.error(
-                        request,
-                        'Profile image size must be less than 5MB'
-                    )
+                    messages.error(request,'Profile image size must be less than 5MB')
                     return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
                 file_name = f"{uuid.uuid4()}.{ext}"
@@ -174,11 +132,10 @@ def profile_page(request):
 
         old_email = user.email
 
-        # SAVE USERNAME & PHONE
+
         user.username = username
         user.phone_number = phone_number
 
-        # EMAIL CHANGE FLOW
         if new_email != old_email:
 
             user.save()
@@ -186,13 +143,13 @@ def profile_page(request):
             request.session['pending_new_email'] = new_email
             request.session['email_change_user_id'] = user.id
 
-            # DELETE OLD OTP
+        
             OTP.objects.filter(
                 user=user,
                 purpose='email_change'
             ).delete()
 
-            # GENERATE OTP
+            
             otp = str(random.randint(100000, 999999))
 
             OTP.objects.create(
@@ -207,21 +164,21 @@ def profile_page(request):
                     'STYLE-HUB | Email Change Verification',
 
                     f'''
-Hello,
+                        Hello,
 
-We received a request to change the email address associated with your STYLE-HUB account.
+                        We received a request to change the email address associated with your STYLE-HUB account.
 
-Your OTP for email verification is:
+                        Your OTP for email verification is:
 
-{otp}
+                        {otp}
 
-This OTP is valid for 5 minutes.
+                        This OTP is valid for 5 minutes.
 
-If you did not request this change, please ignore this email and secure your account immediately.
+                        If you did not request this change, please ignore this email and secure your account immediately.
 
-Thank you,
-STYLE-HUB Team
-                    ''',
+                        Thank you,
+                        STYLE-HUB Team
+                                            ''',
 
                     settings.EMAIL_HOST_USER,
                     [new_email],
@@ -235,22 +192,15 @@ STYLE-HUB Team
                 )
                 return render(request, 'profile.html', {'old_data': request.POST, 'show_edit_modal': True})
 
-            messages.success(
-                request,
-                'OTP sent to your new email'
-            )
-
+            messages.success(request,'OTP sent to your new email')
             return redirect('verify_changed_email')
 
-        # NORMAL SAVE
+        
         user.save()
 
-        messages.success(
-            request,
-            'Profile updated successfully'
-        )
-
+        messages.success( request, 'Profile updated successfully')
         return redirect('profile')
+    
     return render(request, 'profile.html')
 
 
@@ -341,7 +291,7 @@ def resend_email_change_otp(request):
 
     if last_otp:
         if timezone.now() < last_otp.created_at + timedelta(seconds=30):
-            return JsonResponse({'success':False,'message':'Please wait 30 seconds before requesting another OTP'})
+            return JsonResponse({'success':False,'message':'Please wait 30 seconds before requesting another OTP'}, status=400)
         
 
     OTP.objects.filter(
@@ -350,7 +300,7 @@ def resend_email_change_otp(request):
         ).delete()
 
 
-    # create new otp
+    
     otp = str(random.randint(100000, 999999))
 
     OTP.objects.create(
@@ -359,7 +309,7 @@ def resend_email_change_otp(request):
         purpose='email_change'
     )
 
-    # send mail
+
     send_mail(
         'STYLE-HUB | Secure Email Verification',
 
@@ -368,26 +318,23 @@ def resend_email_change_otp(request):
         STYLE-HUB
 
 
-Your new OTP is:
+        Your new OTP is:
 
-{otp}
+        {otp}
 
-This OTP is valid for 5 minutes.
+        This OTP is valid for 5 minutes.
 
 
-STYLE-HUB Team
+        STYLE-HUB Team
 
-        ''',
+                ''',
 
         settings.EMAIL_HOST_USER,
         [pending_new_email],
         fail_silently=False,
     )
 
-    return JsonResponse({
-        'success': True,
-        'message': 'New OTP sent successfully'
-    })
+    return JsonResponse({'success': True,'message': 'New OTP sent successfully'},status=200)
 
 
 

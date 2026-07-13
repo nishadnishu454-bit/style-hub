@@ -10,9 +10,6 @@ from django.conf import settings
 # Create your views here.
 
 
-
-
-
 @login_required(login_url='login')
 def wallet_page(request):
 
@@ -69,7 +66,6 @@ client = razorpay.Client(
 )
 
 
-
 @login_required(login_url='login')
 def add_money(request):
     if request.method == 'POST':
@@ -79,7 +75,7 @@ def add_money(request):
              return JsonResponse({
                 'success': False,
                 'message': 'Please enter amount'
-            })
+            },status=400)
         
         try:
             amount = Decimal(amount)
@@ -88,13 +84,13 @@ def add_money(request):
                 return JsonResponse({
                     'success': False,
                     'message': 'Invalid amount'
-                })
+                },status=400)
             
         except:
             return JsonResponse({
                 'success': False,
                 'message': 'Invalid amount'
-            })
+            },status=400)
         
         razorpay_order = client.order.create({
             "amount": int(amount * 100),
@@ -112,13 +108,10 @@ def add_money(request):
             'key': settings.RAZORPAY_KEY_ID,
             'name': 'STYLE-HUB',
             'description': 'Wallet Topup',
-        })
+        },status=200)
     
 
-    return JsonResponse({
-        'success': False,
-        'message': 'Invalid request'
-         })
+    return JsonResponse({'success': False,'message': 'Invalid request' },status=400)
     
 
 
@@ -140,7 +133,7 @@ def verify_wallet_payment(request):
             return JsonResponse({
                 'success': False,
                 'message': 'Could not verify order amount'
-            })
+            },status=400)
 
         try:
             
@@ -174,15 +167,12 @@ def verify_wallet_payment(request):
             return JsonResponse({
                 'success': True,
                 'message': 'Money added successfully'
-            })
+            },status=200)
 
         except Exception as error:
             return JsonResponse({
                 'success': False,
                 'message': str(error)
-            })
+            },status=500)
 
-    return JsonResponse({
-        'success': False,
-        'message': 'Invalid request'
-    })
+    return JsonResponse({'success': False,'message': 'Invalid request'},status=400)

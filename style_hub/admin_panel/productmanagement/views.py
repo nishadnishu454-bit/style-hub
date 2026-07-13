@@ -7,8 +7,7 @@ from django.db.models import Sum
 import re
 from .models import Product
 from admin_panel.categorymanagement.models import Category
-from django.db.models import Sum
-
+\
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
@@ -62,106 +61,55 @@ def add_product(request):
 
     if request.method == 'POST':
 
-        product_name = request.POST.get(
-            'product_name',
-            ''
-        ).strip()
+        product_name = request.POST.get('product_name','').strip()
+        description = request.POST.get('description','').strip()
+        category_id = request.POST.get('category')
 
-        description = request.POST.get(
-            'description',
-            ''
-        ).strip()
-
-        category_id = request.POST.get(
-            'category'
-        )
-
-        # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
 
         if (
             not product_name or
             not description or
             not category_id
         ):
-            messages.error(
-                request,
-                'All fields are required'
-            )
+            messages.error(request,'All fields are required')
             return redirect('add_product')
 
-        # ---------------- PRODUCT NAME VALIDATIONS ---------------- #
-
-        # minimum length
         if len(product_name) < 3:
-            messages.error(
-                request,
-                'Product name must contain at least 3 characters'
-            )
+            messages.error(request,'Product name must contain at least 3 characters')
             return redirect('add_product')
 
-        # maximum length
         if len(product_name) > 100:
-            messages.error(
-                request,
-                'Product name is too long'
-            )
+            messages.error(request,'Product name is too long')
             return redirect('add_product')
 
-        # prevent multiple spaces
         if "  " in product_name:
-            messages.error(
-                request,
-                'Product name contains invalid spaces'
-            )
+            messages.error( request,'Product name contains invalid spaces')
             return redirect('add_product')
 
-        # only letters, numbers and spaces
         if not re.match(r'^[A-Za-z0-9\s\-\&]+$', product_name):
-            messages.error(
-                request,
-                'Product name contains invalid characters'
-            )
+            messages.error(request,'Product name contains invalid characters')
             return redirect('add_product')
 
-        # duplicate product validation
         if Product.objects.filter(
             product_name__iexact=product_name,
             is_deleted=False
         ).exists():
 
-            messages.error(
-                request,
-                'Product already exists'
-            )
+            messages.error(request,'Product already exists')
             return redirect('add_product')
 
-        # ---------------- DESCRIPTION VALIDATIONS ---------------- #
 
-        # minimum length
         if len(description) < 10:
-            messages.error(
-                request,
-                'Description must contain at least 10 characters'
-            )
+            messages.error(request,'Description must contain at least 10 characters')
             return redirect('add_product')
 
-        # maximum length
         if len(description) > 2000:
-            messages.error(
-                request,
-                'Description is too long'
-            )
+            messages.error( request,'Description is too long')
             return redirect('add_product')
 
-        # prevent meaningless descriptions
         if description.isdigit():
-            messages.error(
-                request,
-                'Description cannot contain only numbers'
-            )
+            messages.error( request,'Description cannot contain only numbers')
             return redirect('add_product')
-
-        # ---------------- CATEGORY VALIDATIONS ---------------- #
 
         try:
 
@@ -174,13 +122,8 @@ def add_product(request):
 
         except:
 
-            messages.error(
-                request,
-                'Invalid category selected'
-            )
+            messages.error(request,'Invalid category selected')
             return redirect('add_product')
-
-        # ---------------- CREATE PRODUCT ---------------- #
 
         Product.objects.create(
             product_name=product_name,
@@ -188,22 +131,17 @@ def add_product(request):
             category=category,
         )
 
-        messages.success(
-            request,
-            'Product added successfully'
-        )
-
+        messages.success(request,'Product added successfully')
         return redirect('product_listing')
 
     context = {
         'categories': categories
     }
 
-    return render(
-        request,
-        'addproduct.html',
-        context
-    )
+    return render(request,'addproduct.html', context)
+
+
+
 
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
@@ -222,114 +160,61 @@ def edit_product(request, id):
 
     if request.method == 'POST':
 
-        product_name = request.POST.get(
-            'product_name',
-            ''
-        ).strip()
+        product_name = request.POST.get('product_name','').strip()
+        description = request.POST.get('description','').strip()
+        category_id = request.POST.get('category')
 
-        description = request.POST.get(
-            'description',
-            ''
-        ).strip()
-
-        category_id = request.POST.get(
-            'category'
-        )
-
-        # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
 
         if (
             not product_name or
             not description or
             not category_id
         ):
-            messages.error(
-                request,
-                'All fields are required'
-            )
+            messages.error(request,'All fields are required')
             return redirect('edit_product', id=id)
 
-        # ---------------- PRODUCT NAME VALIDATIONS ---------------- #
 
-        # minimum length
         if len(product_name) < 3:
-            messages.error(
-                request,
-                'Product name must contain at least 3 characters'
-            )
+            messages.error( request,'Product name must contain at least 3 characters')
             return redirect('edit_product', id=id)
 
-        # maximum length
         if len(product_name) > 100:
-            messages.error(
-                request,
-                'Product name is too long'
-            )
+            messages.error(request,'Product name is too long')
             return redirect('edit_product', id=id)
 
-        # prevent multiple spaces
         if "  " in product_name:
-            messages.error(
-                request,
-                'Product name contains invalid spaces'
-            )
+            messages.error(request,'Product name contains invalid spaces')
             return redirect('edit_product', id=id)
 
-        # only letters, numbers, spaces, hyphen and &
         if not re.match(r'^[A-Za-z0-9\s\-\&]+$', product_name):
-            messages.error(
-                request,
-                'Product name contains invalid characters'
-            )
+            messages.error(request,'Product name contains invalid characters')
             return redirect('edit_product', id=id)
 
-        # duplicate product validation
+
         if Product.objects.filter(
             product_name__iexact=product_name,
             is_deleted=False
         ).exclude(id=id).exists():
 
-            messages.error(
-                request,
-                'Product already exists'
-            )
+            messages.error(request,'Product already exists')
             return redirect('edit_product', id=id)
 
-        # ---------------- DESCRIPTION VALIDATIONS ---------------- #
-
-        # minimum length
         if len(description) < 20:
-            messages.error(
-                request,
-                'Description must contain at least 20 characters'
-            )
+            messages.error(request,'Description must contain at least 20 characters')
             return redirect('edit_product', id=id)
 
-        # maximum length
         if len(description) > 2000:
-            messages.error(
-                request,
-                'Description is too long'
-            )
+            messages.error(request,'Description is too long')
             return redirect('edit_product', id=id)
 
-        # prevent numeric-only description
         if description.isdigit():
-            messages.error(
-                request,
-                'Description cannot contain only numbers'
-            )
+            messages.error(request,'Description cannot contain only numbers')
             return redirect('edit_product', id=id)
 
-        # prevent repeated invalid spaces
         if "  " in description:
-            messages.error(
-                request,
-                'Description contains invalid spaces'
-            )
+            messages.error( request,'Description contains invalid spaces')
             return redirect('edit_product', id=id)
 
-        # ---------------- CATEGORY VALIDATIONS ---------------- #
 
         try:
 
@@ -341,14 +226,9 @@ def edit_product(request, id):
             )
 
         except:
-
-            messages.error(
-                request,
-                'Invalid category selected'
-            )
+            messages.error(request,'Invalid category selected')
             return redirect('edit_product', id=id)
 
-        # ---------------- UPDATE PRODUCT ---------------- #
 
         product.product_name = product_name
         product.description = description
@@ -356,11 +236,7 @@ def edit_product(request, id):
 
         product.save()
 
-        messages.success(
-            request,
-            'Product updated successfully'
-        )
-
+        messages.success( request,'Product updated successfully')
         return redirect('product_listing')
 
     context = {
@@ -368,11 +244,8 @@ def edit_product(request, id):
         'categories': categories,
     }
 
-    return render(
-        request,
-        'editproduct.html',
-        context
-    )
+    return render(request,'editproduct.html',context)
+
 
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
@@ -388,9 +261,8 @@ def view_product(request, id):
 
     variants = product.variants.filter(is_deleted = False)
 
-    stock_data = variants.aggregate(
-    total=Sum('variant_stock')
-)
+    stock_data = variants.aggregate(total=Sum('variant_stock'))
+
     total_stock = stock_data['total'] or 0
 
     context = {

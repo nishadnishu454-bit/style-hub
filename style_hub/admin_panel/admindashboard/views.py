@@ -65,7 +65,6 @@ def admin_dashboard(request):
     blocked_users = User.objects.filter(is_staff=False, is_active=False).count()
     total_products = Product.objects.filter(is_deleted=False).count()
     
-    # Active orders (excluding Cancelled/Returned)
     active_orders = Order.objects.exclude(order_status__in=['Cancelled', 'Returned'])
     total_orders = active_orders.count()
     
@@ -84,7 +83,8 @@ def admin_dashboard(request):
     
     recent_orders = Order.objects.all().select_related('user').order_by('-ordered_at')[:5]
     
-    # Chart calculation
+
+
     sales_chart = []
     today = timezone.now().date()
     
@@ -99,7 +99,6 @@ def admin_dashboard(request):
             raw_chart_data.append({'label': d.strftime('%a'), 'amount': float(amt)})
             
     elif chart_filter == 'yearly':
-        # 12 Months of current year
         raw_chart_data = []
         for m in range(1, 13):
             amt = Order.objects.exclude(order_status__in=['Cancelled', 'Returned']).filter(
@@ -109,7 +108,7 @@ def admin_dashboard(request):
             month_name = datetime(today.year, m, 1).strftime('%b')
             raw_chart_data.append({'label': month_name, 'amount': float(amt)})
             
-    else:  # monthly (default: last 15 days daily)
+    else:  
         days = [today - timedelta(days=i) for i in range(14, -1, -1)]
         raw_chart_data = []
         for d in days:
@@ -118,11 +117,10 @@ def admin_dashboard(request):
             ).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
             raw_chart_data.append({'label': d.strftime('%d %b'), 'amount': float(amt)})
             
-    # Calculate relative heights (max 100%)
+
     max_amount = max([item['amount'] for item in raw_chart_data]) if raw_chart_data else 0
     for item in raw_chart_data:
         height = int((item['amount'] / max_amount) * 100) if max_amount > 0 else 0
-        # Prevent completely invisible bars if amount > 0
         if item['amount'] > 0 and height < 5:
             height = 5
         sales_chart.append({
@@ -131,13 +129,13 @@ def admin_dashboard(request):
             'height': height
         })
         
-    # Top 10 best-selling products
+
     top_products = OrderItem.objects.exclude(order__order_status__in=['Cancelled', 'Returned'])\
         .values('product_name', 'variant__product_id')\
         .annotate(total_qty=Sum('quantity'), total_sales=Sum('total_price'))\
         .order_by('-total_qty')[:10]
         
-    # Top 10 best-selling categories
+
     top_categories = OrderItem.objects.exclude(order__order_status__in=['Cancelled', 'Returned'])\
         .values('variant__product__category__category_name')\
         .annotate(total_qty=Sum('quantity'), total_sales=Sum('total_price'))\
@@ -174,23 +172,11 @@ def sales_report_page(request):
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
 
-    # ALL ORDERS
+    
     all_orders = get_filtered_orders(filter_type, start_date, end_date)
-
-    # SALES ORDERS ONLY
-    orders = all_orders.exclude(
-        order_status__in=['Cancelled', 'Returned']
-    )
-
-    # REFUNDED ORDERS
-    refunded_orders = all_orders.filter(
-        payment_status='Refunded'
-    )
-
-    # REFUND AMOUNT
-    refund_amount = refunded_orders.aggregate(
-        total=Sum('total_amount')
-    )['total'] or Decimal('0.00')
+    orders = all_orders.exclude(order_status__in=['Cancelled', 'Returned'])
+    refunded_orders = all_orders.filter(payment_status='Refunded')
+    refund_amount = refunded_orders.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
 
     # MAIN STATS
     stats = orders.aggregate(
@@ -205,10 +191,9 @@ def sales_report_page(request):
     total_subtotal = stats['total_subtotal_sum'] or Decimal('0.00')
     total_discount = stats['total_discount_sum'] or Decimal('0.00')
     total_delivery = stats['total_delivery_sum'] or Decimal('0.00')
-
     gross_revenue = stats['total_amount_sum'] or Decimal('0.00')
 
-    # NET REVENUE AFTER REFUND
+    
     net_revenue = gross_revenue - refund_amount
 
     # PAGINATION
@@ -221,21 +206,16 @@ def sales_report_page(request):
         'filter_type': filter_type,
         'start_date': start_date,
         'end_date': end_date,
-
         'total_orders_count': total_orders_count,
         'total_subtotal': total_subtotal,
         'total_discount': total_discount,
         'total_delivery': total_delivery,
-
         'refund_amount': refund_amount,
         'net_revenue': net_revenue,
     }
 
-    return render(
-        request,
-        'admindashboard/sales_report.html',
-        context
-    )
+    return render(request,'admindashboard/sales_report.html', context)
+
 
 
 @login_required(login_url='admin_login')
@@ -250,7 +230,6 @@ def download_sales_report_pdf(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="sales_report_{filter_type}_{timezone.now().date()}.pdf"'
     
-    # Calculate summary metrics
     stats = orders.aggregate(
         total_orders_count=Count('id'),
         total_subtotal_sum=Sum('subtotal'),
@@ -296,11 +275,9 @@ def download_sales_report_pdf(request):
         spaceAfter=10
     )
     
-    # Document header
     story.append(Paragraph("STYLE-HUB SALES REPORT", title_style))
     story.append(Paragraph(f"Generated on {timezone.now().strftime('%Y-%m-%d %H:%M')} | Filter: {filter_type.upper()}", subtitle_style))
     
-    # Summary Table
     summary_data = [
         ['Total Orders', 'Subtotal', 'Coupon Discounts', 'Delivery Charges', 'Net Revenue'],
         [
@@ -333,7 +310,7 @@ def download_sales_report_pdf(request):
     story.append(summary_table)
     story.append(Spacer(1, 25))
     
-    # Detailed Orders Table
+    
     story.append(Paragraph("Detailed Order Breakdown", header_style))
     
     order_headers = ['Order No.', 'Customer', 'Date', 'Payment', 'Status', 'Subtotal', 'Discount', 'Total']
@@ -382,7 +359,7 @@ def download_sales_report_excel(request):
     
     orders = get_filtered_orders(filter_type, start_date, end_date).order_by('-ordered_at')
     
-    # Calculate stats
+    
     stats = orders.aggregate(
         total_orders_count=Count('id'),
         total_subtotal_sum=Sum('subtotal'),
@@ -401,21 +378,19 @@ def download_sales_report_excel(request):
     ws = wb.active
     ws.title = "Sales Report"
     
-    # Design Styles
+    
     title_font = Font(name="Arial", size=16, bold=True, color="111827")
     header_font = Font(name="Arial", size=10, bold=True, color="FFFFFF")
     section_font = Font(name="Arial", size=11, bold=True, color="1F2937")
     normal_font = Font(name="Arial", size=9, color="374151")
     bold_font = Font(name="Arial", size=9, bold=True, color="000000")
-    
     header_fill = PatternFill(start_color="111827", end_color="111827", fill_type="solid")
     summary_fill = PatternFill(start_color="F3F4F6", end_color="F3F4F6", fill_type="solid")
-    
     align_left = Alignment(horizontal="left", vertical="center")
     align_center = Alignment(horizontal="center", vertical="center")
     align_right = Alignment(horizontal="right", vertical="center")
     
-    # Sheet title
+    
     ws.merge_cells("A1:H1")
     ws["A1"] = "STYLE-HUB SALES REPORT"
     ws["A1"].font = title_font
@@ -426,7 +401,7 @@ def download_sales_report_excel(request):
     ws["A2"].font = Font(name="Arial", size=9, italic=True, color="4B5563")
     ws["A2"].alignment = align_left
     
-    # Summary section
+    
     ws["A4"] = "Summary Statistics"
     ws["A4"].font = section_font
     
@@ -449,7 +424,7 @@ def download_sales_report_excel(request):
         if c > 1:
             cell.alignment = align_right
             
-    # Orders Detail Table
+
     ws["A8"] = "Order Details Table"
     ws["A8"].font = section_font
     
@@ -514,7 +489,7 @@ def admin_referrals(request):
             Q(referred_user__email__icontains=search)
         )
         
-    paginator = Paginator(referrals, 10)
+    paginator = Paginator(referrals, 5)
     page_number = request.GET.get('page')
     referrals_page = paginator.get_page(page_number)
     

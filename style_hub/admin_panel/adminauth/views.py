@@ -17,7 +17,6 @@ def admin_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-
         if not username or not password:
             messages.error(request,'All fields are required')
             return render(request,'adminauth/admin_login.html')

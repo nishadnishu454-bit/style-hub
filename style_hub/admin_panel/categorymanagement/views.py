@@ -25,28 +25,22 @@ def category_listing(request):
         is_deleted = False
     ).order_by('-id')
 
-
     if search:
         categories = categories.filter(
             Q(category_name__icontains=search)
         )
 
-
     paginator = Paginator(categories,5)
     page_number = request.GET.get('page')
     categories = paginator.get_page(page_number)
-
 
     context={
         'page_obj':categories,
        'categories':categories,
        'search':search,
-       
     }
-    
+
     return render(request,'categorylisting.html',context)
-
-
 
 
 
@@ -65,7 +59,6 @@ def activate_category(request, id):
     ).update(is_active=True)
 
     messages.success(request, 'Category activated successfully')
-
     return redirect('category_listing')
 
 
@@ -85,7 +78,6 @@ def deactivate_category(request, id):
     ).update(is_active=False)
 
     messages.success(request, 'Category deactivated successfully')
-
     return redirect('category_listing')
 
 
@@ -114,17 +106,14 @@ def add_category(request):
             return redirect('add_category')
 
 
-        # minimum length
         if len(category_name) < 3:
             messages.error(request, 'Category name must contain at least 3 characters')
             return redirect('add_category')
 
-        # maximum length
         if len(category_name) > 50:
             messages.error(request, 'Category name is too long')
             return redirect('add_category')
 
-        # only alphabets and spaces
         if not re.match(r'^[A-Za-z\s]+$', category_name):
             messages.error(request, 'Category name should contain only alphabets and spaces')
             return redirect('add_category')
@@ -132,7 +121,6 @@ def add_category(request):
         if "  " in category_name:
             messages.error(request, 'Category name contains invalid spaces')
             return redirect('add_category')
-
 
         if len(description) < 10:
             messages.error(request, 'Description must contain at least 10 characters')
@@ -175,13 +163,10 @@ def add_category(request):
                 existing_category.is_active = True
 
                 existing_category.save()
-
                 messages.success(request, 'Category restored successfully')
-
                 return redirect('category_listing')
 
             messages.error(request, 'Category already exists')
-
             return redirect('add_category')
 
       
@@ -193,9 +178,8 @@ def add_category(request):
         )
 
         messages.success(request, 'Category added successfully')
-
         return redirect('category_listing')
-
+    
     return render(request, 'addcategory.html')
 
 
@@ -213,85 +197,45 @@ def edit_category(request, id):
 
     if request.method == 'POST':
 
-        category_name = request.POST.get(
-            'category_name',
-            ''
-        ).strip()
-
-        description = request.POST.get(
-            'description',
-            ''
-        ).strip()
-
+        category_name = request.POST.get('category_name','').strip()
+        description = request.POST.get( 'description','').strip()
         category_image = request.FILES.get('category_image')
 
-        # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
 
         if not category_name:
-            messages.error(
-                request,
-                'Category name is required'
-            )
+            messages.error(request,'Category name is required')
             return redirect('edit_category', id=id)
 
         if not description:
-            messages.error(
-                request,
-                'Description is required'
-            )
+            messages.error(request, 'Description is required')
             return redirect('edit_category', id=id)
 
-        # ---------------- CATEGORY NAME VALIDATIONS ---------------- #
 
-        # minimum length
         if len(category_name) < 3:
-            messages.error(
-                request,
-                'Category name must contain at least 3 characters'
-            )
+            messages.error(request,'Category name must contain at least 3 characters')
             return redirect('edit_category', id=id)
 
-        # maximum length
         if len(category_name) > 50:
-            messages.error(
-                request,
-                'Category name is too long'
-            )
+            messages.error(request,'Category name is too long' )
             return redirect('edit_category', id=id)
 
-        # only alphabets and spaces
         if not re.match(r'^[A-Za-z\s]+$', category_name):
-            messages.error(
-                request,
-                'Category name should contain only alphabets and spaces'
-            )
+            messages.error( request,'Category name should contain only alphabets and spaces')
             return redirect('edit_category', id=id)
 
-        # prevent multiple spaces
         if "  " in category_name:
-            messages.error(
-                request,
-                'Category name contains invalid spaces'
-            )
+            messages.error(request,'Category name contains invalid spaces' )
             return redirect('edit_category', id=id)
 
-        # ---------------- DESCRIPTION VALIDATIONS ---------------- #
 
         if len(description) < 10:
-            messages.error(
-                request,
-                'Description must contain at least 10 characters'
-            )
+            messages.error( request,'Description must contain at least 10 characters')
             return redirect('edit_category', id=id)
 
         if len(description) > 500:
-            messages.error(
-                request,
-                'Description is too long'
-            )
+            messages.error(request,'Description is too long')
             return redirect('edit_category', id=id)
 
-        # ---------------- IMAGE VALIDATIONS ---------------- #
 
         if category_image:
 
@@ -322,7 +266,6 @@ def edit_category(request, id):
                 )
                 return redirect('edit_category', id=id)
 
-        # ---------------- DUPLICATE CATEGORY VALIDATION ---------------- #
 
         existing_category = Category.objects.filter(
             category_name__iexact=category_name,
@@ -330,13 +273,9 @@ def edit_category(request, id):
         ).exclude(id=id)
 
         if existing_category.exists():
-            messages.error(
-                request,
-                'Category name already exists'
-            )
+            messages.error(request,'Category name already exists')
             return redirect('edit_category', id=id)
 
-        # ---------------- UPDATE CATEGORY ---------------- #
 
         category.category_name = category_name
         category.description = description
@@ -346,22 +285,14 @@ def edit_category(request, id):
 
         category.save()
 
-        messages.success(
-            request,
-            'Category updated successfully'
-        )
-
+        messages.success(request,'Category updated successfully')
         return redirect('category_listing')
 
     context = {
         'category': category
     }
 
-    return render(
-        request,
-        'editcategory.html',
-        context
-    )
+    return render(request,'editcategory.html',context)
 
 
 

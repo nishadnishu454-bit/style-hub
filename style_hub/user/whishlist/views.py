@@ -88,6 +88,7 @@ def add_to_wishlist(request, id):
             'success': True,
             'action': action,
             'message': msg,
+            
             'wishlist_count': Wishlist.objects.filter(
                 user=request.user,
                 variant__is_deleted=False,
@@ -97,7 +98,7 @@ def add_to_wishlist(request, id):
                 variant__product__category__is_deleted=False,
                 variant__product__category__is_active=True
             ).count()
-        })
+        }, status=200)
 
     if action == 'added':
         messages.success(request, msg)
@@ -117,7 +118,6 @@ def remove_wishlist_item(request, id):
     wishlist_item.delete()
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        from django.http import JsonResponse
         return JsonResponse({
             'success': True,
             'message': 'Item removed from wishlist',
@@ -130,7 +130,7 @@ def remove_wishlist_item(request, id):
                 variant__product__category__is_deleted=False,
                 variant__product__category__is_active=True
             ).count()
-        })
+        }, status=200)
 
     messages.success(request, 'Item removed from wishlist')
     return redirect('wishlist_page')

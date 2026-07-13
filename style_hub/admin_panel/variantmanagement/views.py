@@ -65,25 +65,10 @@ def add_variant(request, product_id):
 
     if request.method == 'POST':
 
-        size = request.POST.get(
-            'size',
-            ''
-        ).strip()
-
-        color = request.POST.get(
-            'color',
-            ''
-        ).strip()
-
-        price = request.POST.get(
-            'variant_price',
-            ''
-        ).strip()
-
-        stock = request.POST.get(
-            'variant_stock',
-            ''
-        ).strip()
+        size = request.POST.get('size','').strip()
+        color = request.POST.get('color','').strip()
+        price = request.POST.get('variant_price','').strip()
+        stock = request.POST.get('variant_stock','').strip()
 
         cropped_images = [
             request.POST.get('variant_cropped_image_1'),
@@ -99,25 +84,18 @@ def add_variant(request, product_id):
             'images': cropped_images,  
         }
 
-        # REQUIRED FIELD VALIDATIONS
 
         if (
             not size or
             not color or
             not price or
-            not stock
-        ):
-            messages.error(
-                request,
-                'All variant details are required'
-            )
+            not stock):
+
+            messages.error(request,'All variant details are required')
             return redirect('variant_management')
         
 
-
-        #  SIZE VALIDATIONS 
-
-        if product.category.category_name.lower()in ['pant','pants', 'jeans', 'trouser']:
+        if product.category.category_name.lower() in ['pant','pants', 'jeans', 'trouser']:
 
             allowed_sizes = [
                 '26','28','30','32','34','36',
@@ -140,124 +118,74 @@ def add_variant(request, product_id):
             final_size = size.upper()
 
         if final_size not in allowed_sizes:
-            messages.error(
-                request,
-                'Invalid size selected'
-            )
+            messages.error(request,'Invalid size selected')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
 
-        # ---------------- COLOR VALIDATIONS ---------------- #
-
         if len(color) < 3:
-            messages.error(
-                request,
-                'Color name must contain at least 3 characters'
-            )
+            messages.error(request,'Color name must contain at least 3 characters')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
 
         if len(color) > 30:
-            messages.error(
-                request,
-                'Color name is too long'
-            )
+            messages.error(request,'Color name is too long')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
 
-        # only alphabets and spaces
         if not re.match(r'^[A-Za-z\s]+$', color):
-            messages.error(
-                request,
-                'Color name should contain only alphabets'
-            )
+            messages.error(request,'Color name should contain only alphabets')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
 
-        # prevent multiple spaces
+
         if "  " in color:
-            messages.error(
-                request,
-                'Color name contains invalid spaces'
-            )
+            messages.error(request,'Color name contains invalid spaces')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
 
-        # ---------------- PRICE VALIDATIONS ---------------- #
 
         try:
 
             price = Decimal(price)
 
             if price <= 0:
-                messages.error(
-                    request,
-                    'Price must be greater than 0'
-                )
+                messages.error(request,'Price must be greater than 0')
                 return redirect(f'/variant_management/?add_variant_error={product.id}')
 
             if price > 1000000:
-                messages.error(
-                    request,
-                    'Price is too high'
-                )
+                messages.error(request,'Price is too high')
                 return redirect(f'/variant_management/?add_variant_error={product.id}')
 
         except InvalidOperation:
-            messages.error(
-                request,
-                'Price must be a valid number'
-            )
+            messages.error(request,'Price must be a valid number')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
-
-        # ---------------- STOCK VALIDATIONS ---------------- #
 
         try:
 
             stock = int(stock)
 
             if stock < 0:
-                messages.error(
-                    request,
-                    'Stock cannot be negative'
-                )
+                messages.error(request,'Stock cannot be negative')
                 return redirect(f'/variant_management/?add_variant_error={product.id}')
 
             if stock > 10000:
-                messages.error(
-                    request,
-                    'Stock quantity is too high'
-                )
+                messages.error(request,'Stock quantity is too high')
                 return redirect(f'/variant_management/?add_variant_error={product.id}')
 
         except ValueError:
-            messages.error(
-                request,
-                'Stock must be a valid number'
-            )
+            messages.error(request,'Stock must be a valid number')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
 
-        # ---------------- IMAGE VALIDATIONS ---------------- #
 
         valid_images = [
             img for img in cropped_images
             if img
         ]
 
-        # minimum image validation
         if len(valid_images) < 3:
-            messages.error(
-                request,
-                'Minimum 3 variant images are required'
-            )
+            messages.error(request,'Minimum 3 variant images are required')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
 
        
-
-        # duplicate image validation
         if len(valid_images) != len(set(valid_images)):
-            messages.error(
-                request,
-                'Duplicate images are not allowed'
-            )
+            messages.error(request,'Duplicate images are not allowed')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
 
-        # ---------------- DUPLICATE VARIANT VALIDATION ---------------- #
 
         if ProductVariant.objects.filter(
             product=product,
@@ -266,14 +194,9 @@ def add_variant(request, product_id):
             is_deleted=False
         ).exists():
 
-            messages.error(
-                request,
-                f'Variant {size}/{color} already exists'
-            )
-
+            messages.error( request, f'Variant {size}/{color} already exists')
             return redirect(f'/variant_management/?add_variant_error={product.id}')
 
-        # ---------------- CREATE VARIANT ---------------- #
 
         variant = ProductVariant.objects.create(
             product=product,
@@ -283,7 +206,6 @@ def add_variant(request, product_id):
             variant_stock=stock
         )
 
-        # ---------------- SAVE IMAGES ---------------- #
 
         for index, img_data in enumerate(valid_images):
 
@@ -293,11 +215,7 @@ def add_variant(request, product_id):
                 if not img_data.startswith('data:image'):
                     variant.delete()
 
-                    messages.error(
-                        request,
-                        'Invalid image format'
-                    )
-
+                    messages.error(request,'Invalid image format')
                     return redirect(f'/variant_management/?add_variant_error={product.id}')
 
                 image_file = decode_base64_image(
@@ -315,22 +233,12 @@ def add_variant(request, product_id):
             except Exception:
 
                 variant.delete()
-
-                messages.error(
-                    request,
-                    'Failed to upload images'
-                )
-
+                messages.error(request,'Failed to upload images')
                 return redirect(f'/variant_management/?add_variant_error={product.id}')
 
-        # ---------------- SUCCESS MESSAGE ---------------- #
-
-        messages.success(
-            request,
-            'Variant added successfully'
-        )
-
+        messages.success( request,'Variant added successfully')
         return redirect('variant_management')
+    
     return redirect('variant_management')
 
 
@@ -346,25 +254,10 @@ def edit_variant(request, variant_id):
 
     if request.method == 'POST':
 
-        size = request.POST.get(
-            'size',
-            ''
-        ).strip()
-
-        color = request.POST.get(
-            'color',
-            ''
-        ).strip()
-
-        price = request.POST.get(
-            'variant_price',
-            ''
-        ).strip()
-
-        stock = request.POST.get(
-            'variant_stock',
-            ''
-        ).strip()
+        size = request.POST.get('size','').strip()
+        color = request.POST.get('color','').strip()
+        price = request.POST.get('variant_price','').strip()
+        stock = request.POST.get('variant_stock','').strip()
 
         cropped_images = [
             request.POST.get('variant_cropped_image_1'),
@@ -381,7 +274,6 @@ def edit_variant(request, variant_id):
             'images': cropped_images, 
         }
 
-        # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
 
         if (
             not size or
@@ -389,14 +281,9 @@ def edit_variant(request, variant_id):
             not price or
             not stock
         ):
-            messages.error(
-                request,
-                'All variant details are required'
-            )
+            messages.error(request,'All variant details are required')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
         
-
-        # ---------------- SIZE VALIDATIONS ---------------- #
         if variant.product.category.category_name.lower() in ['pant','pants', 'jeans', 'trouser']:
             allowed_sizes = [
                 '26','28','30','32','34','36',
@@ -424,93 +311,56 @@ def edit_variant(request, variant_id):
             )
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
-        # ---------------- COLOR VALIDATIONS ---------------- #
 
         if len(color) < 3:
-            messages.error(
-                request,
-                'Color name must contain at least 3 characters'
-            )
+            messages.error(request,'Color name must contain at least 3 characters')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
         if len(color) > 30:
-            messages.error(
-                request,
-                'Color name is too long'
-            )
+            messages.error(request,'Color name is too long')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
-        # only alphabets and spaces
         if not re.match(r'^[A-Za-z\s]+$', color):
-            messages.error(
-                request,
-                'Color name should contain only alphabets'
-            )
+            messages.error(request,'Color name should contain only alphabets')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
-        # prevent multiple spaces
         if "  " in color:
-            messages.error(
-                request,
-                'Color name contains invalid spaces'
-            )
+            messages.error(request,'Color name contains invalid spaces')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
-        # ---------------- PRICE VALIDATIONS ---------------- #
 
         try:
 
             price = Decimal(price)
 
             if price <= 0:
-                messages.error(
-                    request,
-                    'Price must be greater than 0'
-                )
+                messages.error(request,'Price must be greater than 0')
                 return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
             if price > 1000000:
-                messages.error(
-                    request,
-                    'Price is too high'
-                )
+                messages.error(request,'Price is too high')
                 return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
         except InvalidOperation:
-            messages.error(
-                request,
-                'Price must be a valid number'
-            )
+            messages.error(request,'Price must be a valid number')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
-
-        # ---------------- STOCK VALIDATIONS ---------------- #
 
         try:
 
             stock = int(stock)
 
             if stock < 0:
-                messages.error(
-                    request,
-                    'Stock cannot be negative'
-                )
+                messages.error(request,'Stock cannot be negative' )
                 return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
             if stock > 10000:
-                messages.error(
-                    request,
-                    'Stock quantity is too high'
-                )
+                messages.error(request,'Stock quantity is too high')
                 return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
         except ValueError:
-            messages.error(
-                request,
-                'Stock must be a valid number'
-            )
+            messages.error(request,'Stock must be a valid number')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
-        # ---------------- DUPLICATE VARIANT VALIDATION ---------------- #
 
         if ProductVariant.objects.filter(
             product=variant.product,
@@ -519,29 +369,19 @@ def edit_variant(request, variant_id):
             is_deleted=False
         ).exclude(id=variant_id).exists():
 
-            messages.error(
-                request,
-                f'Variant {size}/{color} already exists'
-            )
-
+            messages.error(request,f'Variant {size}/{color} already exists')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
-        # ---------------- IMAGE VALIDATIONS ---------------- #
 
         valid_images = [
             img for img in cropped_images
             if img
         ]
 
-        # prevent duplicate images
         if len(valid_images) != len(set(valid_images)):
-            messages.error(
-                request,
-                'Duplicate images are not allowed'
-            )
+            messages.error(request,'Duplicate images are not allowed')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
-        # ---------------- IMAGE VALIDATION & DECODING ---------------- #
 
         decoded_images = []
         for index in range(3):
@@ -549,12 +389,8 @@ def edit_variant(request, variant_id):
             if not img_data:
                 continue
 
-            # validate image format
             if not img_data.startswith('data:image'):
-                messages.error(
-                    request,
-                    'Invalid image format'
-                )
+                messages.error(request,'Invalid image format')
                 return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
             try:
@@ -564,15 +400,8 @@ def edit_variant(request, variant_id):
                 )
                 decoded_images.append((index, image_file))
             except Exception:
-                messages.error(
-                    request,
-                    'Failed to process variant images'
-                )
+                messages.error(request,'Failed to process variant images' )
                 return redirect(f'/variant_management/?edit_variant_error={variant.id}')
-
-        # ---------------- UPDATE VARIANT ATOMICALLY ---------------- #
-
-        
 
         try:
             with transaction.atomic():
@@ -582,7 +411,6 @@ def edit_variant(request, variant_id):
                 variant.variant_stock = stock
                 variant.save()
 
-                # ---------------- IMAGE UPDATE ---------------- #
                 existing_images = {
                     img.position: img
                     for img in variant.images.all().order_by('position')
@@ -603,13 +431,11 @@ def edit_variant(request, variant_id):
                             is_primary=True if index == 0 else False
                         )
 
-                # ---------------- CHECK MINIMUM IMAGES ---------------- #
                 total_images = variant.images.filter(
                     image__isnull=False
                 ).count()
 
                 if total_images < 3:
-                    # Raise exception to trigger rollback
                     raise ValueError('Variant must contain at least 3 images')
 
         except ValueError as val_err:
@@ -619,13 +445,8 @@ def edit_variant(request, variant_id):
             messages.error(request, 'Failed to save variant changes')
             return redirect(f'/variant_management/?edit_variant_error={variant.id}')
 
-        # ---------------- SUCCESS MESSAGE ---------------- #
 
-        messages.success(
-            request,
-            'Variant updated successfully'
-        )
-
+        messages.success(request,'Variant updated successfully')
         return redirect('variant_management')
 
     return redirect('variant_management')
