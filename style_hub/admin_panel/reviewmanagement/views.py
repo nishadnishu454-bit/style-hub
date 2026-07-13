@@ -22,26 +22,16 @@ def admin_reviews(request):
         'product'
     ).order_by('-created_at')
 
-    # SEARCH FILTER
     if search:
-
         reviews = reviews.filter(
-
             Q(product__product_name__icontains=search) |
-
             Q(user__username__icontains=search) |
-
             Q(title__icontains=search) |
-
             Q(content__icontains=search)
-
         )
 
-    # RATING FILTER
     if rating_filter:
-
         try:
-
             reviews = reviews.filter(
                 rating=int(rating_filter)
             )
@@ -49,11 +39,8 @@ def admin_reviews(request):
         except ValueError:
             pass
 
-    # PAGINATION
-    paginator = Paginator(reviews, 10)
-
+    paginator = Paginator(reviews, 5)
     page_number = request.GET.get('page')
-
     reviews_page = paginator.get_page(page_number)
 
     context = {
@@ -62,11 +49,8 @@ def admin_reviews(request):
         'rating_filter': rating_filter,
     }
 
-    return render(
-        request,
-        'reviews_listing.html',
-        context
-    )
+    return render(request,'reviews_listing.html',context)
+
 
 
 @login_required(login_url='admin_login')
@@ -80,9 +64,5 @@ def delete_review(request, review_id):
 
     review.delete()
 
-    messages.success(
-        request,
-        'Review deleted successfully'
-    )
-
+    messages.success(request,'Review deleted successfully')
     return redirect('admin_reviews')

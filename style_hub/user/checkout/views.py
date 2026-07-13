@@ -18,14 +18,15 @@ from user.orders.models import Order
 import traceback
 from decimal import Decimal, InvalidOperation
 from django.db.models import F
-
+from django.views.decorators.cache import never_cache
+import re
 
 client = razorpay.Client(
     auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
 )
 
 
-from django.views.decorators.cache import never_cache
+
 
 @never_cache
 @login_required(login_url='login')
@@ -54,11 +55,7 @@ def checkout_page(request):
 
         if item.variant.variant_stock < item.quantity:
 
-            messages.error(
-                request,
-                f"{item.variant.product.product_name} has only {item.variant.variant_stock} stock left."
-            )
-
+            messages.error( request,f"{item.variant.product.product_name} has only {item.variant.variant_stock} stock left.")
             return redirect('cart_page')
 
     addresses = Address.objects.filter(user=request.user)
@@ -74,7 +71,7 @@ def checkout_page(request):
         # USE OFFER PRICE
         price = item.variant.offer_price
 
-        # FALLBACK
+        
         if not price:
             price = item.variant.variant_price
 
@@ -132,7 +129,7 @@ def checkout_page(request):
 
             else:
 
-                # PERCENTAGE
+            
                 if applied_coupon.discount_type == 'PERCENTAGE':
 
                     discount_amount = (
@@ -144,7 +141,7 @@ def checkout_page(request):
 
                     discount_amount = applied_coupon.discount_value
 
-                # MAX DISCOUNT
+        
                 if (
                     applied_coupon.max_discount and
                     discount_amount > applied_coupon.max_discount
@@ -184,7 +181,7 @@ def checkout_page(request):
         tax_amount
     )
 
-    # NEVER NEGATIVE
+    
     if total_amount < 0:
         total_amount = Decimal('0.00')
 
@@ -205,7 +202,7 @@ def checkout_page(request):
         address_id = request.POST.get('address_id')
         payment_method = request.POST.get('payment_method')
 
-        # ADDRESS VALIDATION
+
 
         if not address_id and payment_method:
             messages.error(request,'Please select both delivery address and payment method')
@@ -215,7 +212,7 @@ def checkout_page(request):
             messages.error(request,'Please select a delivery address')
             return redirect('checkout')
 
-        # PAYMENT VALIDATION
+
         if not payment_method:
 
             messages.error(
@@ -225,7 +222,7 @@ def checkout_page(request):
 
             return redirect('checkout')
 
-        # COD LIMIT
+        
         if (
             payment_method == 'COD' and
             total_amount > 1000
@@ -248,7 +245,6 @@ def checkout_page(request):
 
             with transaction.atomic():
 
-                # FINAL STOCK CHECK
                 for item in cart_items:
 
                     variant = item.variant
@@ -268,9 +264,8 @@ def checkout_page(request):
 
                 if payment_method == 'RAZORPAY':
 
-                    # Re-validate total amount (Issue 9)
                     if total_amount <= 0 and subtotal > 0:
-                        return JsonResponse({'success': False, 'message': 'Invalid total amount for payment'})
+                        return JsonResponse({'success': False, 'message': 'Invalid total amount for payment'},status=400)
 
                     razorpay_order = client.order.create({
                         "amount": int(float(total_amount) * 100),
@@ -288,9 +283,8 @@ def checkout_page(request):
                         'key': settings.RAZORPAY_KEY_ID,
                         'name': 'STYLE-HUB',
                         'description': 'Order Payment',
-                    })
+                    },status=200)
 
-                # CREATE ORDER FOR COD OR WALLET
                 order = Order.objects.create(
                     user=request.user,
                     address=address,
@@ -318,11 +312,7 @@ def checkout_page(request):
 
                     if not wallet_payment:
 
-                        messages.error(
-                            request,
-                            'Insufficient wallet balance'
-                        )
-
+                        messages.error(request,'Insufficient wallet balance')
                         return redirect('checkout')
 
                     order.payment_status = 'Completed'
@@ -363,15 +353,14 @@ def checkout_page(request):
 
                     )
 
-                    # STOCK REDUCE
+                    
                     item.variant.variant_stock = F('variant_stock')-item.quantity
                     item.variant.save()
                     item.variant.refresh_from_db
 
-                # REFERRAL
+                
                 process_referral_reward(request.user, order)
 
-                # CLEAR CART
                 cart_items.delete()
 
                 # REMOVE COUPON SESSION
@@ -395,16 +384,9 @@ def checkout_page(request):
 
                     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 
-                        return JsonResponse({
-                            'success': False,
-                            'message': str(e)
-                        })
+                        return JsonResponse({'success': False,'message': str(e)},status=500)
 
-                    messages.error(
-                        request,
-                        f'Something went wrong: {e}'
-                    )
-
+                    messages.error( request, f'Something went wrong: {e}')
                     return redirect('checkout')
 
 
@@ -413,20 +395,15 @@ def checkout_page(request):
         'cart_items': cart_items,
         'addresses': addresses,
         'default_address': default_address,
-
         'subtotal': subtotal,
         'original_subtotal': original_subtotal,
         'offer_discount': offer_discount,
-
         'applied_coupon': applied_coupon,
         'discount_amount': discount_amount,
-
         'delivery_charge': delivery_charge,
         'tax_amount': tax_amount,
         'total_amount': total_amount,
-
         'delivery_date': '3-5 Business Days',
-
         'available_coupons': available_coupons,
 
     }
@@ -446,10 +423,7 @@ def verify_razorpay_payment(request):
         address_id = request.session.get('checkout_address_id')
 
         if not address_id:
-            return JsonResponse({
-                'success': False,
-                'message': 'Checkout session expired. Please try again.'
-            })
+            return JsonResponse({'success': False,'message': 'Checkout session expired. Please try again.'},status=400)
 
         address = get_object_or_404(
             Address,
@@ -476,7 +450,7 @@ def verify_razorpay_payment(request):
                             return JsonResponse({
                                 'success': False,
                                 'message': f"{variant.product.product_name} has only {variant.variant_stock} stock left."
-                            })
+                            },status=400)
 
                     existing_order.payment_status = 'Completed'
                     existing_order.order_status = 'Confirmed'
@@ -503,7 +477,7 @@ def verify_razorpay_payment(request):
                     return JsonResponse({
                         'success': True,
                         'redirect_url': '/orders/order_success/'
-                    })
+                    },status=200)
 
             with transaction.atomic():
                 cart_items = Cart.objects.filter(
@@ -520,7 +494,7 @@ def verify_razorpay_payment(request):
                 )
 
                 if not cart_items.exists():
-                     return JsonResponse({'success': False, 'message': 'Cart is empty'})
+                     return JsonResponse({'success': False, 'message': 'Cart is empty'},status=400)
 
                 subtotal = Decimal('0.00')
                 for item in cart_items:
@@ -534,7 +508,7 @@ def verify_razorpay_payment(request):
                 if coupon_id:
                     applied_coupon = Coupon.objects.filter(id=coupon_id, is_active=True, is_deleted=False).first()
                     if applied_coupon:
-                        from django.utils import timezone
+                        
                         today = timezone.now().date()
                         used_count = Order.objects.filter(user=request.user, coupon=applied_coupon).exclude(payment_status='Failed').count()
                         if (
@@ -606,98 +580,48 @@ def verify_razorpay_payment(request):
 
                 request.session['order_id'] = order.id
 
-                return JsonResponse({
-                    'success': True,
-                    'redirect_url': '/orders/order_success/'
-                })
+                return JsonResponse({'success': True, 'redirect_url': '/orders/order_success/'},status=200)
 
         except Exception as e:
             return JsonResponse({
                 'success': False,
                 'message': str(e)
-            })
+            },status=500)
 
-    return JsonResponse({
-        'success': False,
-        'message': 'Invalid request'
-    })
+    return JsonResponse({'success': False,'message': 'Invalid request'},status=400)
 
 
 @login_required(login_url='login')
 def apply_coupon(request):
 
-    # ---------------- REQUEST METHOD CHECK ---------------- #
-
     if request.method != 'POST':
-        messages.error(
-            request,
-            'Invalid request method'
-        )
+        messages.error(request,'Invalid request method')
         return redirect('checkout')
 
-    # ---------------- GET COUPON CODE ---------------- #
-
-    coupon_code = request.POST.get(
-        'coupon_code',
-        ''
-    ).strip().upper()
-
-    # ---------------- EMPTY COUPON CHECK ---------------- #
+    coupon_code = request.POST.get('coupon_code','').strip().upper()
 
     if not coupon_code:
-
-        messages.error(
-            request,
-            'Please enter a coupon code'
-        )
-
+        messages.error( request,'Please enter a coupon code')
         return redirect('checkout')
 
-    # ---------------- COUPON LENGTH VALIDATION ---------------- #
-
+   
     if len(coupon_code) < 3:
-
-        messages.error(
-            request,
-            'Coupon code is too short'
-        )
-
+        messages.error( request,'Coupon code is too short')
         return redirect('checkout')
 
     if len(coupon_code) > 20:
-
-        messages.error(
-            request,
-            'Coupon code is too long'
-        )
-
+        messages.error(request,'Coupon code is too long')
         return redirect('checkout')
-
-    # ---------------- COUPON FORMAT VALIDATION ---------------- #
-
-    import re
 
     if not re.match(r'^[A-Z0-9_-]+$', coupon_code):
-
-        messages.error(
-            request,
-            'Invalid coupon code format'
-        )
-
+        messages.error( request, 'Invalid coupon code format')
         return redirect('checkout')
 
-    # ---------------- ALREADY APPLIED CHECK ---------------- #
 
     if request.session.get('coupon_id'):
-
-        messages.error(
-            request,
-            'A coupon is already applied'
-        )
-
+        messages.error(request,'A coupon is already applied')
         return redirect('checkout')
 
-    # ---------------- GET COUPON ---------------- #
 
     coupon = Coupon.objects.filter(
         code__iexact=coupon_code,
@@ -705,53 +629,26 @@ def apply_coupon(request):
         is_deleted=False
     ).first()
 
-    # ---------------- INVALID COUPON ---------------- #
 
     if not coupon:
-
-        messages.error(
-            request,
-            'Invalid coupon code'
-        )
-
+        messages.error(request,'Invalid coupon code')
         return redirect('checkout')
 
     today = timezone.now().date()
 
-    # ---------------- COUPON START DATE CHECK ---------------- #
-
     if coupon.start_date > today:
-
-        messages.error(
-            request,
-            'This coupon is not active yet'
-        )
-
+        messages.error(request,'This coupon is not active yet' )
         return redirect('checkout')
-
-    # ---------------- COUPON EXPIRY CHECK ---------------- #
 
     if coupon.end_date < today:
-
-        messages.error(
-            request,
-            'This coupon has expired'
-        )
-
+        messages.error(request,'This coupon has expired')
         return redirect('checkout')
 
-    # ---------------- COUPON ACTIVE STATUS CHECK ---------------- #
 
     if not coupon.is_active:
-
-        messages.error(
-            request,
-            'This coupon is inactive'
-        )
-
+        messages.error(request,'This coupon is inactive')
         return redirect('checkout')
 
-    # ---------------- USAGE LIMIT CHECK ---------------- #
 
     used_count = Order.objects.filter(
         user=request.user,
@@ -761,15 +658,9 @@ def apply_coupon(request):
     ).count()
 
     if used_count >= coupon.usage_limit_per_user:
-
-        messages.error(
-            request,
-            'Coupon usage limit exceeded'
-        )
-
+        messages.error(request,'Coupon usage limit exceeded')
         return redirect('checkout')
 
-    # ---------------- GET VALID CART ITEMS ---------------- #
 
     cart_items = Cart.objects.filter(
         user=request.user,
@@ -781,18 +672,11 @@ def apply_coupon(request):
         variant__product__category__is_active=True
     )
 
-    # ---------------- EMPTY CART CHECK ---------------- #
 
     if not cart_items.exists():
-
-        messages.error(
-            request,
-            'Your cart is empty'
-        )
-
+        messages.error( request,'Your cart is empty')
         return redirect('cart_page')
 
-    # ---------------- SUBTOTAL CALCULATION ---------------- #
 
     subtotal = Decimal('0.00')
 
@@ -801,143 +685,72 @@ def apply_coupon(request):
         # STOCK VALIDATION
 
         if item.quantity > item.variant.variant_stock:
-
-            messages.error(
-                request,
-                f'{item.variant.product.product_name} has only {item.variant.variant_stock} items left in stock'
-            )
-
+            messages.error(request,f'{item.variant.product.product_name} has only {item.variant.variant_stock} items left in stock')
             return redirect('cart_page')
 
-        # PRICE VALIDATION
-
-        price = (
-            item.variant.offer_price
-            if item.variant.offer_price
-            else item.variant.variant_price
-        )
+        price = (item.variant.offer_price if item.variant.offer_price else item.variant.variant_price)
 
         try:
 
             price = Decimal(price)
 
         except (InvalidOperation, TypeError):
-
-            messages.error(
-                request,
-                'Invalid product price detected'
-            )
-
+            messages.error(request,'Invalid product price detected' )
             return redirect('checkout')
 
-        # NEGATIVE PRICE CHECK
 
         if price <= 0:
-
-            messages.error(
-                request,
-                'Invalid product price'
-            )
-
+            messages.error(request,'Invalid product price')
             return redirect('checkout')
 
         subtotal += price * item.quantity
 
-    # ---------------- SUBTOTAL VALIDATION ---------------- #
 
     if subtotal <= 0:
-
-        messages.error(
-            request,
-            'Invalid cart subtotal'
-        )
-
+        messages.error( request,'Invalid cart subtotal')
         return redirect('checkout')
 
-    # ---------------- MINIMUM PURCHASE CHECK ---------------- #
 
     if subtotal < coupon.min_purchase:
 
-        remaining_amount = (
-            coupon.min_purchase - subtotal
-        )
-
-        messages.error(
-            request,
-            f'Minimum purchase amount for this coupon is ₹{coupon.min_purchase}. Add ₹{remaining_amount} more to use this coupon.'
-        )
-
+        remaining_amount = ( coupon.min_purchase - subtotal)
+        messages.error(request, f'Minimum purchase amount for this coupon is ₹{coupon.min_purchase}. Add ₹{remaining_amount} more to use this coupon.')
         return redirect('checkout')
 
-    # ---------------- DISCOUNT CALCULATION ---------------- #
 
     try:
 
         if coupon.discount_type == 'PERCENTAGE':
 
-            discount_amount = (
-                subtotal * coupon.discount_value
-            ) / Decimal('100')
+            discount_amount = ( subtotal * coupon.discount_value) / Decimal('100')
 
         elif coupon.discount_type == 'FIXED':
-
             discount_amount = coupon.discount_value
 
         else:
-
-            messages.error(
-                request,
-                'Invalid coupon discount type'
-            )
-
+            messages.error(request,'Invalid coupon discount type')
             return redirect('checkout')
 
     except Exception:
-
-        messages.error(
-            request,
-            'Failed to calculate discount'
-        )
-
+        messages.error( request, 'Failed to calculate discount')
         return redirect('checkout')
 
-    # ---------------- DISCOUNT VALIDATION ---------------- #
 
     if discount_amount <= 0:
-
-        messages.error(
-            request,
-            'Invalid discount amount'
-        )
-
+        messages.error(request,'Invalid discount amount' )
         return redirect('checkout')
 
-    # ---------------- MAX DISCOUNT CHECK ---------------- #
 
-    if (
-        coupon.max_discount and
-        discount_amount > coupon.max_discount
-    ):
-
+    if (coupon.max_discount and discount_amount > coupon.max_discount):
         discount_amount = coupon.max_discount
 
-    # ---------------- PREVENT OVER DISCOUNT ---------------- #
 
     if discount_amount > subtotal:
-
         discount_amount = subtotal
 
-    # ---------------- FINAL PAYABLE VALIDATION ---------------- #
-
     final_amount = subtotal - discount_amount
-
     if final_amount < 0:
-
-        messages.error(
-            request,
-            'Invalid final amount calculation'
-        )
-
+        messages.error(request,'Invalid final amount calculation' )
         return redirect('checkout')
 
     # ---------------- SAVE SESSION ---------------- #
@@ -950,14 +763,9 @@ def apply_coupon(request):
 
     request.session['applied_coupon_code'] = coupon.code
 
-    # ---------------- SUCCESS MESSAGE ---------------- #
-
-    messages.success(
-        request,
-        f'Coupon "{coupon.code}" applied successfully'
-    )
-
+    messages.success( request, f'Coupon "{coupon.code}" applied successfully')
     return redirect('checkout')
+
 
 
 @login_required(login_url='login')
@@ -986,12 +794,12 @@ def payment_failure_page(request):
 def retry_razorpay_payment(request):
     order_id = request.GET.get('order_id')
     if not order_id:
-        return JsonResponse({'success': False, 'message': 'Order ID is required'})
+        return JsonResponse({'success': False, 'message': 'Order ID is required'},status=400)
         
     order = get_object_or_404(Order, id=order_id, user=request.user)
     
     if order.payment_status == 'Completed':
-        return JsonResponse({'success': False, 'message': 'This order is already paid.'})
+        return JsonResponse({'success': False, 'message': 'This order is already paid.'},status=400)
         
     # Stock validation for retry
     for item in order.items.all():
@@ -999,7 +807,7 @@ def retry_razorpay_payment(request):
             return JsonResponse({
                 'success': False,
                 'message': f"{item.variant.product.product_name} is out of stock (only {item.variant.variant_stock} available)."
-            })
+            },status=400)
             
     try:
         # Create a new Razorpay order
@@ -1023,9 +831,9 @@ def retry_razorpay_payment(request):
             'order_id': razorpay_order['id'],
             'name': 'STYLE-HUB',
             'description': 'Retry Order Payment',
-        })
+        },status=200)
     except Exception as e:
-        return JsonResponse({'success': False, 'message': str(e)})
+        return JsonResponse({'success': False, 'message': str(e)},status=500)
 
 
 @login_required(login_url='login')
@@ -1033,7 +841,7 @@ def create_failed_order(request):
     if request.method == 'POST':
         address_id = request.POST.get('address_id')
         if not address_id:
-            return JsonResponse({'success': False, 'message': 'Address is required'})
+            return JsonResponse({'success': False, 'message': 'Address is required'},status=400)
             
         address = get_object_or_404(Address, id=address_id, user=request.user)
         
@@ -1048,7 +856,7 @@ def create_failed_order(request):
         ).select_related('variant', 'variant__product')
         
         if not cart_items.exists():
-            return JsonResponse({'success': False, 'message': 'Cart is empty'})
+            return JsonResponse({'success': False, 'message': 'Cart is empty'},status=400)
             
         subtotal = Decimal('0.00')
         for item in cart_items:
@@ -1109,9 +917,9 @@ def create_failed_order(request):
             return JsonResponse({
                 'success': True,
                 'order_id': order.id
-            })
+            },status=200)
             
-    return JsonResponse({'success': False, 'message': 'Invalid request'})
+    return JsonResponse({'success': False, 'message': 'Invalid request'},status=400)
 
 
 def process_referral_reward(user, order):

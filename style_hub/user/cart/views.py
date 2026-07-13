@@ -97,7 +97,7 @@ def add_cart(request, id):
 
     if not variant_id:
         if is_ajax:
-            return JsonResponse({'success': False, 'message': 'Please select a size'})
+            return JsonResponse({'success': False, 'message': 'Please select a size'},status=400)
         messages.error(request, 'Please select a size')
         return redirect(referer) if referer else default_redirect()
 
@@ -111,19 +111,19 @@ def add_cart(request, id):
 
     if variant.variant_stock <= 0:
         if is_ajax:
-            return JsonResponse({'success': False, 'message': 'This product is out of stock'})
+            return JsonResponse({'success': False, 'message': 'This product is out of stock'},status=400)
         messages.error(request, 'This product is out of stock')
         return redirect(referer) if referer else default_redirect()
 
     if quantity > variant.variant_stock:
         if is_ajax:
-            return JsonResponse({'success': False, 'message': 'Selected quantity is more than available stock'})
+            return JsonResponse({'success': False, 'message': 'Selected quantity is more than available stock'},status=400)
         messages.error(request, 'Selected quantity is more than available stock')
         return redirect(referer) if referer else default_redirect()
 
     if quantity > 5:
         if is_ajax:
-            return JsonResponse({'success': False, 'message': 'Maximum 5 quantity allowed'})
+            return JsonResponse({'success': False, 'message': 'Maximum 5 quantity allowed'},status=400)
         messages.error(request, 'Maximum 5 quantity allowed')
         return redirect(referer) if referer else default_redirect()
 
@@ -138,13 +138,13 @@ def add_cart(request, id):
 
         if new_quantity > variant.variant_stock:
             if is_ajax:
-                return JsonResponse({'success': False, 'message': 'Not enough stock available'})
+                return JsonResponse({'success': False, 'message': 'Not enough stock available'},status=400)
             messages.error(request, 'Not enough stock available')
             return redirect(referer) if referer else default_redirect()
 
         if new_quantity > 5:
             if is_ajax:
-                return JsonResponse({'success': False, 'message': 'Maximum 5 quantity allowed'})
+                return JsonResponse({'success': False, 'message': 'Maximum 5 quantity allowed'},status=400)
             messages.error(request, 'Maximum 5 quantity allowed')
             return redirect(referer) if referer else default_redirect()
 
@@ -170,7 +170,7 @@ def add_cart(request, id):
             'success': True,
             'message': 'Product added to cart',
             'cart_count': cart_count
-        })
+        },status=200)
 
     messages.success(request, 'Product added to cart')
     return redirect(referer) if referer else redirect('product_detail', id=id)
@@ -185,7 +185,6 @@ def increase_cart_quantity(request, id):
         cart_item.save()
     else:
         messages.error(request, 'Stock limit reached')
-
     return redirect('cart_page')
 
 
@@ -193,15 +192,12 @@ def increase_cart_quantity(request, id):
 def decrease_cart_quantity(request, id):
     cart_item = get_object_or_404(Cart, id=id, user=request.user)
 
-
     if cart_item.quantity > 1:
         cart_item.quantity -= 1
         cart_item.save()
         
     else:
         messages.warning(request, 'Minimum quanity allowed is 1')
-
-
     return redirect('cart_page')
 
 
@@ -303,12 +299,12 @@ def update_cart_quantity_ajax(request):
                 'cart_count': cart_items.count(),
                 'deleted': deleted,
                 'has_out_of_stock': any(item.variant.variant_stock < item.quantity for item in cart_items)
-            })
+            },status=200)
             
         except Exception as e:
-            return JsonResponse({'status': False, 'message': str(e)})
+            return JsonResponse({'status': False, 'message': str(e)},status=500)
             
-    return JsonResponse({'status': False, 'message': 'Invalid request'})
+    return JsonResponse({'status': False, 'message': 'Invalid request'},status=400)
 
 
 @login_required(login_url='login')

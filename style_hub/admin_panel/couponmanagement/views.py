@@ -4,7 +4,6 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Coupon
-
 from decimal import Decimal, InvalidOperation
 from datetime import datetime, date
 import re
@@ -28,7 +27,7 @@ def coupon_listing(request):
             Q(title__icontains=search)
         )
 
-    paginator = Paginator(coupons, 10)
+    paginator = Paginator(coupons, 5)
     page_number = request.GET.get('page')
     coupons_page = paginator.get_page(page_number)
 
@@ -38,7 +37,6 @@ def coupon_listing(request):
     })
 
 
-# ---------------- ADD COUPON ---------------- #
 
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
@@ -62,12 +60,11 @@ def add_coupon(request):
         start_date = request.POST.get('start_date', '').strip()
         end_date = request.POST.get('end_date', '').strip()
 
-        # REQUIRED FIELDS
+    
         if not all([code, title, discount_type, discount_value, start_date, end_date]):
             messages.error(request, 'All required fields must be filled')
             return redirect_back('add_coupon')
 
-        # CODE VALIDATION
         if len(code) < 4:
             messages.error(request, 'Coupon code must contain at least 4 characters')
             return redirect_back('add_coupon')
@@ -84,7 +81,6 @@ def add_coupon(request):
             messages.error(request, 'Coupon code already exists')
             return redirect_back('add_coupon')
 
-        # TITLE VALIDATION
         if len(title) < 3:
             messages.error(request, 'Coupon title must contain at least 3 characters')
             return redirect_back('add_coupon')
@@ -93,17 +89,15 @@ def add_coupon(request):
             messages.error(request, 'Coupon title is too long')
             return redirect_back('add_coupon')
 
-        # DESCRIPTION VALIDATION
         if description and (len(description) < 10 or len(description) > 500):
             messages.error(request, 'Description must be between 10 and 500 characters')
             return redirect_back('add_coupon')
 
-        # DISCOUNT TYPE
         if discount_type not in ['PERCENTAGE', 'FIXED']:
             messages.error(request, 'Invalid discount type selected')
             return redirect_back('add_coupon')
 
-        # DISCOUNT VALUE
+    
         try:
             discount_val = Decimal(discount_value)
 
@@ -123,7 +117,7 @@ def add_coupon(request):
             messages.error(request, 'Invalid discount value')
             return redirect_back('add_coupon')
 
-        # MIN PURCHASE
+    
         try:
             min_purch = Decimal(min_purchase) if min_purchase else Decimal('0.00')
 
@@ -139,7 +133,7 @@ def add_coupon(request):
             messages.error(request, 'Fixed discount must be less than minimum purchase amount')
             return redirect_back('add_coupon')
 
-        # MAX DISCOUNT
+
         try:
             max_disc = Decimal(max_discount) if max_discount else Decimal('0.00')
 
@@ -155,7 +149,7 @@ def add_coupon(request):
             messages.error(request, 'Invalid maximum discount value')
             return redirect_back('add_coupon')
 
-        # USAGE LIMIT
+    
         try:
             usage_lim = int(usage_limit) if usage_limit else 1
 
@@ -171,7 +165,7 @@ def add_coupon(request):
             messages.error(request, 'Invalid usage limit value')
             return redirect_back('add_coupon')
 
-        # DATES
+    
         try:
             s_date = datetime.strptime(start_date, '%Y-%m-%d').date()
             e_date = datetime.strptime(end_date, '%Y-%m-%d').date()
@@ -188,7 +182,7 @@ def add_coupon(request):
             messages.error(request, 'Invalid date format')
             return redirect_back('add_coupon')
 
-        # CREATE
+
         Coupon.objects.create(
             code=code,
             title=title,
@@ -209,7 +203,6 @@ def add_coupon(request):
     return render(request, 'add_coupon.html')
 
 
-# ---------------- EDIT COUPON ---------------- #
 
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
@@ -235,7 +228,6 @@ def edit_coupon(request, id):
         start_date = request.POST.get('start_date', '').strip()
         end_date = request.POST.get('end_date', '').strip()
 
-        # (VALIDATIONS SAME AS ADD - kept unchanged logically)
 
         if Coupon.objects.filter(code__iexact=code).exclude(id=id).exists():
             messages.error(request, 'Coupon code already exists')
@@ -253,7 +245,7 @@ def edit_coupon(request, id):
             messages.error(request, 'Invalid input values')
             return redirect_back('edit_coupon')
 
-        # UPDATE
+        
         coupon.code = code
         coupon.title = title
         coupon.description = description
@@ -273,7 +265,6 @@ def edit_coupon(request, id):
     return render(request, 'edit_coupon.html', {'coupon': coupon})
 
 
-# ---------------- DELETE ---------------- #
 
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
@@ -285,7 +276,6 @@ def delete_coupon(request, id):
     return redirect('coupon_listing')
 
 
-# ---------------- TOGGLE STATUS ---------------- #
 
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
@@ -294,8 +284,5 @@ def toggle_coupon_status(request, id):
     coupon.is_active = not coupon.is_active
     coupon.save()
 
-    messages.success(
-        request,
-        f'Coupon status changed to {"Active" if coupon.is_active else "Inactive"}'
-    )
+    messages.success(request,f'Coupon status changed to {"Active" if coupon.is_active else "Inactive"}' )
     return redirect('coupon_listing')

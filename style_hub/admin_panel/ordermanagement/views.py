@@ -4,7 +4,8 @@ from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
-
+from decimal import Decimal
+import re
 from user.orders.models import Order, OrderItem
 from user.wallet.utils import credit_wallet
 
@@ -218,8 +219,7 @@ def return_requests(request):
             Q(order__user__username__icontains=search)
         )
 
-    import re
-    from decimal import Decimal
+    
 
     for item in items:
         qty_to_return = item.quantity - item.cancelled_quantity - item.returned_quantity
@@ -258,8 +258,6 @@ def approve_return(request):
                     messages.error(request, 'This item is not requested for return')
                     return redirect('return_requests')
 
-                import re
-                from decimal import Decimal
                 qty_to_approve = item.remaining_quantity()
                 match = re.match(r'^\[Qty:\s*(\d+)\]\s*(.*)', item.reason or '')
                 if match:
@@ -363,7 +361,6 @@ def approve_return(request):
                     messages.error(request, 'This order is not requested for return')
                     return redirect('return_requests')
 
-                from decimal import Decimal
                 
                 for item in order.items.all():
                     if item.item_status == 'Return Requested':
@@ -436,5 +433,4 @@ def reject_return(request):
             messages.info(request, f'Return rejected for order: {order.order_number}')
 
         return redirect('return_requests')
-
     return redirect('orders_listing')

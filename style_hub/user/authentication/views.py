@@ -24,93 +24,38 @@ def login_page(request):
     if request.method == 'POST':
 
         old_data = request.POST
-
         username_or_email = request.POST.get('username_or_email','').strip()
         password = request.POST.get('password','').strip()
 
         context = {'old_data': old_data}
 
-
         if not username_or_email or not password:
-
             messages.error( request, 'All fields are required' )
             return render( request, 'authentication/login.html',context)
 
-       
         if len(username_or_email) < 3:
-
-            messages.error(
-                request,
-                'Username or email is too short'
-            )
-
-            return render(
-                request,
-                'authentication/login.html',
-                context
-            )
+            messages.error(request,'Username or email is too short')
+            return render(request,'authentication/login.html',context)
 
         if len(username_or_email) > 100:
-
-            messages.error(
-                request,
-                'Username or email is too long'
-            )
-
-            return render(
-                request,
-                'authentication/login.html',
-                context
-            )
-
-        # ---------------- PASSWORD LENGTH VALIDATION ---------------- #
+            messages.error(request, 'Username or email is too long')
+            return render( request,'authentication/login.html', context)
 
         if len(password) < 6:
-
-            messages.error(
-                request,
-                'Password must contain at least 6 characters'
-            )
-
-            return render(
-                request,
-                'authentication/login.html',
-                context
-            )
+            messages.error(request,'Password must contain at least 6 characters')
+            return render(request,'authentication/login.html',context )
 
         if len(password) > 128:
-
-            messages.error(
-                request,
-                'Password is too long'
-            )
-
-            return render(
-                request,
-                'authentication/login.html',
-                context
-            )
-
-        # ---------------- CHECK INVALID SPACES ---------------- #
+            messages.error(request, 'Password is too long')
+            return render(request,'authentication/login.html',context)
 
         if username_or_email != username_or_email.strip():
+            messages.error( request,'Invalid username or email')
+            return render(request,'authentication/login.html',context )
 
-            messages.error(
-                request,
-                'Invalid username or email'
-            )
-
-            return render(
-                request,
-                'authentication/login.html',
-                context
-            )
-
-        # ---------------- IDENTIFY USER ---------------- #
 
         user = None
 
-        # LOGIN USING EMAIL
         if '@' in username_or_email:
 
             if not re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',username_or_email):
@@ -123,7 +68,6 @@ def login_page(request):
             if user_object:
                 user = authenticate(request,username=user_object.username,password=password)
 
-        # LOGIN USING USERNAME
         else:
 
             if not re.match(r'^[A-Za-z0-9_]+$', username_or_email):
@@ -132,79 +76,32 @@ def login_page(request):
 
             user = authenticate( request, username=username_or_email,password=password)
 
-        # ---------------- INVALID CREDENTIALS ---------------- #
 
         if user is None:
+            messages.error(request, 'Invalid credentials')
+            return render(request, 'authentication/login.html', context )
 
-            messages.error(
-                request,
-                'Invalid credentials'
-            )
-
-            return render(
-                request,
-                'authentication/login.html',
-                context
-            )
-
-        # ---------------- ADMIN LOGIN BLOCK ---------------- #
 
         if user.is_staff or user.is_superuser:
+            messages.error(request,'Admin cannot login from user side')
+            return render(request,'authentication/login.html', context)
 
-            messages.error(
-                request,
-                'Admin cannot login from user side'
-            )
-
-            return render(
-                request,
-                'authentication/login.html',
-                context
-            )
-
-        # ---------------- EMAIL VERIFICATION CHECK ---------------- #
 
         if not user.is_email_verified:
-
-            messages.error(
-                request,
-                'Please verify your email first'
-            )
-
+            messages.error( request,'Please verify your email first')
             request.session['verification_user_id'] = user.id
-
             return redirect('email_verification')
 
-        # ---------------- ACCOUNT BLOCK CHECK ---------------- #
 
         if not user.is_active:
-
-            messages.error(
-                request,
-                'Your account is blocked'
-            )
-
-            return render(
-                request,
-                'authentication/login.html',
-                context
-            )
-
-        # ---------------- LOGIN SUCCESS ---------------- #
+            messages.error(request,'Your account is blocked')
+            return render(request,'authentication/login.html', context)
 
         login(request, user)
-
-        messages.success(
-            request,
-            'Login successful'
-        )
-
+        messages.success( request, 'Login successful' )
         return redirect('home')
-
-    return render(
-        request,
-        'authentication/login.html'
-    )
+    
+    return render(request,'authentication/login.html')
 
 
 
@@ -237,7 +134,6 @@ def signup_page(request):
             messages.error(request, 'All fields are required')
             return render(request, 'authentication/signup.html', context)
 
-        # Username validations
         if len(username) < 3:
             messages.error(request, 'Username must be at least 3 characters')
             return render(request, 'authentication/signup.html', context)
@@ -262,7 +158,8 @@ def signup_page(request):
             messages.error(request, 'Username already exists')
             return render(request, 'authentication/signup.html', context)
 
-        # Email validations
+
+
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w{2,}$'
 
         if not re.match(email_pattern, email):
@@ -273,7 +170,6 @@ def signup_page(request):
             messages.error(request, 'Email already exists')
             return render(request, 'authentication/signup.html', context)
 
-        # Phone validations
         if not phone_number.isdigit():
             messages.error(request, 'Phone number must contain only digits')
             return render(request, 'authentication/signup.html', context)
@@ -290,7 +186,6 @@ def signup_page(request):
             messages.error(request, 'Phone number already exists')
             return render(request, 'authentication/signup.html', context)
 
-        # Password validations
         if password != confirm_password:
             messages.error(request, 'Passwords do not match')
             return render(request, 'authentication/signup.html', context)
@@ -379,44 +274,24 @@ def email_verification(request):
         'verification_user_id'
     )
 
-    # ---------------- SESSION CHECK ---------------- #
 
     if not user_id:
-
-        messages.error(
-            request,
-            'Session expired. Please signup again.'
-        )
-
+        messages.error( request,'Session expired. Please signup again.')
         return redirect('signup')
 
-    # ---------------- USER CHECK ---------------- #
 
     try:
-
         user = User.objects.get(id=user_id)
 
     except User.DoesNotExist:
-
-        messages.error(
-            request,
-            'User not found'
-        )
-
+        messages.error( request,'User not found')
         return redirect('signup')
 
-    # ---------------- ALREADY VERIFIED CHECK ---------------- #
 
     if user.is_email_verified:
-
-        messages.info(
-            request,
-            'Email already verified. Please login.'
-        )
-
+        messages.info(request,'Email already verified. Please login.')
         return redirect('login')
 
-    # ---------------- OTP VERIFICATION ---------------- #
 
     if request.method == 'POST':
 
@@ -429,37 +304,19 @@ def email_verification(request):
             request.POST.get('otp6', '').strip()
         )
 
-        # ---------------- EMPTY OTP CHECK ---------------- #
 
         if not otp:
-
-            messages.error(
-                request,
-                'Please enter OTP'
-            )
-
+            messages.error( request,'Please enter OTP')
             return redirect('email_verification')
 
-        # ---------------- OTP LENGTH CHECK ---------------- #
 
         if len(otp) != 6:
-
-            messages.error(
-                request,
-                'OTP must contain exactly 6 digits'
-            )
-
+            messages.error(request,'OTP must contain exactly 6 digits')
             return redirect('email_verification')
 
-        # ---------------- OTP DIGIT CHECK ---------------- #
 
         if not otp.isdigit():
-
-            messages.error(
-                request,
-                'OTP must contain only digits'
-            )
-
+            messages.error(request,'OTP must contain only digits')
             return redirect('email_verification')
 
         # ---------------- GET LATEST OTP ---------------- #
@@ -469,56 +326,34 @@ def email_verification(request):
             purpose='signup_verification'
         ).order_by('-created_at').first()
 
-        # ---------------- OTP EXISTS CHECK ---------------- #
 
         if not otp_obj:
-
-            messages.error(
-                request,
-                'OTP not found. Please resend OTP.'
-            )
-
+            messages.error(request,'OTP not found. Please resend OTP.')
             return redirect('email_verification')
 
         # ---------------- OTP EXPIRY CHECK ---------------- #
 
         if otp_obj.is_expired():
-
             otp_obj.delete()
 
-            messages.error(
-                request,
-                'OTP expired. Please resend OTP.'
-            )
-
+            messages.error(request,'OTP expired. Please resend OTP.')
             return redirect('email_verification')
 
-        # ---------------- OTP MATCH CHECK ---------------- #
 
         if otp_obj.code != otp:
-
             otp_obj.attempts += 1
             otp_obj.save()
             
 
             if otp_obj.attempts >= 5:
-
                 otp_obj.delete()
 
-                messages.error(
-                    request,
-                    'Too many invalid attempts. Please resend OTP.'
-                )
-
+                messages.error( request, 'Too many invalid attempts. Please resend OTP.')
                 return redirect('email_verification')
 
+
             remaining_attempts = 5 - otp_obj.attempts
-
-            messages.error(
-                request,
-                f'Invalid OTP. {remaining_attempts} attempts remaining.'
-            )
-
+            messages.error(request,f'Invalid OTP. {remaining_attempts} attempts remaining.' )
             return redirect('email_verification')
 
         # ---------------- OTP VERIFIED SUCCESSFULLY ---------------- #
@@ -526,11 +361,9 @@ def email_verification(request):
         user.is_email_verified = True
         user.save()
 
-        # CLEAR FAILED ATTEMPTS
         if 'otp_failed_attempts' in request.session:
             del request.session['otp_failed_attempts']
 
-        # ---------------- REFERRAL BONUS ---------------- #
 
         if user.referred_by:
 
@@ -547,58 +380,24 @@ def email_verification(request):
             )
 
             if created:
-
-                credit_wallet(
-                    user,
-                    50.00,
-                    'Referral Signup Benefit'
-                )
-
-                messages.success(
-                    request,
-                    'You received ₹50 referral signup bonus in your wallet!'
-                )
-
-        # ---------------- DELETE OTP ---------------- #
+                credit_wallet(user,50.00,'Referral Signup Benefit')
+                messages.success(request, 'You received ₹50 referral signup bonus in your wallet!')
 
         otp_obj.delete()
 
         # ---------------- CLEAR SESSION DATA ---------------- #
 
-        request.session.pop(
-            'verification_user_id',
-            None
-        )
+        request.session.pop('verification_user_id',None)
+        request.session.pop('referral_code',None)
+        request.session.pop('otp_failed_attempts', None)
 
-        request.session.pop(
-            'referral_code',
-            None
-        )
 
-        request.session.pop(
-            'otp_failed_attempts',
-            None
-        )
+        login( request,user,backend='django.contrib.auth.backends.ModelBackend')
 
-        # ---------------- LOGIN USER ---------------- #
-
-        login(
-            request,
-            user,
-            backend='django.contrib.auth.backends.ModelBackend'
-        )
-
-        messages.success(
-            request,
-            'Email verified successfully'
-        )
-
+        messages.success( request,'Email verified successfully')
         return redirect('home')
 
-    return render(
-        request,
-        'authentication/email_verification.html'
-    )
+    return render(request,'authentication/email_verification.html')
 
 
 def resend_signup_otp(request):
@@ -607,7 +406,7 @@ def resend_signup_otp(request):
         user_id = request.session.get('verification_user_id')
 
         if not user_id:
-            return JsonResponse({'success': False, 'message': 'Session expired'})
+            return JsonResponse({'success': False, 'message': 'Session expired'},status=401)
 
         user = User.objects.get(id=user_id)
 
@@ -622,7 +421,7 @@ def resend_signup_otp(request):
                 return JsonResponse({
                     'success': False,
                     'message': 'Please wait 30 seconds before resending OTP'
-                })
+                },status=400)
 
        
         OTP.objects.filter(
@@ -644,28 +443,25 @@ def resend_signup_otp(request):
             purpose_text="Email Verification"
         )
 
-        return JsonResponse({
-            'success': True,
-            'message': 'New OTP sent successfully'
-        })
+        return JsonResponse({'success': True, 'message': 'New OTP sent successfully' },status=200)
 
 
 def forgott_password(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip().lower()
 
-        # Empty validation
+        
         if not email:
             messages.error(request, 'Email is required')
             return redirect('auth_forgott_password')
 
-        # Email format validation
+
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w{2,}$'
         if not re.match(email_pattern, email):
             messages.error(request, 'Enter a valid email address')
             return redirect('auth_forgott_password')
 
-        # Length validation
+
         if len(email) > 254:
             messages.error(request, 'Email address is too long')
             return redirect('auth_forgott_password')
@@ -676,17 +472,17 @@ def forgott_password(request):
             messages.error(request, 'No account found with this email')
             return redirect('auth_forgott_password')
 
-        # Blocked user validation
+    
         if not user.is_active:
             messages.error(request, 'This account has been blocked')
             return redirect('auth_forgott_password')
 
-        # Email verification validation
+        
         if not user.is_email_verified:
             messages.error(request, 'Please verify your email before resetting password')
             return redirect('auth_forgott_password')
 
-        # Rate limiting (30 sec)
+    
         last_otp = OTP.objects.filter(
             user=user,
             purpose='password_reset'
@@ -700,7 +496,7 @@ def forgott_password(request):
                 )
                 return redirect('auth_forgott_password')
 
-        # Delete old OTPs
+        
         OTP.objects.filter(
             user=user,
             purpose='password_reset'
@@ -838,93 +634,60 @@ def reset_password(request):
         password = request.POST.get('password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
 
-        # Empty fields
+        
         if not password or not confirm_password:
             messages.error(request, 'All fields are required')
             return redirect('auth_reset_password')
-
-        # Password match
+        
         if password != confirm_password:
             messages.error(request, 'Passwords do not match')
             return redirect('auth_reset_password')
 
-        # Minimum length
         if len(password) < 8:
             messages.error(request, 'Password must be at least 8 characters')
             return redirect('auth_reset_password')
-
-        # Maximum length
+        
         if len(password) > 128:
             messages.error(request, 'Password is too long')
             return redirect('auth_reset_password')
 
-        # Uppercase letter
         if not re.search(r'[A-Z]', password):
-            messages.error(
-                request,
-                'Password must contain at least one uppercase letter'
-            )
+            messages.error(request,'Password must contain at least one uppercase letter')
             return redirect('auth_reset_password')
-
-        # Lowercase letter
+        
         if not re.search(r'[a-z]', password):
-            messages.error(
-                request,
-                'Password must contain at least one lowercase letter'
-            )
+            messages.error(request,'Password must contain at least one lowercase letter')
             return redirect('auth_reset_password')
 
-        # Number
         if not re.search(r'\d', password):
-            messages.error(
-                request,
-                'Password must contain at least one number'
-            )
+            messages.error(request,'Password must contain at least one number')
             return redirect('auth_reset_password')
 
-        # Special character
+        
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-            messages.error(
-                request,
-                'Password must contain at least one special character'
-            )
+            messages.error(request,'Password must contain at least one special character' )
             return redirect('auth_reset_password')
 
-        # Spaces not allowed
         if ' ' in password:
-            messages.error(
-                request,
-                'Password cannot contain spaces'
-            )
+            messages.error(request,'Password cannot contain spaces')
             return redirect('auth_reset_password')
 
-        # Username should not be in password
         if user.username.lower() in password.lower():
-            messages.error(
-                request,
-                'Password should not contain your username'
-            )
+            messages.error(request,'Password should not contain your username')
             return redirect('auth_reset_password')
 
-        # Email name should not be in password
+    
         email_name = user.email.split('@')[0].lower()
 
         if email_name in password.lower():
-            messages.error(
-                request,
-                'Password should not contain your email name'
-            )
+            messages.error( request, 'Password should not contain your email name')
             return redirect('auth_reset_password')
 
-        # Prevent using current password again
         if user.check_password(password):
-            messages.error(
-                request,
-                'New password cannot be the same as your current password'
-            )
+            messages.error(request,'New password cannot be the same as your current password')
             return redirect('auth_reset_password')
 
-        # Common password validation
+    
         common_passwords = [
             'password',
             'password123',
@@ -937,13 +700,9 @@ def reset_password(request):
         ]
 
         if password.lower() in common_passwords:
-            messages.error(
-                request,
-                'Choose a stronger password'
-            )
+            messages.error(request,'Choose a stronger password')
             return redirect('auth_reset_password')
 
-        # Save password
         user.set_password(password)
         user.save()
 
@@ -953,12 +712,7 @@ def reset_password(request):
         request.session.pop('otp_verified_at', None)
 
         logout(request)
-
-        messages.success(
-            request,
-            'Password successfully updated. Please login.'
-        )
-
+        messages.success(request,'Password successfully updated. Please login.')
         return redirect('login')
 
     return render(request, 'authentication/reset_password.html')
@@ -971,14 +725,14 @@ def resend_password_reset_otp(request):
     user_id = request.session.get('reset_user_id')
 
     if not user_id:
-        return JsonResponse({'success': False, 'message': 'Session expired'})
+        return JsonResponse({'success': False, 'message': 'Session expired'},status=401)
 
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
-        return JsonResponse({'success': False, 'message': 'User not found'})
+        return JsonResponse({'success': False, 'message': 'User not found'},status=404)
 
-    # remove old OTP
+    
     OTP.objects.filter(user=user, purpose='password_reset').delete()
 
     otp = str(random.randint(100000, 999999))
@@ -995,10 +749,7 @@ def resend_password_reset_otp(request):
         purpose_text="Password Reset"
     )
 
-    return JsonResponse({
-        'success': True,
-        'message': 'OTP resent successfully'
-    })
+    return JsonResponse({'success': True,'message': 'OTP resent successfully'},status=200)
 
 def logout_user(request):
     logout(request)

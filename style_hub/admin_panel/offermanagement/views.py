@@ -52,38 +52,13 @@ def add_offer(request):
 
     if request.method == 'POST':
 
-        name = request.POST.get(
-            'name',
-            ''
-        ).strip()
-
-        discount_type = request.POST.get(
-            'discount_type',
-            ''
-        ).strip()
-
-        discount_value = request.POST.get(
-            'discount_value',
-            ''
-        ).strip()
-
-        start_date = request.POST.get(
-            'start_date',
-            ''
-        ).strip()
-
-        end_date = request.POST.get(
-            'end_date',
-            ''
-        ).strip()
-
-        offer_target = request.POST.get(
-            'offer_target',
-            ''
-        ).strip()
-
+        name = request.POST.get('name','').strip()
+        discount_type = request.POST.get('discount_type','').strip()
+        discount_value = request.POST.get('discount_value','').strip()
+        start_date = request.POST.get('start_date','').strip()
+        end_date = request.POST.get('end_date','').strip()
+        offer_target = request.POST.get('offer_target','').strip()
         product_id = request.POST.get('product')
-
         category_id = request.POST.get('category')
 
 
@@ -98,66 +73,43 @@ def add_offer(request):
             'category_id': category_id,
         }
 
-        # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
 
         if (
             not name or
             not discount_type or
             not discount_value or
             not start_date or
-            not end_date
-        ):
-            messages.error(
-                request,
-                'All fields are required'
-            )
+            not end_date):
+            
+            messages.error(request,'All fields are required')
             return redirect('add_offer')
 
-        # ---------------- OFFER NAME VALIDATIONS ---------------- #
 
         if len(name) < 3:
-            messages.error(
-                request,
-                'Offer name must contain at least 3 characters'
-            )
+            messages.error(request,'Offer name must contain at least 3 characters' )
             return redirect('add_offer')
 
         if len(name) > 100:
-            messages.error(
-                request,
-                'Offer name is too long'
-            )
+            messages.error(request,'Offer name is too long')
             return redirect('add_offer')
 
-        # prevent multiple spaces
         if "  " in name:
-            messages.error(
-                request,
-                'Offer name contains invalid spaces'
-            )
+            messages.error(request,'Offer name contains invalid spaces')
             return redirect('add_offer')
 
-        # allow letters, numbers, spaces, hyphen
         if not re.match(r'^[A-Za-z0-9\s\-\&]+$', name):
-            messages.error(
-                request,
-                'Offer name contains invalid characters'
-            )
+            messages.error( request,'Offer name contains invalid characters' )
             return redirect('add_offer')
 
-        # duplicate offer validation
+
         if Offer.objects.filter(
             name__iexact=name,
             is_deleted=False
         ).exists():
 
-            messages.error(
-                request,
-                'Offer name already exists'
-            )
+            messages.error(request,'Offer name already exists')
             return redirect('add_offer')
 
-        # ---------------- DISCOUNT TYPE VALIDATION ---------------- #
 
         allowed_discount_types = [
             'PERCENTAGE',
@@ -165,13 +117,9 @@ def add_offer(request):
         ]
 
         if discount_type not in allowed_discount_types:
-            messages.error(
-                request,
-                'Invalid discount type selected'
-            )
+            messages.error(request,'Invalid discount type selected')
             return redirect('add_offer')
 
-        # ---------------- DISCOUNT VALUE VALIDATION ---------------- #
 
         try:
 
@@ -180,42 +128,27 @@ def add_offer(request):
             )
 
             if discount_value <= 0:
-                messages.error(
-                    request,
-                    'Discount value must be greater than 0'
-                )
+                messages.error(request,'Discount value must be greater than 0')
                 return redirect('add_offer')
 
-            # percentage validation
             if (
                 discount_type == 'PERCENTAGE' and
                 discount_value > 100
             ):
-                messages.error(
-                    request,
-                    'Percentage discount cannot exceed 100%'
-                )
+                messages.error(request,'Percentage discount cannot exceed 100%')
                 return redirect('add_offer')
 
-            # fixed amount validation
             if (
                 discount_type == 'FIXED' and
                 discount_value > 100000
             ):
-                messages.error(
-                    request,
-                    'Discount amount is too high'
-                )
+                messages.error(request,'Discount amount is too high')
                 return redirect('add_offer')
 
         except InvalidOperation:
-            messages.error(
-                request,
-                'Invalid discount value'
-            )
+            messages.error(request,'Invalid discount value')
             return redirect('add_offer')
 
-        # ---------------- DATE VALIDATIONS ---------------- #
 
         try:
 
@@ -233,28 +166,18 @@ def add_offer(request):
 
             # start date validation
             if s_date < today:
-                messages.error(
-                    request,
-                    'Start date cannot be in the past'
-                )
+                messages.error(request,'Start date cannot be in the past')
                 return redirect('add_offer')
 
             # end date validation
             if e_date <= s_date:
-                messages.error(
-                    request,
-                    'End date must be after start date'
-                )
+                messages.error(request,'End date must be after start date')
                 return redirect('add_offer')
 
         except ValueError:
-            messages.error(
-                request,
-                'Invalid date format (YYYY-MM-DD)'
-            )
+            messages.error(request,'Invalid date format (YYYY-MM-DD)')
             return redirect('add_offer')
 
-        # ---------------- OFFER TARGET VALIDATION ---------------- #
 
         allowed_targets = [
             'product',
@@ -262,24 +185,16 @@ def add_offer(request):
         ]
 
         if offer_target not in allowed_targets:
-            messages.error(
-                request,
-                'Invalid offer target selected'
-            )
+            messages.error(request,'Invalid offer target selected')
             return redirect('add_offer')
 
         prod = None
         cat = None
 
-        # ---------------- PRODUCT OFFER VALIDATION ---------------- #
 
         if offer_target == 'product':
-
             if not product_id:
-                messages.error(
-                    request,
-                    'Please select a product'
-                )
+                messages.error(request,'Please select a product')
                 return redirect('add_offer')
 
             prod = get_object_or_404(
@@ -289,7 +204,6 @@ def add_offer(request):
                 is_active=True
             )
 
-            # duplicate active offer validation
             existing_offer = Offer.objects.filter(
                 product=prod,
                 is_deleted=False,
@@ -297,21 +211,14 @@ def add_offer(request):
             )
 
             if existing_offer.exists():
-                messages.error(
-                    request,
-                    'An active offer already exists for this product'
-                )
+                messages.error( request,'An active offer already exists for this product' )
                 return redirect('add_offer')
 
-        # ---------------- CATEGORY OFFER VALIDATION ---------------- #
 
         elif offer_target == 'category':
 
             if not category_id:
-                messages.error(
-                    request,
-                    'Please select a category'
-                )
+                messages.error( request, 'Please select a category' )
                 return redirect('add_offer')
 
             cat = get_object_or_404(
@@ -349,13 +256,9 @@ def add_offer(request):
             )
 
             if existing_offer.exists():
-                messages.error(
-                    request,
-                    'An active offer already exists for this category'
-                )
+                messages.error(request,'An active offer already exists for this category')
                 return redirect('add_offer')
 
-        # ---------------- CREATE OFFER ---------------- #
 
         Offer.objects.create(
             name=name,
@@ -368,11 +271,7 @@ def add_offer(request):
             is_active=True
         )
 
-        messages.success(
-            request,
-            'Offer created successfully'
-        )
-
+        messages.success(request,'Offer created successfully')
         return redirect('offer_listing')
 
     context = {
@@ -406,38 +305,13 @@ def edit_offer(request, id):
 
     if request.method == 'POST':
 
-        name = request.POST.get(
-            'name',
-            ''
-        ).strip()
-
-        discount_type = request.POST.get(
-            'discount_type',
-            ''
-        ).strip()
-
-        discount_value = request.POST.get(
-            'discount_value',
-            ''
-        ).strip()
-
-        start_date = request.POST.get(
-            'start_date',
-            ''
-        ).strip()
-
-        end_date = request.POST.get(
-            'end_date',
-            ''
-        ).strip()
-
-        offer_target = request.POST.get(
-            'offer_target',
-            ''
-        ).strip()
-
+        name = request.POST.get('name','').strip()
+        discount_type = request.POST.get('discount_type','').strip()
+        discount_value = request.POST.get('discount_value','').strip()
+        start_date = request.POST.get('start_date','').strip()
+        end_date = request.POST.get('end_date','').strip()
+        offer_target = request.POST.get('offer_target','').strip()
         product_id = request.POST.get('product')
-
         category_id = request.POST.get('category')
 
 
@@ -453,7 +327,6 @@ def edit_offer(request, id):
             'category_id': category_id,
         }
 
-        # ---------------- REQUIRED FIELD VALIDATIONS ---------------- #
 
         if (
             not name or
@@ -462,57 +335,35 @@ def edit_offer(request, id):
             not start_date or
             not end_date
         ):
-            messages.error(
-                request,
-                'All fields are required'
-            )
+            messages.error(request,'All fields are required')
             return redirect('edit_offer', id=id)
 
-        # ---------------- OFFER NAME VALIDATIONS ---------------- #
 
         if len(name) < 3:
-            messages.error(
-                request,
-                'Offer name must contain at least 3 characters'
-            )
+            messages.error(request,'Offer name must contain at least 3 characters')
             return redirect('edit_offer', id=id)
 
         if len(name) > 100:
-            messages.error(
-                request,
-                'Offer name is too long'
-            )
+            messages.error(request,'Offer name is too long')
             return redirect('edit_offer', id=id)
 
-        # prevent multiple spaces
         if "  " in name:
-            messages.error(
-                request,
-                'Offer name contains invalid spaces'
-            )
+            messages.error(request,'Offer name contains invalid spaces' )
             return redirect('edit_offer', id=id)
 
-        # only letters, numbers, spaces, &, -
         if not re.match(r'^[A-Za-z0-9\s\-\&]+$', name):
-            messages.error(
-                request,
-                'Offer name contains invalid characters'
-            )
+            messages.error(request,'Offer name contains invalid characters')
             return redirect('edit_offer', id=id)
 
-        # duplicate offer name validation
+
         if Offer.objects.filter(
             name__iexact=name,
             is_deleted=False
         ).exclude(id=id).exists():
 
-            messages.error(
-                request,
-                'Offer name already exists'
-            )
+            messages.error(request,'Offer name already exists')
             return redirect('edit_offer', id=id)
 
-        # ---------------- DISCOUNT TYPE VALIDATION ---------------- #
 
         allowed_discount_types = [
             'PERCENTAGE',
@@ -520,13 +371,9 @@ def edit_offer(request, id):
         ]
 
         if discount_type not in allowed_discount_types:
-            messages.error(
-                request,
-                'Invalid discount type selected'
-            )
+            messages.error(request,'Invalid discount type selected')
             return redirect('edit_offer', id=id)
 
-        # ---------------- DISCOUNT VALUE VALIDATION ---------------- #
 
         try:
 
@@ -535,42 +382,27 @@ def edit_offer(request, id):
             )
 
             if discount_value <= 0:
-                messages.error(
-                    request,
-                    'Discount value must be greater than 0'
-                )
+                messages.error(request,'Discount value must be greater than 0' )
                 return redirect('edit_offer', id=id)
 
-            # percentage validation
             if (
                 discount_type == 'PERCENTAGE' and
-                discount_value > 100
-            ):
-                messages.error(
-                    request,
-                    'Percentage discount cannot exceed 100%'
-                )
+                discount_value > 100):
+
+                messages.error(request,'Percentage discount cannot exceed 100%')
                 return redirect('edit_offer', id=id)
 
-            # fixed validation
             if (
                 discount_type == 'FIXED' and
-                discount_value > 100000
-            ):
-                messages.error(
-                    request,
-                    'Discount amount is too high'
-                )
+                discount_value > 100000 ):
+
+                messages.error( request,'Discount amount is too high')
                 return redirect('edit_offer', id=id)
 
         except InvalidOperation:
-            messages.error(
-                request,
-                'Invalid discount value'
-            )
+            messages.error( request,'Invalid discount value')
             return redirect('edit_offer', id=id)
 
-        # ---------------- DATE VALIDATIONS ---------------- #
 
         try:
 
@@ -588,28 +420,18 @@ def edit_offer(request, id):
 
             # prevent past end dates
             if e_date < today:
-                messages.error(
-                    request,
-                    'End date cannot be in the past'
-                )
+                messages.error(request,'End date cannot be in the past')
                 return redirect('edit_offer', id=id)
 
             # end date check
             if e_date <= s_date:
-                messages.error(
-                    request,
-                    'End date must be after start date'
-                )
+                messages.error(request,'End date must be after start date')
                 return redirect('edit_offer', id=id)
 
         except ValueError:
-            messages.error(
-                request,
-                'Invalid date format (YYYY-MM-DD)'
-            )
+            messages.error(request,'Invalid date format (YYYY-MM-DD)')
             return redirect('edit_offer', id=id)
 
-        # ---------------- OFFER TARGET VALIDATION ---------------- #
 
         allowed_targets = [
             'product',
@@ -617,24 +439,17 @@ def edit_offer(request, id):
         ]
 
         if offer_target not in allowed_targets:
-            messages.error(
-                request,
-                'Invalid offer target selected'
-            )
+            messages.error(request,'Invalid offer target selected')
             return redirect('edit_offer', id=id)
 
         prod = None
         cat = None
 
-        # ---------------- PRODUCT OFFER VALIDATION ---------------- #
 
         if offer_target == 'product':
 
             if not product_id:
-                messages.error(
-                    request,
-                    'Please select a product'
-                )
+                messages.error(request,'Please select a product')
                 return redirect('edit_offer', id=id)
 
             prod = get_object_or_404(
@@ -644,7 +459,7 @@ def edit_offer(request, id):
                 is_active=True
             )
 
-            # prevent duplicate active product offers
+
             existing_offer = Offer.objects.filter(
                 product=prod,
                 is_deleted=False,
@@ -653,22 +468,14 @@ def edit_offer(request, id):
 
             if existing_offer.exists():
 
-                messages.error(
-                    request,
-                    'An active offer already exists for this product'
-                )
-
+                messages.error( request,'An active offer already exists for this product')
                 return redirect('edit_offer', id=id)
 
-        # ---------------- CATEGORY OFFER VALIDATION ---------------- #
 
         elif offer_target == 'category':
 
             if not category_id:
-                messages.error(
-                    request,
-                    'Please select a category'
-                )
+                messages.error(request,'Please select a category' )
                 return redirect('edit_offer', id=id)
 
             cat = get_object_or_404(
@@ -691,30 +498,21 @@ def edit_offer(request, id):
                 for variant in variants:
 
                     if discount_value >= variant.variant_price:
-
-                        messages.error(
-                            request,
-                            f'Offer value cannot be greater than or equal to product price ({variant.product.product_name})'
-                        )
-
+                        messages.error(request, f'Offer value cannot be greater than or equal to product price ({variant.product.product_name})')
                         return redirect('edit_offer', id=id)
-            # prevent duplicate active category offers
+                    
+
             existing_offer = Offer.objects.filter(
                 category=cat,
                 is_deleted=False,
                 is_active=True
             ).exclude(id=id)
 
+
             if existing_offer.exists():
-
-                messages.error(
-                    request,
-                    'An active offer already exists for this category'
-                )
-
+                messages.error(request,'An active offer already exists for this category')
                 return redirect('edit_offer', id=id)
 
-        # ---------------- UPDATE OFFER ---------------- #
 
         offer.name = name
         offer.discount_type = discount_type
@@ -726,13 +524,8 @@ def edit_offer(request, id):
 
         offer.save()
 
-        # ---------------- SUCCESS MESSAGE ---------------- #
 
-        messages.success(
-            request,
-            'Offer updated successfully'
-        )
-
+        messages.success(request,'Offer updated successfully')
         return redirect('offer_listing')
 
     context = {

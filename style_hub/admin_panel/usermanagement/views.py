@@ -57,10 +57,8 @@ def user_management(request):
 def user_detail(request, user_id):
 
     user_obj = get_object_or_404(User, id=user_id, is_staff=False)
-
     orders = Order.objects.filter(user=user_obj)
     orders_count = orders.count()
-
     total_amount = orders.aggregate(total=Sum("total_amount"))["total"] or 0
 
 
@@ -84,7 +82,6 @@ def user_detail(request, user_id):
 def block_user(request, user_id):
     user_obj = get_object_or_404(User, id=user_id, is_staff=False)
 
-
     user_obj.is_active = False
     user_obj.save()
 
@@ -97,7 +94,6 @@ def block_user(request, user_id):
 def unblock_user(request, user_id):
     user_obj = get_object_or_404(User, id=user_id, is_staff=False)
 
-    
     user_obj.is_active = True
     user_obj.save()
 

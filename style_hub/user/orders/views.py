@@ -12,6 +12,7 @@ from django.db.models import Q
 from user.orders.models import Order, OrderItem, Review, ReviewImage
 from user.wallet.utils import credit_wallet
 from decimal import Decimal
+from django.views.decorators.cache import never_cache
 import re
 
 
@@ -85,7 +86,6 @@ def orders_view(request):
     return render(request, 'ordersview.html', context)
 
 
-from django.views.decorators.cache import never_cache
 
 @never_cache
 @login_required(login_url='login')
@@ -122,7 +122,7 @@ def invoice(request):
         user=request.user
     )
 
-    from decimal import Decimal
+   
     offer_discount = Decimal('0.00')
     # Filter active items to recalculate correct original subtotal and offer discounts using active quantities
     for item in order.items.all():
@@ -272,10 +272,8 @@ def order_cancel_success(request):
                 'Shipped',
                 'Partially Cancelled'
             ]:
-                messages.error(
-                    request,
-                    f"Item cannot be cancelled: {item.item_status}"
-                )
+                messages.error(request,f"Item cannot be cancelled: {item.item_status}")
+
                 return redirect(
                     f"{reverse('orders_view')}?order_id={item.order.id}"
                 )
@@ -307,7 +305,7 @@ def order_cancel_success(request):
                     - item.returned_quantity
                 )
 
-                # STATUS UPDATE
+                
                 if remaining_quantity == 0:
                     item.item_status = 'Cancelled'
                 else:
@@ -323,7 +321,7 @@ def order_cancel_success(request):
 
                 order = item.order
 
-                # FULL ORDER CANCEL CHECK
+        
                 all_cancelled = True
                 for order_item in order.items.all():
                     rem_qty = (
@@ -338,7 +336,7 @@ def order_cancel_success(request):
                 refund_amount = Decimal('0.00')
 
                 if all_cancelled:
-                    # Refund the remaining total amount of the order (including delivery charge)
+        
                     if order.payment_status in ['Completed', 'completed']:
                         refund_amount = order.total_amount.quantize(Decimal('0.01'))
                         credit_wallet(
@@ -500,7 +498,7 @@ def review_writing(request):
 
     product = order_item.variant.product
 
-    # PRODUCT STATUS VALIDATION
+    
     if (
         product.is_deleted or
         not product.is_active or
@@ -512,14 +510,14 @@ def review_writing(request):
             f"{reverse('orders_view')}?order_id={order_item.order.id}"
         )
 
-    # ONLY DELIVERED PRODUCTS
+    
     if order_item.item_status not in ['Delivered', 'Partially Returned', 'Return Rejected']:
         messages.error(request, 'Review can only be added for delivered products')
         return redirect(
             f"{reverse('orders_view')}?order_id={order_item.order.id}"
         )
 
-    # PREVENT DUPLICATE REVIEW
+
     if Review.objects.filter(
         user=request.user,
         order_item=order_item
@@ -544,7 +542,6 @@ def review_writing(request):
 
         images = request.FILES.getlist('images')
 
-        # REQUIRED FIELD VALIDATION
 
 
         if not title :
@@ -565,7 +562,6 @@ def review_writing(request):
         
         
 
-        # RATING VALIDATION
         try:
             rating = int(rating)
 
@@ -577,7 +573,7 @@ def review_writing(request):
             messages.error(request, 'Invalid rating')
             return render(request, 'review_writing.html',context)
 
-        # TITLE LENGTH VALIDATION
+    
         if len(title) < 3:
             messages.error(
                 request,
@@ -592,7 +588,6 @@ def review_writing(request):
             )
             return render(request, 'review_writing.html',context)
 
-        # CONTENT LENGTH VALIDATION
         if len(content) < 10:
             messages.error(
                 request,
@@ -607,7 +602,7 @@ def review_writing(request):
             )
             return render(request, 'review_writing.html',context)
 
-        # INVALID SPACES
+        
         if "  " in title:
             messages.error(
                 request,
@@ -615,7 +610,7 @@ def review_writing(request):
             )
             return render(request, 'review_writing.html',context)
 
-        # TITLE CHARACTER VALIDATION
+
         if not re.match(r'^[A-Za-z0-9\s.,!?&()\'"-]+$', title):
             messages.error(
                 request,
@@ -623,7 +618,6 @@ def review_writing(request):
             )
             return render(request, 'review_writing.html',context)
 
-        # IMAGE LIMIT VALIDATION
         if len(images) > 3:
             messages.error(
                 request,
@@ -631,7 +625,7 @@ def review_writing(request):
             )
             return render(request, 'review_writing.html',context)
 
-        # IMAGE VALIDATION
+        
         allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
 
         for image in images:
@@ -654,7 +648,7 @@ def review_writing(request):
                 )
                 return render(request, 'review_writing.html',context)
 
-        # CREATE REVIEW
+    
         review = Review.objects.create(
             user=request.user,
             product=product,
