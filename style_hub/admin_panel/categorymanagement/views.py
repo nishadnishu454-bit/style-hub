@@ -20,6 +20,7 @@ def is_admin(user):
 def category_listing(request):
 
     search = request.GET.get('search','')
+    
 
     categories =Category.objects.filter(
         is_deleted = False
@@ -29,6 +30,7 @@ def category_listing(request):
         categories = categories.filter(
             Q(category_name__icontains=search)
         )
+
 
     paginator = Paginator(categories,5)
     page_number = request.GET.get('page')
@@ -91,44 +93,48 @@ def add_category(request):
         category_name = request.POST.get('category_name', '').strip()
         description = request.POST.get('description', '').strip()
         category_image = request.FILES.get('category_image')
+        old_data = request.POST
 
+        context = {
+            'old_data':old_data
+        }
 
         if not category_name:
             messages.error(request, 'Category name is required')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
         if not description:
             messages.error(request, 'Description is required')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
         if not category_image:
             messages.error(request, 'Category image is required')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
 
         if len(category_name) < 3:
             messages.error(request, 'Category name must contain at least 3 characters')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
         if len(category_name) > 50:
             messages.error(request, 'Category name is too long')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
         if not re.match(r'^[A-Za-z\s]+$', category_name):
             messages.error(request, 'Category name should contain only alphabets and spaces')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
         if "  " in category_name:
             messages.error(request, 'Category name contains invalid spaces')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
         if len(description) < 10:
             messages.error(request, 'Description must contain at least 10 characters')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
         if len(description) > 500:
             messages.error(request, 'Description is too long')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
 
         allowed_extensions = ['.jpg', '.jpeg', '.png', '.webp']
@@ -140,11 +146,11 @@ def add_category(request):
                 request,
                 'Only JPG, JPEG, PNG and WEBP images are allowed'
             )
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
         if category_image.size > 5 * 1024 * 1024:
             messages.error(request, 'Image size should be less than 5MB')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
        
 
@@ -167,7 +173,7 @@ def add_category(request):
                 return redirect('category_listing')
 
             messages.error(request, 'Category already exists')
-            return redirect('add_category')
+            return render(request,'addcategory.html',context)
 
       
 

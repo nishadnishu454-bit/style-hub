@@ -37,6 +37,9 @@
 
 <body class="bg-[#F8F9FA]">
 
+
+
+
     <main class="min-h-screen flex justify-center py-10 px-4">
 
         <div class="w-full max-w-4xl">
@@ -81,6 +84,19 @@
 
             <!-- CARD -->
             <div class="bg-white p-8 md:p-12 shadow-lg rounded-sm">
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="mb-4 p-3 rounded
+            {% if message.tags == 'error' %}
+                bg-red-100 text-red-700
+            {% else %}
+                bg-green-100 text-green-700
+            {% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 
                 <form method="POST"
                       enctype="multipart/form-data"

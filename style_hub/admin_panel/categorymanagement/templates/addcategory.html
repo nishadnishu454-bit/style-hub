@@ -106,7 +106,8 @@
                            name="category_name"
                            placeholder="Enter category name"
                            class="input-field"
-                           required>
+                           value="{{old_data.category_name}}"
+                           >
 
                 </div>
 
@@ -120,7 +121,7 @@
                     <textarea name="description"
                               rows="5"
                               placeholder="Write category description..."
-                              class="input-field resize-none"></textarea>
+                              class="input-field resize-none">{{ old_data.description|default:"" }} </textarea>
 
                 </div>
 
@@ -154,7 +155,8 @@
                            name="category_image"
                            accept="image/*"
                            class="hidden"
-                           onchange="previewCategoryImage(event)">
+                           onchange="previewCategoryImage(event)"
+                           >
 
                 </div>
 
