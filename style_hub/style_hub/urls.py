@@ -28,7 +28,8 @@ urlpatterns = [
     path('wallet/',include('user.wallet.urls')),
     path('offer_management/',include('admin_panel.offermanagement.urls')),
     path('variant_management/',include('admin_panel.variantmanagement.urls')),
-    path('review_management/',include('admin_panel.reviewmanagement.urls'))
+    path('review_management/',include('admin_panel.reviewmanagement.urls')),
+    
    
 
 

@@ -1,5 +1,7 @@
 from django.db import models
 from admin_panel.productmanagement.models import Product
+from decimal import Decimal
+from django.utils import timezone
 
 # Create your models here.
 class ProductVariant(models.Model):
@@ -20,8 +22,7 @@ class ProductVariant(models.Model):
 
     @property
     def offer_price(self):
-        from decimal import Decimal
-        from django.utils import timezone
+        
         today = timezone.now().date()
         product_offers = self.product.offers.filter(is_active=True, is_deleted=False, start_date__lte=today, end_date__gte=today)
         
