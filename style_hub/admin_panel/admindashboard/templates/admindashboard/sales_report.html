@@ -173,8 +173,8 @@
                             ₹{{ order.delivery_charge }}
                         </td>
                         <td class="py-5 px-6 text-right font-medium text-red-500">
-                            {% if order.payment_status|lower == 'refunded' %}
-                                ₹{{ order.total_amount }}
+                            {% if order.payment_status == 'Refunded' %}
+                                ₹{{ order.refunded_amount }}
                             {% else %}
                                 ₹0.00
                             {% endif %}

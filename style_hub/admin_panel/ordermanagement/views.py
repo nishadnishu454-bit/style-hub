@@ -148,12 +148,14 @@ def update_status(request, id):
             if new_status in ['Cancelled', 'Returned'] and old_status not in ['Cancelled', 'Returned', 'Return Requested']:
                 from decimal import Decimal
                 if order.payment_status in ['Completed', 'completed'] and order.total_amount > 0:
+                    refund = order.total_amount.quantize(Decimal("0.01"))
                     credit_wallet(
                         user=order.user,
-                        amount=order.total_amount.quantize(Decimal('0.01')),
+                        amount=refund,
                         purpose=f'Order {new_status} Refund',
                         order=order
                     )
+                    order.refunded_amount = refund
                     order.payment_status = 'Refunded'
 
                 for item in order.items.all():
@@ -295,14 +297,17 @@ def approve_return(request):
 
                 if all_inactive:
                     if order.payment_status in ['Completed', 'completed'] or (order.payment_method == 'COD' and order.payment_status == 'Pending'):
-                        refund_amount = order.total_amount.quantize(Decimal('0.01'))
+
+                        refund_amount = order.total_amount.quantize(Decimal("0.01"))
                         credit_wallet(
                             user=order.user,
                             amount=refund_amount,
                             purpose='Return Refund',
                             order=order
                         )
+                        order.refunded_amount = refund_amount
                         order.payment_status = 'Refunded'
+
                     order.order_status = 'Returned'
                     order.subtotal = Decimal('0.00')
                     order.discount_amount = Decimal('0.00')
@@ -343,6 +348,8 @@ def approve_return(request):
                             purpose='Return Refund',
                             order=order
                         )
+                        order.refunded_amount += refund_amount
+                        order.save(update_fields=['refunded_amount'])
 
                     order.subtotal = new_subtotal
                     order.discount_amount = new_discount.quantize(Decimal('0.01'))
@@ -375,12 +382,15 @@ def approve_return(request):
                             item.variant.save()
 
                 if order.payment_status in ['Completed', 'completed'] or (order.payment_method == 'COD' and order.payment_status == 'Pending'):
+                    refund = order.total_amount.quantize(Decimal("0.01"))
+
                     credit_wallet(
                         user=order.user,
                         amount=order.total_amount.quantize(Decimal('0.01')),
                         purpose='Return Refund',
                         order=order
                     )
+                    order.refunded_amount = refund
                     order.payment_status = 'Refunded'
 
                 order.order_status = 'Returned'

@@ -339,13 +339,17 @@ def order_cancel_success(request):
         
                     if order.payment_status in ['Completed', 'completed']:
                         refund_amount = order.total_amount.quantize(Decimal('0.01'))
-                        credit_wallet(
-                            user=request.user,
-                            amount=refund_amount,
-                            purpose='Item Cancellation Refund',
-                            order=order
-                        )
-                        order.payment_status = 'Refunded'
+
+                        if refund_amount > 0:
+                            credit_wallet(
+                                user=request.user,
+                                amount=refund_amount,
+                                purpose='Item Cancellation Refund',
+                                order=order
+                            )
+
+                            order.refunded_amount = (order.refunded_amount + refund_amount).quantize(Decimal('0.01'))
+                            order.payment_status = 'Refunded'
 
                     order.order_status = 'Cancelled'
                     order.subtotal = Decimal('0.00')
@@ -387,6 +391,9 @@ def order_cancel_success(request):
                             purpose='Item Cancellation Refund',
                             order=order
                         )
+                        order.refunded_amount = (
+                            order.refunded_amount + refund_amount
+                        ).quantize(Decimal('0.01'))
 
                     order.subtotal = new_subtotal
                     order.discount_amount = new_discount.quantize(Decimal('0.01'))
@@ -448,13 +455,11 @@ def order_cancel_success(request):
                             purpose='Order Cancellation Refund',
                             order=order
                         )
+                    order.refunded_amount += refund_amount
                     order.payment_status = 'Refunded'
 
                 order.order_status = 'Cancelled'
                 order.reason = reason
-                order.subtotal = Decimal('0.00')
-                order.discount_amount = Decimal('0.00')
-                order.total_amount = Decimal('0.00')
                 order.save()
 
             context = {
@@ -470,6 +475,7 @@ def order_cancel_success(request):
             )
 
     return redirect('user_orders_listing')
+
 
 @login_required(login_url='login')
 def review_writing(request):
