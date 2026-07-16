@@ -76,7 +76,7 @@ def product_page(request):
         variant = product.variants.filter(
             is_deleted=False,
             is_active=True
-        ).first()
+        ).order_by('id').first()
 
         product.display_variant = variant
 
@@ -132,7 +132,7 @@ def product_detail(request, id):
     variants = product.variants.filter(
         is_deleted=False,
         is_active=True
-    ).prefetch_related('images')
+    ).order_by('id').prefetch_related('images')
 
     if not variants.exists():
         return redirect('product_page')

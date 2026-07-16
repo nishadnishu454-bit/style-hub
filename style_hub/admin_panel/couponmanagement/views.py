@@ -64,39 +64,52 @@ def add_coupon(request):
         if not all([code, title, discount_type, discount_value, start_date, end_date]):
             messages.error(request, 'All required fields must be filled')
             return redirect_back('add_coupon')
+    
 
-        if len(code) < 4:
-            messages.error(request, 'Coupon code must contain at least 4 characters')
+        if len(code) < 4 or len(code) > 20:
+            messages.error(request, "Coupon code must be between 4 and 20 characters")
             return redirect_back('add_coupon')
 
-        if len(code) > 20:
-            messages.error(request, 'Coupon code is too long')
+        if not re.fullmatch(r'[A-Z0-9]+', code):
+            messages.error(request, "Coupon code can contain only uppercase letters and numbers")
             return redirect_back('add_coupon')
 
-        if not re.match(r'^[A-Z0-9]+$', code):
-            messages.error(request, 'Coupon code should contain only uppercase letters and numbers')
+        if code.isdigit():
+            messages.error(request, "Coupon code cannot contain only numbers")
             return redirect_back('add_coupon')
 
         if Coupon.objects.filter(code__iexact=code).exists():
-            messages.error(request, 'Coupon code already exists')
+            messages.error(request, "Coupon code already exists")
+            return redirect_back('add_coupon')
+        
+        if len(title) < 3 or len(title) > 100:
+            messages.error(request, "Coupon title must be between 3 and 100 characters")
             return redirect_back('add_coupon')
 
-        if len(title) < 3:
-            messages.error(request, 'Coupon title must contain at least 3 characters')
+        if title.isspace():
+            messages.error(request, "Coupon title cannot be empty")
             return redirect_back('add_coupon')
 
-        if len(title) > 100:
-            messages.error(request, 'Coupon title is too long')
+        if not re.fullmatch(r"[A-Za-z0-9\s&()\-']+", title):
+            messages.error(request, "Coupon title contains invalid characters")
             return redirect_back('add_coupon')
 
-        if description and (len(description) < 10 or len(description) > 500):
-            messages.error(request, 'Description must be between 10 and 500 characters')
+        if title.isdigit():
+            messages.error(request, "Coupon title cannot contain only numbers")
             return redirect_back('add_coupon')
 
-        if discount_type not in ['PERCENTAGE', 'FIXED']:
-            messages.error(request, 'Invalid discount type selected')
+
+        if len(description) < 10:
+            messages.error(request, "Description should be at least 10 characters")
             return redirect_back('add_coupon')
 
+        if len(description) > 500:
+            messages.error(request, "Description is too long")
+            return redirect_back('add_coupon')
+
+        if description.isdigit():
+            messages.error(request, "Description cannot contain only numbers")
+            return redirect_back('add_coupon')
     
         try:
             discount_val = Decimal(discount_value)
@@ -209,12 +222,8 @@ def add_coupon(request):
 def edit_coupon(request, id):
 
     coupon = get_object_or_404(Coupon, id=id, is_deleted=False)
-
-    def redirect_back(to):
-        if to == 'edit_coupon':
-            return render(request, 'edit_coupon.html', {'coupon': coupon})
-        return redirect(to, id=id)
-
+    old_data = coupon
+        
     if request.method == 'POST':
 
         code = request.POST.get('code', '').strip().upper()
@@ -227,25 +236,145 @@ def edit_coupon(request, id):
         usage_limit = request.POST.get('usage_limit_per_user', '').strip()
         start_date = request.POST.get('start_date', '').strip()
         end_date = request.POST.get('end_date', '').strip()
+        old_data = request.POST
 
+        context={
+            'coupon':coupon,
+            'old_data':old_data
+        }
+
+        if not all([code, title, discount_type, discount_value, start_date, end_date]):
+            messages.error(request, 'All required fields must be filled')
+            return render(request,'edit_coupon.html',context)
+
+        if len(code) < 4:
+            messages.error(request, 'Coupon code must contain at least 4 characters')
+            return render(request,'edit_coupon.html',context)
+
+        if len(code) > 20:
+            messages.error(request, 'Coupon code is too long')
+            return render(request,'edit_coupon.html',context)
+
+        if not re.match(r'^[A-Z0-9]+$', code):
+            messages.error(request, 'Coupon code should contain only uppercase letters and numbers')
+            return render(request,'edit_coupon.html',context)
 
         if Coupon.objects.filter(code__iexact=code).exclude(id=id).exists():
             messages.error(request, 'Coupon code already exists')
-            return redirect_back('edit_coupon')
+            return render(request,'edit_coupon.html',context)
 
+      
+        if len(title) < 3:
+            messages.error(request, 'Coupon title must contain at least 3 characters')
+            return render(request,'edit_coupon.html',context)
+
+        if len(title) > 100:
+            messages.error(request, 'Coupon title is too long')
+            return render(request,'edit_coupon.html',context)
+        
+        if not title.strip():
+            messages.error(request, 'Coupon title cannot contain only spaces')
+            return render(request, 'edit_coupon.html', context)
+        
+        if not re.match(r'^[A-Za-z0-9\s&()-]+$', title):
+            messages.error(request,'Coupon title contains invalid characters')
+            return render(request, 'edit_coupon.html', context)
+        
+        if title.replace(' ', '').isdigit():
+            messages.error(request, 'Coupon title cannot contain only numbers')
+            return render(request, 'edit_coupon.html', context)
+
+        
+        if description and (len(description) < 10 or len(description) > 500):
+            messages.error(request, 'Description must be between 10 and 500 characters')
+            return render(request,'edit_coupon.html',context)
+
+        if discount_type not in ['PERCENTAGE', 'FIXED']:
+            messages.error(request, 'Invalid discount type selected')
+            return render(request,'edit_coupon.html',context)
+
+       
         try:
             discount_val = Decimal(discount_value)
+
+            if discount_val <= 0:
+                messages.error(request, 'Discount value must be greater than 0')
+                return render(request,'edit_coupon.html',context)
+
+            if discount_type == 'PERCENTAGE' and discount_val > 100:
+                messages.error(request, 'Percentage discount cannot exceed 100%')
+                return render(request,'edit_coupon.html',context)
+
+            if discount_type == 'FIXED' and discount_val > 100000:
+                messages.error(request, 'Fixed discount amount is too high')
+                return render(request,'edit_coupon.html',context)
+
+        except InvalidOperation:
+            messages.error(request, 'Invalid discount value')
+            return render(request,'edit_coupon.html',context)
+
+       
+        try:
             min_purch = Decimal(min_purchase) if min_purchase else Decimal('0.00')
+
+            if min_purch < 0:
+                messages.error(request, 'Minimum purchase cannot be negative')
+                return render(request,'edit_coupon.html',context)
+
+        except InvalidOperation:
+            messages.error(request, 'Invalid minimum purchase value')
+            return render(request,'edit_coupon.html',context)
+
+        if discount_type == 'FIXED' and discount_val >= min_purch:
+            messages.error(request, 'Fixed discount must be less than minimum purchase amount')
+            return render(request,'edit_coupon.html',context)
+
+       
+        try:
             max_disc = Decimal(max_discount) if max_discount else Decimal('0.00')
+
+            if max_disc < 0:
+                messages.error(request, 'Maximum discount cannot be negative')
+                return render(request,'edit_coupon.html',context)
+
+            if discount_type == 'PERCENTAGE' and max_disc <= 0:
+                messages.error(request, 'Maximum discount is required for percentage coupons')
+                return render(request,'edit_coupon.html',context)
+
+        except InvalidOperation:
+            messages.error(request, 'Invalid maximum discount value')
+            return render(request,'edit_coupon.html',context)
+
+       
+        try:
             usage_lim = int(usage_limit) if usage_limit else 1
+
+            if usage_lim <= 0:
+                messages.error(request, 'Usage limit per user must be at least 1')
+                return render(request,'edit_coupon.html',context)
+
+            if usage_lim > 1000:
+                messages.error(request, 'Usage limit is too high')
+                return render(request,'edit_coupon.html',context)
+
+        except ValueError:
+            messages.error(request, 'Invalid usage limit value')
+            return render(request,'edit_coupon.html',context)
+
+      
+        try:
             s_date = datetime.strptime(start_date, '%Y-%m-%d').date()
             e_date = datetime.strptime(end_date, '%Y-%m-%d').date()
 
-        except Exception:
-            messages.error(request, 'Invalid input values')
-            return redirect_back('edit_coupon')
+            if e_date <= s_date:
+                messages.error(request, 'End date must be after start date')
+                return render(request,'edit_coupon.html',context)
 
-        
+        except ValueError:
+            messages.error(request, 'Invalid date format')
+            return render(request,'edit_coupon.html',context)
+
+      
         coupon.code = code
         coupon.title = title
         coupon.description = description
@@ -262,7 +391,10 @@ def edit_coupon(request, id):
         messages.success(request, 'Coupon updated successfully')
         return redirect('coupon_listing')
 
-    return render(request, 'edit_coupon.html', {'coupon': coupon})
+    return render(request, 'edit_coupon.html',{
+        'coupon':coupon,
+        'old_data':old_data
+        })
 
 
 
