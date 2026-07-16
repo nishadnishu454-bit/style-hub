@@ -47,12 +47,12 @@
                     <div class="lg:col-span-7 space-y-8">
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Product Name</label>
-                            <input type="text" name="product_name" placeholder="Minimalist Oversized Hoodie" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
+                            <input type="text" name="product_name" value="{{old_data.product_name}}" placeholder="Minimalist Oversized Hoodie" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none focus:border-black transition-all shadow-sm" required>
                         </div>
 
                         <div>
                             <label class="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Product Description</label>
-                            <textarea rows="7" name="description" placeholder="Enter detailed product description..." class="w-full p-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none resize-none focus:border-black transition-all shadow-sm" required></textarea>
+                            <textarea rows="7" name="description" placeholder="Enter detailed product description..." class="w-full p-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none resize-none focus:border-black transition-all shadow-sm" required>{{ old_data.description }}</textarea>
                         </div>
 
                         <div>
@@ -61,7 +61,11 @@
                                 <select name="category" class="w-full h-16 px-6 rounded-2xl border border-gray-200 bg-white text-sm outline-none appearance-none focus:border-black transition-all shadow-sm" required>
                                     <option value="">Select Category</option>
                                     {% for category in categories %}
-                                        <option value="{{ category.id }}">{{ category.category_name }}</option>
+                                        <option value="{{ category.id }}"
+                                        {% if old_data.category == category.id|stringformat:"s" %}
+                                            selected
+                                        {% endif %}
+                                        >{{ category.category_name }}</option>
                                     {% endfor %}
                                 </select>
                                 <div class="absolute inset-y-0 right-6 flex items-center text-gray-400">
