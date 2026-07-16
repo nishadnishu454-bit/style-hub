@@ -304,17 +304,29 @@
 
     <div class="flex gap-6 text-sm text-on-surface">
         <label>
-            <input type="radio" name="address_type" value="Home" checked>
+            <input type="radio" name="address_type" value="Home" 
+            {% if old.address_type == "Home" or not old.address_type %}
+              checked
+            {% endif %}
+            >
             Home
         </label>
 
         <label>
-            <input type="radio" name="address_type" value="Work">
+            <input type="radio" name="address_type" value="Work"
+            {% if old.address_type == "Work" %}
+              checked
+            {% endif %}
+            >
             Work
         </label>
 
         <label>
-            <input type="radio" name="address_type" value="Other">
+            <input type="radio" name="address_type" value="Other"
+            {% if old.address_type == "Other" %}
+              checked
+            {% endif %}
+            >
             Other
         </label>
     </div>
