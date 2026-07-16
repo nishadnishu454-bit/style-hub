@@ -39,7 +39,7 @@
     <div class="p-10 max-w-7xl mx-auto">
         {% include 'toast.html' %}
         <div class="mb-12">
-            <p class="stat-label mb-1">Performance Analytics</p>
+            <p class="stat-label mb-3">Performance Analytics</p>
 
             <div class="flex justify-between items-center">
                 <h2 class="text-4xl font-black tracking-tight">System Overview</h2>
@@ -68,9 +68,24 @@
                 <h3 class="text-3xl font-light text-gray-500">{{ total_users|default:"0" }}</h3>
             </div>
 
+            <div class="py-10 px-6 border-r border-gray-100">
+                <p class="stat-label mb-2">Active Users</p>
+                <h3 class="text-3xl font-light text-gray-500">{{ active_users|default:"0" }}</h3>
+            </div>
+
+            <div class="py-10 px-6 border-r border-gray-100">
+                <p class="stat-label mb-2">Blocked Users</p>
+                <h3 class="text-3xl font-light text-gray-500">{{ blocked_users|default:"0" }}</h3>
+            </div>
+
             <div class="py-10 pl-6">
                 <p class="stat-label mb-2">Total Products</p>
                 <h3 class="text-3xl font-light text-gray-500">{{ total_products|default:"0" }}</h3>
+            </div>
+
+            <div class="py-10 px-6 border-r border-gray-100">
+                <p class="stat-label mb-2">Total Categories</p>
+                <h3 class="text-3xl font-light text-gray-500">{{ total_categories|default:"0" }}</h3>
             </div>
         </div>
 
@@ -114,7 +129,7 @@
                             <p class="font-bold text-sm text-gray-800">Pending</p>
                             <p class="text-[10px] text-gray-400 font-medium">Awaiting processing</p>
                         </div>
-                        <span class="text-xl font-bold">{{ processing_orders|default:"0" }}</span>
+                        <span class="text-xl font-bold">{{ pending_orders|default:"0" }}</span>
                     </div>
 
                     <div class="flex justify-between items-start">
@@ -159,6 +174,14 @@
 
                     <div class="flex justify-between items-start">
                         <div>
+                            <p class="font-bold text-red-600 text-sm">Returned</p>
+                            <p class="text-[10px] text-red-400 font-medium">Returned Orders</p>
+                        </div>
+                        <span class="text-xl font-bold text-red-600">{{ returned_orders|default:"0" }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-start">
+                        <div>
                             <p class="font-bold text-rose-800 text-sm">Cancelled</p>
                             <p class="text-[10px] text-rose-500 font-medium">Order voided</p>
                         </div>
@@ -178,7 +201,8 @@
                             <tr class="text-[9px] font-black text-gray-300 uppercase tracking-widest bg-gray-50/50">
                                 <th class="py-3 px-4 border-b border-gray-100">Product</th>
                                 <th class="py-3 px-4 border-b border-gray-100 text-center">Qty Sold</th>
-                                <th class="py-3 px-4 border-b border-gray-100 text-right">Revenue</th>
+                                <th class="py-3 px-4 border-b border-gray-100 text-right">Revenue</th> 
+
                             </tr>
                         </thead>
                         <tbody class="text-[10px]">
@@ -192,7 +216,7 @@
                                 </td>
                                 <td class="py-4 px-4 text-right font-extrabold">
                                     ₹{{ item.total_sales }}
-                                </td>
+                                </td> 
                             </tr>
                             {% empty %}
                             <tr>

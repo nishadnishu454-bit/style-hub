@@ -17,6 +17,7 @@ from user.orders.models import Order, OrderItem
 from admin_panel.productmanagement.models import Product
 from django.core.paginator import Paginator
 from user.authentication.models import Referral
+from admin_panel.categorymanagement.models import Category
 
 User = get_user_model()
 
@@ -27,7 +28,7 @@ def is_admin(user):
 
 def get_filtered_orders(filter_type, start_date_str=None, end_date_str=None):
     orders = Order.objects.all()    
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     if filter_type == 'daily':
         orders = orders.filter(ordered_at__date=today)
@@ -64,13 +65,13 @@ def admin_dashboard(request):
     active_users = User.objects.filter(is_staff=False, is_active=True).count()
     blocked_users = User.objects.filter(is_staff=False, is_active=False).count()
     total_products = Product.objects.filter(is_deleted=False).count()
+    total_categories = Category.objects.filter(is_deleted=False).count()
     
     active_orders = Order.objects.exclude(order_status__in=['Cancelled', 'Returned'])
     total_orders = active_orders.count()
-    
     total_revenue_val = active_orders.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
     
-    processing_orders = Order.objects.filter(order_status='Pending').count()
+    pending_orders = Order.objects.filter(order_status='Pending').count()
     confirmed_orders = Order.objects.filter(order_status='Confirmed').count()
     shipped_orders = Order.objects.filter(order_status='Shipped').count()
     out_for_delivery_orders = Order.objects.filter(order_status='Out for Delivery').count()
@@ -80,13 +81,14 @@ def admin_dashboard(request):
     full_returns = Order.objects.filter(order_status='Return Requested').count()
     partial_returns = OrderItem.objects.filter(item_status='Return Requested').exclude(order__order_status='Return Requested').values('order').distinct().count()
     return_orders = full_returns + partial_returns
+    returned_orders = Order.objects.filter(order_status='Returned').count()
     
     recent_orders = Order.objects.all().select_related('user').order_by('-ordered_at')[:5]
     
 
 
     sales_chart = []
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     if chart_filter == 'weekly':
         # Last 7 days
@@ -148,13 +150,15 @@ def admin_dashboard(request):
         'active_users': active_users,
         'blocked_users': blocked_users,
         'total_products': total_products,
-        'processing_orders': processing_orders,
+        'total_categories':total_categories,
+        'pending_orders': pending_orders,
         'confirmed_orders': confirmed_orders,
         'shipped_orders': shipped_orders,
         'out_for_delivery_orders': out_for_delivery_orders,
         'delivered_orders': delivered_orders,
         'cancelled_orders': cancelled_orders,
         'return_orders': return_orders,
+        'returned_orders':returned_orders,
         'recent_orders': recent_orders,
         'sales_chart': sales_chart,
         'chart_filter': chart_filter,
@@ -176,7 +180,7 @@ def sales_report_page(request):
     all_orders = get_filtered_orders(filter_type, start_date, end_date)
     orders = all_orders.exclude(order_status__in=['Cancelled', 'Returned'])
     refunded_orders = all_orders.filter(payment_status='Refunded')
-    refund_amount = refunded_orders.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    refund_amount = refunded_orders.aggregate(total=Sum('refunded_amount'))['total'] or Decimal('0.00')
 
     # MAIN STATS
     stats = orders.aggregate(
@@ -228,7 +232,7 @@ def download_sales_report_pdf(request):
     orders = get_filtered_orders(filter_type, start_date, end_date).order_by('-ordered_at')
     
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="sales_report_{filter_type}_{timezone.now().date()}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="sales_report_{filter_type}_{timezone.localdate()}.pdf"'
     
     stats = orders.aggregate(
         total_orders_count=Count('id'),
@@ -251,32 +255,22 @@ def download_sales_report_pdf(request):
     styles = getSampleStyleSheet()
     title_style = ParagraphStyle(
         'TitleStyle',
-        parent=styles['Heading1'],
-        fontName='Helvetica-Bold',
-        fontSize=24,
-        leading=28,
-        textColor=colors.HexColor('#111827'),
-        spaceAfter=15
+        parent=styles['Heading1'],fontName='Helvetica-Bold',
+        fontSize=24,leading=28,
+        textColor=colors.HexColor('#111827'), spaceAfter=15
     )
     subtitle_style = ParagraphStyle(
-        'SubtitleStyle',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=10,
-        textColor=colors.HexColor('#4B5563'),
-        spaceAfter=25
+        'SubtitleStyle', parent=styles['Normal'],fontName='Helvetica',
+        fontSize=10,textColor=colors.HexColor('#4B5563'),spaceAfter=25
     )
     header_style = ParagraphStyle(
-        'HeaderStyle',
-        parent=styles['Heading3'],
-        fontName='Helvetica-Bold',
-        fontSize=12,
-        textColor=colors.HexColor('#111827'),
-        spaceAfter=10
+        'HeaderStyle', parent=styles['Heading3'],
+        fontName='Helvetica-Bold',fontSize=12,
+        textColor=colors.HexColor('#111827'), spaceAfter=10
     )
     
     story.append(Paragraph("STYLE-HUB SALES REPORT", title_style))
-    story.append(Paragraph(f"Generated on {timezone.now().strftime('%Y-%m-%d %H:%M')} | Filter: {filter_type.upper()}", subtitle_style))
+    story.append(Paragraph(f"Generated on {timezone.localtime().strftime('%d %b %Y, %I:%M %p')} | Filter: {filter_type.upper()}", subtitle_style))
     
     summary_data = [
         ['Total Orders', 'Subtotal', 'Coupon Discounts', 'Delivery Charges', 'Net Revenue'],
@@ -289,6 +283,7 @@ def download_sales_report_pdf(request):
         ]
     ]
     summary_table = Table(summary_data, colWidths=[100, 110, 110, 110, 120])
+
     summary_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F3F4F6')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#374151')),
@@ -320,34 +315,41 @@ def download_sales_report_pdf(request):
         order_rows.append([
             order.order_number,
             order.user.username if order.user else 'Guest',
-            order.ordered_at.strftime('%Y-%m-%d'),
+            timezone.localtime(order.ordered_at).strftime('%d-%m-%Y\n%I:%M %p'),
             order.payment_method,
             order.order_status,
-            f"{order.subtotal:.2f}",
-            f"{order.discount_amount:.2f}",
-            f"{order.total_amount:.2f}"
+            f"INR {order.subtotal:.2f}",
+            f"INR {order.discount_amount:.2f}",
+            f"INR {order.total_amount:.2f}"
         ])
         
-    orders_table = Table(order_rows, colWidths=[90, 80, 70, 60, 70, 60, 60, 60])
+    orders_table = Table(order_rows, colWidths=[85, 70, 80, 60, 75, 60, 60, 60])
     orders_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#111827')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 8),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 7.5),
+
+        ('ALIGN', (0, 0), (1, -1), 'LEFT'),
+        ('ALIGN', (2, 0), (4, -1), 'CENTER'),
+        ('ALIGN', (5, 0), (7, -1), 'RIGHT'),
+
         ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
         ('TOPPADDING', (0, 0), (-1, 0), 6),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 8),
-        ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
-        ('TOPPADDING', (0, 1), (-1, -1), 4),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#F3F4F6')),
+
+        ('GRID', (0, 0), (-1, -1), 0.4, colors.HexColor('#E5E7EB')),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F9FAFB')])
     ]))
     
     story.append(orders_table)
     doc.build(story)
     return response
+
+
+
 
 
 @login_required(login_url='admin_login')
@@ -412,11 +414,11 @@ def download_sales_report_excel(request):
         cell.fill = summary_fill
         cell.alignment = align_center
         
-    ws.cell(row=6, column=1, value=total_orders_count).alignment = align_center
-    ws.cell(row=6, column=2, value=total_subtotal).number_format = '$#,##0.00'
-    ws.cell(row=6, column=3, value=total_discount).number_format = '$#,##0.00'
-    ws.cell(row=6, column=4, value=total_delivery).number_format = '$#,##0.00'
-    ws.cell(row=6, column=5, value=net_revenue).number_format = '$#,##0.00'
+    ws.cell(row=6, column=1,value=total_orders_count).alignment=align_center
+    ws.cell(row=6, column=2, value=total_subtotal).number_format='$#,##0.00'
+    ws.cell(row=6, column=3, value=total_discount).number_format='$#,##0.00'
+    ws.cell(row=6, column=4,value=total_delivery).number_format='$#,##0.00'
+    ws.cell(row=6, column=5, value=net_revenue).number_format='$#,##0.00'
     
     for c in range(1, 6):
         cell = ws.cell(row=6, column=c)
@@ -429,6 +431,7 @@ def download_sales_report_excel(request):
     ws["A8"].font = section_font
     
     headers = ["Order Number", "Customer", "Order Date", "Payment Method", "Order Status", "Subtotal", "Coupon Discount", "Total Amount"]
+
     for col_idx, header in enumerate(headers, start=1):
         cell = ws.cell(row=9, column=col_idx, value=header)
         cell.font = header_font
@@ -440,9 +443,13 @@ def download_sales_report_excel(request):
     row_idx = 10
     for order in orders:
         ws.cell(row=row_idx, column=1, value=order.order_number).alignment = align_left
+
         ws.cell(row=row_idx, column=2, value=order.user.username if order.user else 'Guest').alignment = align_left
+
         ws.cell(row=row_idx, column=3, value=order.ordered_at.strftime('%Y-%m-%d')).alignment = align_center
+
         ws.cell(row=row_idx, column=4, value=order.payment_method).alignment = align_center
+
         ws.cell(row=row_idx, column=5, value=order.order_status).alignment = align_center
         
         c6 = ws.cell(row=row_idx, column=6, value=float(order.subtotal))
@@ -470,7 +477,7 @@ def download_sales_report_excel(request):
         ws.column_dimensions[col_letter].width = max(max_len + 3, 12)
         
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename="sales_report_{filter_type}_{timezone.now().date()}.xlsx"'
+    response['Content-Disposition'] = f'attachment; filename="sales_report_{filter_type}_{timezone.localdate()}.xlsx"'
     wb.save(response)
     return response
 
