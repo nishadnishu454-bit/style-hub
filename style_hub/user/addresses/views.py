@@ -339,7 +339,7 @@ def edit_address_page(request, id):
             return redirect(redirect_url)
 
 
-        if len(area) < 2:
+        if len(area) < 3:
             messages.error(request,"Area name is too short")
             return redirect(redirect_url)
 
@@ -347,7 +347,7 @@ def edit_address_page(request, id):
             messages.error( request,"Area name is too long")
             return redirect(redirect_url)
 
-        if len(district) < 2:
+        if len(district) < 4:
             messages.error(request,"District name is too short")
             return redirect(redirect_url)
 
