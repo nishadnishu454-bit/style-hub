@@ -175,7 +175,7 @@ def add_address_page(request):
 
         allowed_address_types = [
             'Home',
-            'Office',
+            'Work',
             'Other'
         ]
 
@@ -399,7 +399,7 @@ def edit_address_page(request, id):
 
         allowed_address_types = [
             'Home',
-            'Office',
+            'Work',
             'Other'
         ]
 

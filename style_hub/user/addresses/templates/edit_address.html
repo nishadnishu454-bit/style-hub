@@ -308,20 +308,43 @@
     </label>
 
     <div class="flex gap-6 text-sm text-on-surface">
+
         <label>
-            <input type="radio" name="address_type" value="Home" checked>
+            <input
+                type="radio"
+                name="address_type"
+                value="Home"
+                {% if address.address_type == "Home" %}
+                    checked
+                {% endif %}
+            >
             Home
         </label>
 
         <label>
-            <input type="radio" name="address_type" value="Work">
+            <input
+                type="radio"
+                name="address_type"
+                value="Work"
+                {% if address.address_type == "Work" %}
+                    checked
+                {% endif %}
+            >
             Work
         </label>
 
         <label>
-            <input type="radio" name="address_type" value="Other" >
+            <input
+                type="radio"
+                name="address_type"
+                value="Other"
+                {% if address.address_type == "Other" %}
+                    checked
+                {% endif %}
+            >
             Other
         </label>
+
     </div>
 </div>
 <!-- Default Checkbox -->
