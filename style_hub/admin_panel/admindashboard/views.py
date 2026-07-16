@@ -132,16 +132,29 @@ def admin_dashboard(request):
         })
         
 
-    top_products = OrderItem.objects.exclude(order__order_status__in=['Cancelled', 'Returned'])\
-        .values('product_name', 'variant__product_id')\
-        .annotate(total_qty=Sum('quantity'), total_sales=Sum('total_price'))\
-        .order_by('-total_qty')[:10]
+    top_products = OrderItem.objects.exclude(order__order_status__in=['Cancelled', 'Returned']
+        ).exclude( item_status__in=['Cancelled', 'Returned', 'Return Requested']
+        ).values(
+            'product_name',
+            'variant__product_id'
+        ).annotate(
+            total_qty=Sum('quantity'),
+            total_sales=Sum('total_price')
+        ).order_by('-total_qty')[:10]
         
 
-    top_categories = OrderItem.objects.exclude(order__order_status__in=['Cancelled', 'Returned'])\
-        .values('variant__product__category__category_name')\
-        .annotate(total_qty=Sum('quantity'), total_sales=Sum('total_price'))\
-        .order_by('-total_qty')[:10]
+    top_categories = OrderItem.objects.exclude(
+            order__order_status__in=['Cancelled', 'Returned']
+        ).exclude(
+            item_status__in=['Cancelled', 'Returned', 'Return Requested']
+        ).values(
+            'variant__product__category__category_name'
+        ).annotate(
+            total_qty=Sum('quantity'),
+            total_sales=Sum('total_price')
+        ).order_by('-total_qty')[:10]
+        
+
         
     context = {
         'total_revenue': total_revenue_val,
