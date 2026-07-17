@@ -95,9 +95,9 @@ def product_page(request):
     if request.user.is_authenticated:
         wishlist_variant_ids = list(Wishlist.objects.filter(user=request.user).values_list('variant_id', flat=True))
 
-   
 
-    paginator = Paginator(products, 6)
+    
+    paginator = Paginator(products, 5)
     page_number = request.GET.get('page')
     products_page = paginator.get_page(page_number)
   
