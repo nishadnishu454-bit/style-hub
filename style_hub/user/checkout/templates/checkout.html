@@ -512,8 +512,14 @@ function closeCouponModal() {
 }
 
 function copyCoupon(code) {
-
-    navigator.clipboard.writeText(code);
+            navigator.clipboard.writeText(code)
+            .then(()=>{
+                showToast("Copied","success");
+            })
+            .catch(()=>{
+                showToast("Copy failed","error");
+            });
+    
 
     const input = document.querySelector('input[name="coupon_code"]');
 
@@ -566,7 +572,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
         const data = await response.json();
 
         if (!data.success) {
-            alert(data.message || 'Something went wrong');
+            showToast(data.message, 'error');
             return;
         }
 
@@ -605,6 +611,11 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
                     }
                 );
 
+                if (!verifyResponse.ok) {
+                    showToast("Payment verification failed", "error");
+                    return;
+                }
+
                 const verifyData = await verifyResponse.json();
 
                 if (verifyData.success) {
@@ -621,7 +632,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 
                 ondismiss: function () {
 
-                    window.location.href = "{% url 'payment_failure' %}";
+                    window.location.href = "{% url 'payment_failure' %}?order_id=" + data.failed_order_id;
                 }
             },
 
@@ -636,7 +647,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 
     } catch (error) {
 
-        alert("Something went wrong");
+        showToast("Something went wrong","error");
         console.log(error);
     }
 

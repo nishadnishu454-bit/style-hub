@@ -20,6 +20,8 @@ from decimal import Decimal, InvalidOperation
 from django.db.models import F
 from django.views.decorators.cache import never_cache
 import re
+from user.orders.models import OrderAddress
+
 
 client = razorpay.Client(
     auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
@@ -235,11 +237,6 @@ def checkout_page(request):
 
             return redirect('checkout')
 
-        address = get_object_or_404(
-            Address,
-            id=address_id,
-            user=request.user
-        )
 
         try:
 
@@ -251,7 +248,6 @@ def checkout_page(request):
                     variant.refresh_from_db()
 
                     if variant.variant_stock < item.quantity:
-
                         messages.error(
                             request,
                             f'{variant.product.product_name} has only {variant.variant_stock} stock left'
@@ -274,6 +270,7 @@ def checkout_page(request):
                     })
 
                     request.session['checkout_address_id'] = address_id
+                    request.session['payment_method'] = payment_method
 
                     return JsonResponse({
                         'success': True,
@@ -284,10 +281,31 @@ def checkout_page(request):
                         'name': 'STYLE-HUB',
                         'description': 'Order Payment',
                     },status=200)
+                
+
+
+                address = get_object_or_404(
+                        Address,
+                        id=address_id,
+                        user=request.user
+                    )
+
+                order_address = OrderAddress.objects.create(
+                        full_name=address.full_name,
+                        phone_number=address.phone_number,
+                        house_name=address.house_name,
+                        address=address.address,
+                        area=address.area,
+                        country=address.country,
+                        state=address.state,
+                        district=address.district,
+                        pincode=address.pincode,
+                        address_type=address.address_type,
+                    )
 
                 order = Order.objects.create(
                     user=request.user,
-                    address=address,
+                    address=order_address,
                     order_number=f"SH-{uuid.uuid4().hex[:10].upper()}",
                     payment_method=payment_method,
                     payment_status='Pending',
@@ -356,7 +374,7 @@ def checkout_page(request):
                     
                     item.variant.variant_stock = F('variant_stock')-item.quantity
                     item.variant.save()
-                    item.variant.refresh_from_db
+                    item.variant.refresh_from_db()
 
                 
                 process_referral_reward(request.user, order)
@@ -451,7 +469,24 @@ def verify_razorpay_payment(request):
                                 'success': False,
                                 'message': f"{variant.product.product_name} has only {variant.variant_stock} stock left."
                             },status=400)
+                        
 
+
+                    order_address = OrderAddress.objects.create(
+                        full_name=address.full_name,
+                        phone_number=address.phone_number,
+                        house_name=address.house_name,
+                        address=address.address,
+                        area=address.area,
+                        country=address.country,
+                        state=address.state,
+                        district=address.district,
+                        pincode=address.pincode,
+                        address_type=address.address_type,
+                    )
+
+
+                    existing_order.address = order_address
                     existing_order.payment_status = 'Completed'
                     existing_order.order_status = 'Confirmed'
                     existing_order.razorpay_payment_id = razorpay_payment_id
@@ -538,9 +573,30 @@ def verify_razorpay_payment(request):
                 if total_amount < 0: total_amount = Decimal('0.00')
                 total_amount = total_amount.quantize(Decimal('0.01'))
 
+
+                address = get_object_or_404(
+                    Address,
+                    id=address_id,
+                    user=request.user
+                )
+
+
+                order_address = OrderAddress.objects.create(
+                        full_name=address.full_name,
+                        phone_number=address.phone_number,
+                        house_name=address.house_name,
+                        address=address.address,
+                        area=address.area,
+                        country=address.country,
+                        state=address.state,
+                        district=address.district,
+                        pincode=address.pincode,
+                        address_type=address.address_type,
+                    )
+
                 order = Order.objects.create(
                     user=request.user,
-                    address=address,
+                    address=order_address,
                     order_number=f"SH-{uuid.uuid4().hex[:10].upper()}",
                     payment_method='RAZORPAY',
                     payment_status='Completed',
@@ -821,8 +877,6 @@ def retry_razorpay_payment(request):
         order.razorpay_order_id = razorpay_order['id']
         order.save()
         
-        # Store address in session in case verify_razorpay_payment needs it
-        request.session['checkout_address_id'] = order.address.id
         
         return JsonResponse({
             'success': True,
@@ -844,6 +898,20 @@ def create_failed_order(request):
             return JsonResponse({'success': False, 'message': 'Address is required'},status=400)
             
         address = get_object_or_404(Address, id=address_id, user=request.user)
+
+
+        order_address = OrderAddress.objects.create(
+                full_name=address.full_name,
+                phone_number=address.phone_number,
+                house_name=address.house_name,
+                address=address.address,
+                area=address.area,
+                country=address.country,
+                state=address.state,
+                district=address.district,
+                pincode=address.pincode,
+                address_type=address.address_type,
+            )
         
         cart_items = Cart.objects.filter(
             user=request.user,
@@ -889,7 +957,7 @@ def create_failed_order(request):
         with transaction.atomic():
             order = Order.objects.create(
                 user=request.user,
-                address=address,
+                address=order_address,
                 order_number=f"SH-{uuid.uuid4().hex[:10].upper()}",
                 payment_method='RAZORPAY',
                 payment_status='Failed',
