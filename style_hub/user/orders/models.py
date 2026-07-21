@@ -34,7 +34,7 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_orders')
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
+    address = models.OneToOneField('OrderAddress',on_delete=models.SET_NULL, null=True, blank=True,related_name='order')
     order_number = models.CharField(max_length=50, unique=True)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default='COD')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='Pending')
@@ -94,6 +94,28 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return self.product_name
+    
+
+
+
+
+class OrderAddress(models.Model):
+    full_name = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=12)
+    house_name = models.CharField(max_length=30)
+    address = models.TextField()
+    area = models.CharField(max_length=30)
+    country = models.CharField(max_length=20)
+    state = models.CharField(max_length=50)
+    district = models.CharField(max_length=30)
+    pincode = models.CharField(max_length=30)
+    address_type = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.full_name
+
+
+
 
 
 class Review(models.Model):
@@ -123,6 +145,7 @@ class ReviewImage(models.Model):
     def __str__(self):
         return f"Image for {self.review.title}"
     
+
 
 
     

@@ -104,11 +104,19 @@
 
                 <div class="bg-slate-50/50 p-8 rounded-xl border border-slate-100">
                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Shipping Address</p>
-                    <p class="font-bold text-sm">{{ order.address.full_name }}</p>
-                    <p class="text-slate-400 text-xs mt-1">{{ order.address.house_name }}, {{ order.address.address }}</p>
-                    <p class="text-slate-400 text-xs">{{ order.address.area }}, {{ order.address.district }}</p>
-                    <p class="text-slate-400 text-xs">{{ order.address.state }}, {{ order.address.pincode }}</p>
-                    <p class="text-slate-400 text-xs">{{ order.address.country }}</p>
+
+                    {% if order.address %}
+                        <p class="font-bold text-sm">{{ order.address.full_name }}</p>
+                        <p class="text-slate-400 text-xs mt-1">{{ order.address.house_name }}, {{ order.address.address }}</p>
+                        <p class="text-slate-400 text-xs">{{ order.address.area }}, {{ order.address.district }}</p>
+                        <p class="text-slate-400 text-xs">{{ order.address.state }}, {{ order.address.pincode }}</p>
+                        <p class="text-slate-400 text-xs">{{ order.address.country }}</p>
+                    {% else %}
+
+                         <p class="text-slate-400 text-sm italic">
+                            No shipping address found.
+                        </p>
+                    {% endif %}
                 </div>
 
                 <div class="bg-slate-50/50 p-8 rounded-xl border border-slate-100">

@@ -97,14 +97,14 @@
         <p class="text-on-surface-variant text-lg mb-8">We could not complete your transaction. Don't worry, your money is safe. If any amount was debited, it will be refunded automatically.</p>
         
         <div class="space-y-4">
-            {% if order %}
-                <button onclick="retryPayment('{{ order.id }}')" class="w-full bg-white hover:bg-white/90 text-black font-bold py-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg">
-                    <span class="material-symbols-outlined">replay</span> Retry Payment
-                </button>
-            {% else %}
-                <a href="{% url 'checkout' %}" class="w-full bg-white hover:bg-white/90 text-black font-bold py-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg">
-                    <span class="material-symbols-outlined">replay</span> Retry Payment
-                </a>
+            {% if order and order.payment_status == "Failed" %}
+            <button
+                onclick="retryPayment('{{ order.id }}')"
+                class="w-full bg-white hover:bg-white/90 text-black font-bold py-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg">
+
+                <span class="material-symbols-outlined">replay</span>
+                Retry Payment
+            </button>
             {% endif %}
             
             <a href="{% url 'checkout' %}" class="w-full block bg-white/5 hover:bg-white/10 text-white font-bold py-4 rounded-xl transition-all duration-200 border border-white/10">
@@ -128,7 +128,7 @@
 <script>
 async function retryPayment(orderId) {
     try {
-        const response = await fetch(`/checkout/retry-payment/?order_id=${orderId}`, {
+        const response = await fetch("{% url 'retry_razorpay_payment' %}?order_id=" + orderId, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -167,13 +167,15 @@ async function retryPayment(orderId) {
                 if (verifyData.success) {
                     window.location.href = verifyData.redirect_url;
                 } else {
-                    alert("Payment verification failed");
-                }
+                    window.location.href =
+                            "{% url 'payment_failure' %}?order_id=" + orderId;
+                        }
             },
             modal: {
                 ondismiss: function () {
-                    alert("Payment cancelled");
-                }
+                    window.location.href =
+                    "{% url 'payment_failure' %}?order_id=" + orderId;
+                    }
             },
             theme: {
                 color: "#e2e2e2"
