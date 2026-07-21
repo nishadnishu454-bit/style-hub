@@ -34,8 +34,7 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_orders')
-    address = models.OneToOneField('OrderAddress',on_delete=models.SET_NULL, null=True, blank=True,related_name='order')
-    order_number = models.CharField(max_length=50, unique=True)
+    address = models.ForeignKey('OrderAddress',on_delete=models.SET_NULL,null=True,blank=True,related_name='orders')
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default='COD')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='Pending')
     order_status = models.CharField(max_length=20, choices=ORDER_STATUS, default='Pending')
