@@ -209,7 +209,7 @@ def return_requests(request):
         'variant',
         'variant__product'
     )
-
+    
     if search:
         orders = orders.filter(
             Q(order_number__icontains=search) |
@@ -225,9 +225,11 @@ def return_requests(request):
 
     for item in items:
         qty_to_return = item.quantity - item.cancelled_quantity - item.returned_quantity
+        item.display_reason = item.reason
         match = re.match(r'^\[Qty:\s*(\d+)\]\s*(.*)', item.reason or '')
         if match:
             qty_to_return = int(match.group(1))
+            item.display_reason = match.group(2)
         
   
         item.total_price = (item.price * Decimal(qty_to_return)).quantize(Decimal('0.01'))
@@ -237,7 +239,6 @@ def return_requests(request):
         'items': items,
         'search': search,
     }
-
     return render(request, 'return_requests.html', context)
 
 
@@ -260,7 +261,7 @@ def approve_return(request):
                     messages.error(request, 'This item is not requested for return')
                     return redirect('return_requests')
 
-                qty_to_approve = item.remaining_quantity()
+                qty_to_approve = (item.quantity - item.cancelled_quantity - item.returned_quantity)
                 match = re.match(r'^\[Qty:\s*(\d+)\]\s*(.*)', item.reason or '')
                 if match:
                     qty_to_approve = int(match.group(1))
@@ -315,18 +316,18 @@ def approve_return(request):
                     order.save()
                 else:
                     returned_value = item.price * Decimal(qty_to_approve)
-                    new_subtotal = order.subtotal - returned_value
-                    
-                    new_discount = Decimal('0.00')
-                    if order.discount_amount > 0 and order.subtotal > 0:
-                        if order.coupon and new_subtotal < order.coupon.min_purchase:
-                            # Coupon is invalidated
-                            new_discount = Decimal('0.00')
-                        else:
-                            new_discount = order.discount_amount - (
-                                returned_value / order.subtotal
-                            ) * order.discount_amount
+                    new_subtotal = Decimal("0.00")
+                    for order_item in order.items.all():
+                        active_qty = (order_item.quantity - order_item.cancelled_quantity - order_item.returned_quantity)
+                        new_subtotal += order_item.price * active_qty
 
+                    new_discount = Decimal('0.00')
+
+                    if order.coupon:
+                        if new_subtotal >= order.coupon.min_purchase:
+                            new_discount = order.discount_amount
+                        else:
+                            new_discount = Decimal('0.00')
                     new_total = max(
                         new_subtotal
                         - new_discount
@@ -375,7 +376,16 @@ def approve_return(request):
                         item.returned_quantity += qty_to_return
                         item.item_status = 'Returned'
                         item.total_price = Decimal('0.00')
+                        print('before')
+                        print(item.item_status)
+                        print(item.reason)
                         item.save()
+
+                        item.refresh_from_db()
+                        print('after')
+                        print(item.item_status)
+                        print(item.reason)
+
 
                         if item.variant:
                             item.variant.variant_stock += qty_to_return
