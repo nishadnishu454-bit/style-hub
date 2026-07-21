@@ -67,7 +67,7 @@ def orders_view(request):
         user=request.user
     )
 
-    from decimal import Decimal
+   
     offer_discount = Decimal('0.00')
     for item in order.items.all():
         active_qty = item.quantity - item.cancelled_quantity - item.returned_quantity
@@ -504,6 +504,16 @@ def review_writing(request):
 
     product = order_item.variant.product
 
+    remaining_qty = (
+        order_item.quantity
+        - order_item.cancelled_quantity
+        - order_item.returned_quantity
+    )
+
+    if remaining_qty <= 0:
+        messages.error(request, "Review not allowed.")
+        return redirect(f"{reverse('orders_view')}?order_id={order_item.order.id}")
+
     
     if (
         product.is_deleted or
@@ -653,35 +663,40 @@ def review_writing(request):
                     'Only JPG, JPEG, PNG and WEBP images are allowed'
                 )
                 return render(request, 'review_writing.html',context)
+            
+        try:
 
-    
-        review = Review.objects.create(
-            user=request.user,
-            product=product,
-            order_item=order_item,
-            rating=rating,
-            title=title,
-            content=content,
-        )
+            with transaction.atomic():
 
-        # SAVE REVIEW IMAGES
-        for image in images:
+                review = Review.objects.create(
+                    user=request.user,
+                    product=product,
+                    order_item=order_item,
+                    rating=rating,
+                    title=title,
+                    content=content,
+                )
 
-            ReviewImage.objects.create(
-                review=review,
-                image=image
-            )
+                # SAVE REVIEW IMAGES
+                for image in images:
+
+                    ReviewImage.objects.create(
+                        review=review,
+                        image=image
+                    )
+
+        except Exception:
+            messages.error(request, "Unable to submit review. Please try again.")
+            return render(request, "review_writing.html", context)
+        
 
         messages.success(request, 'Review submitted successfully')
+        return redirect(f'/orders/orders_view/?order_id={order_item.order.id}')
 
-        return redirect(
-            f'/orders/orders_view/?order_id={order_item.order.id}'
-        )
-
-    context = {
-        'product': product,
-        'order_item': order_item,
-    }
+    # context = {
+    #     'product': product,
+    #     'order_item': order_item,
+    # }
 
     return render(request, 'review_writing.html', context)
 
@@ -712,8 +727,12 @@ def return_order(request):
             item.item_status = 'Return Requested'
             item.reason = f"[Qty: {quantity_to_return}] {reason}"
             item.save()
-
+            
             order = item.order
+
+            if not order.reason:
+                order.reason = reason
+                order.save(update_fields=['reason'])
 
             if not order.items.exclude(
                 item_status__in=['Return Requested', 'Returned', 'Cancelled']
